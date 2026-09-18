@@ -49,8 +49,11 @@ These are hard requirements, not nice-to-haves, for every badge/popup control:
 
 ## Component conventions
 
-- Keep the Marketplace static: no client-side price fetching, no login, no
-  backend calls (REQUIREMENTS §3).
+- The Marketplace is a Vercel-deployed React app that calls the same
+  read-only comparison API (`apps/api`) as the extension — it does not fetch
+  prices from retailers directly and has no login, checkout, or user
+  tracking (REQUIREMENTS §3). Don't add a second, ad hoc data path around the
+  API.
 - Badge and popup copy should match the exact strings in REQUIREMENTS §6
   (headline `Comparable alternative: save $X.XX`, actions `See alternative` /
   `Why this was matched` / `Not now`) rather than paraphrasing them per

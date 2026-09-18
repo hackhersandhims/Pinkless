@@ -16,10 +16,10 @@ sake.
   `feat/catalog-razor-comparisons`.
 - Use `fix/<area>-<short-desc>` for bug fixes, `chore/<short-desc>` for
   non-feature work (tooling, docs, deps).
-- Keep branches scoped to one area (`apps/extension`, `apps/marketplace`,
-  `packages/catalog`, `packages/matcher`, `packages/tokens`) where possible —
-  smaller surface means fewer merge conflicts with teammates working
-  elsewhere.
+- Keep branches scoped to one area (`apps/extension`, `apps/api`,
+  `apps/marketplace`, `packages/catalog`, `packages/matcher`,
+  `packages/tokens`) where possible — smaller surface means fewer merge
+  conflicts with teammates working elsewhere.
 
 ## Commit messages
 
@@ -48,8 +48,10 @@ Keep the subject line describing what changed, not a diary of the session.
 - No direct pushes to `main` that skip the build check above — even for a
   "trivial" change, since trivial changes are exactly what collide with
   someone else's in-flight work.
-- Never commit `node_modules/`, build output (`dist/`), or `.env`/credential
-  files. Check `git status` before staging broadly (`git add -A`) — this repo
-  handles no user data or secrets by design (REQUIREMENTS §3), so a stray
-  credential file showing up in a diff is a sign something is misconfigured,
-  not something to just gitignore silently.
+- Never commit `node_modules/`, build output (`dist/`), or `.env`/`.env.*`
+  files — retailer credentials (`KROGER_CLIENT_ID`/`KROGER_CLIENT_SECRET`,
+  etc.) now live server-side in `apps/api` and are configured in Vercel, never
+  in the repo. `.env.example` documents variable **names** only — real values
+  never go in it. Check `git status` before staging broadly (`git add -A`); a
+  stray credential file showing up in a diff means something is
+  misconfigured, not something to just gitignore silently.

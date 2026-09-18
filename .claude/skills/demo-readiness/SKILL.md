@@ -1,6 +1,6 @@
 ---
 name: demo-readiness
-description: Use before a hackathon demo, before merging a change that touches the extension/matcher/marketplace end-to-end path, or when asked "are we ready to demo" — the §8 acceptance checklist.
+description: Use before a hackathon demo, before merging a change that touches the extension/api/matcher/marketplace end-to-end path, or when asked "are we ready to demo" — the §8 acceptance checklist.
 ---
 
 # Demo readiness
@@ -11,10 +11,11 @@ suggestion.
 
 ## Acceptance checklist (REQUIREMENTS §8)
 
-- [ ] A known supported product shows exactly one correct badge in under
-      three seconds.
-- [ ] Its savings equal `current target price - catalog alternative price`
-      exactly (integer cents, no rounding drift).
+- [ ] A known supported product shows one correct badge in under three
+      seconds **on a warm cache** — measure with the API cache warm, not
+      only cold.
+- [ ] Its savings equal `current offer price - eligible alternative offer
+      price` exactly (integer cents, no rounding drift).
 - [ ] Clicking the badge opens the expected alternative URL (new tab, no
       host-page navigation).
 - [ ] An unknown product stays quiet — no badge.
@@ -24,23 +25,32 @@ suggestion.
 - [ ] A product with no positive savings stays quiet.
 - [ ] Changing a supported product's variant updates or removes the badge
       correctly — never leaves a stale one.
-- [ ] The Marketplace shows every `active` catalog record exactly once,
-      grouped by category, with savings, rationale, and verification date.
-- [ ] Catalog validation (`pnpm run catalog:validate`) runs cleanly.
-- [ ] Fixture-based tests cover every retailer adapter and the matcher's key
-      suppression rules (see `suppress-by-default` skill for the rule list).
-- [ ] The unpacked extension and the static Marketplace can both be
-      demonstrated without a backend or live scraping.
+- [ ] The Marketplace identifies the source retailer, price context
+      (`online`/`store-pickup`/`in-store`), and observed time for every
+      displayed offer.
+- [ ] Product-identity catalog validation runs cleanly before a build
+      (`pnpm run catalog:validate`).
+- [ ] Fixture-based tests cover every retailer adapter (page adapters in
+      `apps/extension` and provider adapters in `apps/api/src/providers`)
+      and the matcher's key suppression rules (see `suppress-by-default`).
+- [ ] The unpacked extension and Vercel-deployed Marketplace use **only**
+      the Pinkless API and approved retailer connections — no page scraping,
+      anywhere.
 
 ## Standing reminder: keep the fallback path alive
 
-- `fixtures/retailer-one` and the fallback demo page exist specifically for
+- `fixtures/retailers/` (and any per-provider fixtures under
+  `fixtures/providers/`) plus the fallback demo page exist specifically for
   the case where a retailer changes their DOM or inventory mid-judging
   (REQUIREMENTS §2, §7). Don't let them rot:
-  - When the adapter or matcher changes, re-run against the fixtures, don't
-    just eyeball a live page.
-  - If the fallback demo page's markup or data drifts from what the adapter
+  - When a page adapter, provider adapter, or matcher changes, re-run
+    against the fixtures — don't just eyeball a live page.
+  - `PINKLESS_PROVIDER_MODE=mock` should reliably produce a working demo
+    path end-to-end at all times; treat a broken mock mode as a
+    demo-blocking bug, not a nice-to-have.
+  - If the fallback demo page's markup or data drifts from what an adapter
     now expects, fix it in the same PR — it's the safety net for the actual
     judging moment, not a leftover scaffold.
 - Before any demo/practice run: confirm the fallback page still produces the
-  same one-badge, correct-savings result as the live retailer path.
+  same one-badge, correct-savings result as the live retailer path, and that
+  mock mode still works if any provider's live credentials aren't available.
