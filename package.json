@@ -8,12 +8,13 @@
     "format:write": "prettier --write .",
     "typecheck": "tsc --noEmit --pretty false -p tsconfig.json",
     "test": "vitest run --passWithNoTests",
-    "catalog:validate": "node scripts/validate-catalog.mjs",
+    "catalog:validate": "node --experimental-strip-types packages/catalog/src/validate.ts",
     "build:extension": "pnpm --filter @pinkless/extension build",
     "build:marketplace": "pnpm --filter @pinkless/marketplace build",
     "build": "pnpm run catalog:validate && pnpm run typecheck && pnpm run build:extension && pnpm run build:marketplace"
   },
   "devDependencies": {
+    "@types/node": "^26.6.1",
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",

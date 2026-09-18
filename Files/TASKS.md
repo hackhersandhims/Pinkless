@@ -30,7 +30,7 @@ Marketplace without credentials.
 - [ ] Record canonical URL/product ID, selected variant, quantity, regular
   one-time price, alternative URL, rationale, sources, and verification date
   for every record.
-- [ ] Implement catalog validation.
+- [x] Implement catalog validation.
 - [ ] Make validation fail for duplicated IDs, invalid money, missing evidence,
   incompatible sizes, bad URL patterns, inactive alternative, and non-cheaper
   alternative.
