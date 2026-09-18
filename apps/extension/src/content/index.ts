@@ -1,6 +1,6 @@
 import { TOKENS_CSS } from './tokens';
 
-// The content-script pipeline (Target adapter → matcher → badge) is added in later phases.
+// The content-script pipeline (retailer adapter → API → badge) is added in Phase 4.
 // BADGE_ROOT_ID must stay a fixed, unique value per REQUIREMENTS.md §7
 // ("Duplicate/injected UI collision"): the badge mount replaces this element
 // rather than appending a new one.

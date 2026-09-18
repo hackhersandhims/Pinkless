@@ -64,15 +64,15 @@ ambiguous or unavailable result.
 
 ## Phase 3 — CVS, Kroger, and Walmart page adapters
 
-- [ ] Define a `RetailerAdapter` interface with `canHandle(url)` and
+- [x] Define a `RetailerAdapter` interface with `canHandle(url)` and
   `extract(document, location): ProductView | null`.
-- [ ] Inspect product pages from CVS, Kroger, and Walmart.
-- [ ] Build page adapters for title, UPC/product ID, selected variant, ordinary
+- [x] Inspect product pages from CVS, Kroger, and Walmart.
+- [x] Build page adapters for title, UPC/product ID, selected variant, ordinary
   one-time price, price context, currency, and stock state.
-- [ ] Capture sanitized fixtures for every retailer: happy path, unknown item,
+- [x] Capture sanitized fixtures for every retailer: happy path, unknown item,
   promotion/subscription display, out-of-stock state, and variant switch.
-- [ ] Test every adapter entirely against fixtures and fail closed for ambiguity.
-- [ ] Add a debounced page-change observer plan for navigation and variants.
+- [x] Test every adapter entirely against fixtures and fail closed for ambiguity.
+- [x] Add a debounced page-change observer plan for navigation and variants.
 
 **Done when:** each supported retailer produces a valid `ProductView` in
 fixtures and no incomplete page can trigger a comparison.

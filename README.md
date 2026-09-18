@@ -87,11 +87,11 @@ pnpm --filter @pinkless/marketplace dev
 ```text
 api/                Thin Vercel Function entry points for comparison and stores
 apps/api/           Provider contracts and server-only retailer integrations
-apps/extension/     Chrome Manifest V3 extension (page adapters added later)
+apps/extension/     Chrome MV3 extension and CVS/Kroger/Walmart page adapters
 apps/marketplace/   Static React/Vite Marketplace for Vercel
 packages/catalog/   Canonical product identity data and validation
 packages/matcher/   Pure matching and savings rules
-fixtures/           Sanitized catalog and provider contract fixtures
+fixtures/           Sanitized retailer, catalog, and provider fixtures
 ```
 
 ## API contracts
