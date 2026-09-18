@@ -1,0 +1,19 @@
+.hero {
+  background: var(--surface-pink);
+  color: var(--ink);
+  padding: var(--space-6) var(--space-4);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.headline {
+  text-transform: uppercase;
+  margin: 0 0 var(--space-3);
+}
+
+.sub {
+  margin: 0;
+}
+
+/* No CTA button here: no primary/CTA color token is defined yet
+   (DESIGN_SYSTEM.md open question). Add one once that's resolved. */

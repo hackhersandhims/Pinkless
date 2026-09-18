@@ -1,8 +1,18 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HomePage } from './routes/HomePage.js';
+import { CategoryPage } from './routes/CategoryPage.js';
+import { ComparePage } from './routes/ComparePage.js';
+import { NotFoundPage } from './routes/NotFoundPage.js';
+
 export function App() {
   return (
-    <main>
-      <h1 className="display">Pinkless Marketplace</h1>
-      <p className="body">Reviewed product comparisons will appear here.</p>
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/category/:slug" element={<CategoryPage />} />
+        <Route path="/compare/:id" element={<ComparePage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
