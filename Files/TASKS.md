@@ -29,18 +29,18 @@ direction are documented; a fresh checkout builds without credentials.
 
 - [x] Implement the original `Comparison`, `ProductView`, `Money`, and `Size`
   types; `Comparison` is now superseded by live-offer architecture.
-- [ ] Replace target/alternative types with retailer-neutral `Product`,
+- [x] Replace target/alternative types with retailer-neutral `Product`,
   `RetailerIdentity`, and time-bounded `Offer` types.
-- [ ] Convert validation to reject duplicate products/UPCs, invalid identity,
+- [x] Convert validation to reject duplicate products/UPCs, invalid identity,
   invalid size or URL patterns, and unsupported equivalence policies.
-- [ ] Define a `RetailerProvider` interface for product, location, and offer
+- [x] Define a `RetailerProvider` interface for product, location, and offer
   lookup.
-- [ ] Implement the Kroger provider against its official product/location APIs.
-- [ ] Add CVS and Walmart provider shells that fail closed until approved
+- [x] Implement the Kroger provider against its official product/location APIs.
+- [x] Add CVS and Walmart provider shells that fail closed until approved
   credentials or licensed product-and-price data are supplied.
-- [ ] Define Vercel environment variables and a local mock-provider mode;
+- [x] Define Vercel environment variables and a local mock-provider mode;
   never commit credentials.
-- [ ] Add provider-contract fixtures/tests for CVS, Kroger, and Walmart.
+- [x] Add provider-contract fixtures/tests for CVS, Kroger, and Walmart.
 
 **Done when:** mocked providers return normalized offers, identity validation
 passes, and unavailable providers never yield invented results.

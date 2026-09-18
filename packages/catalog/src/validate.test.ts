@@ -1,125 +1,98 @@
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
-import type { Comparison } from './schema.js';
+import type { Product } from './schema.js';
 import { validateCatalog } from './validate.js';
 
-function validComparison(): Comparison {
+function validProduct(overrides: Partial<Product> = {}): Product {
   return {
     id: 'sample-razor',
+    upc: '012345678905',
+    name: 'Sample Razor',
+    brand: 'Sample Brand',
+    variant: 'One handle',
     category: 'razors',
-    target: {
-      retailer: 'Target',
-      productId: '12345678',
-      canonicalUrlPatterns: ['^https://www\\.target\\.com/p/sample-razor/-/A-12345678(?:\\?.*)?$'],
-      name: 'Sample Razor',
-      brand: 'Sample Brand',
-      variant: 'Starter Set',
-      marketedAs: 'women',
-      price: { amountCents: 1299, currency: 'USD' },
-      size: { amount: 1, unit: 'count' },
-    },
-    alternative: {
-      retailer: 'Example Retailer',
-      url: 'https://example.com/sample-razor',
-      name: 'Comparable Sample Razor',
-      price: { amountCents: 999, currency: 'USD' },
-      size: { amount: 1, unit: 'count' },
-      condition: 'new',
-      availability: 'verified-in-stock',
-    },
+    size: { amount: 1, unit: 'count' },
+    identities: [
+      {
+        retailer: 'kroger',
+        productId: '00012345678905',
+        canonicalUrlPatterns: ['^https://www\\.kroger\\.com/p/sample-razor/00012345678905$'],
+      },
+    ],
     equivalence: {
-      rationale: 'Both products are reviewed single-handle starter razors.',
-      matchedAttributes: ['single handle', 'starter razor'],
-    },
-    evidence: {
-      verifiedAt: '2026-09-18',
-      sourceUrls: ['https://www.target.com/p/sample-razor/-/A-12345678'],
+      policy: 'exact-packaged-product',
+      rationale: 'Every identity refers to the same packaged one-handle razor.',
+      matchedAttributes: ['UPC', 'one handle'],
     },
     status: 'active',
+    ...overrides,
   };
 }
 
-function validationMessages(value: unknown): string[] {
+function messages(value: unknown): string[] {
   return validateCatalog(value).issues.map((issue) => issue.message);
 }
 
 describe('validateCatalog', () => {
-  it('accepts a reviewed comparison with compatible sizes and positive savings', () => {
-    expect(validateCatalog([validComparison()])).toEqual({ valid: true, issues: [] });
+  it('accepts a retailer-neutral exact product record', () => {
+    expect(validateCatalog([validProduct()])).toEqual({ valid: true, issues: [] });
   });
 
-  it('rejects duplicate IDs', () => {
-    expect(validationMessages([validComparison(), validComparison()])).toContain(
-      'duplicates comparison ID "sample-razor".',
+  it('rejects duplicate product IDs, UPCs, and retailer product identities', () => {
+    const duplicate = validProduct({ id: 'second-product' });
+    const result = messages([validProduct(), duplicate]);
+    expect(result).toContain('duplicates UPC/GTIN "012345678905".');
+    expect(result).toContain('duplicates retailer product identity "kroger:00012345678905".');
+    expect(messages([validProduct(), validProduct()])).toContain(
+      'duplicates product ID "sample-razor".',
     );
   });
 
-  it('rejects invalid money', () => {
-    const comparison = validComparison();
-    comparison.alternative.price.amountCents = 999.5;
+  it('rejects invalid GTIN check digits and sizes', () => {
+    const product = validProduct({ upc: '012345678904', size: { amount: 0, unit: 'count' } });
+    const result = messages([product]);
+    expect(result).toContain('must be a valid GTIN-8, UPC-A, EAN-13, or GTIN-14.');
+    expect(result).toContain('must be a positive finite number.');
+  });
 
-    expect(validationMessages([comparison])).toContain(
-      'must be a positive integer number of cents.',
+  it('rejects duplicate retailer identities on one product', () => {
+    const product = validProduct();
+    product.identities.push({ ...product.identities[0]! });
+    expect(messages([product])).toContain(
+      'duplicates retailer identity "kroger" for this product.',
     );
   });
 
-  it('rejects records with missing evidence', () => {
-    const comparison = validComparison() as unknown as { evidence?: unknown };
-    delete comparison.evidence;
+  it('rejects malformed or unanchored canonical URL patterns', () => {
+    const product = validProduct();
+    product.identities[0]!.canonicalUrlPatterns = ['^['];
+    expect(messages([product])).toContain(
+      'must be an anchored HTTPS regular expression of at most 512 characters.',
+    );
 
-    expect(validationMessages([comparison])).toContain('must be an object.');
+    product.identities[0]!.canonicalUrlPatterns = ['^https://[invalid$'];
+    expect(messages([product])).toContain('must be a valid regular expression.');
+
+    product.identities[0]!.canonicalUrlPatterns = ['^https://www\\.walmart\\.com/item$'];
+    expect(messages([product])).toContain('must target the canonical kroger.com domain.');
   });
 
-  it('rejects incompatible size units', () => {
-    const comparison = validComparison();
-    comparison.alternative.size = { amount: 100, unit: 'ml' };
-
-    expect(validationMessages([comparison])).toContain('must match target size unit (count).');
+  it('rejects an unsupported equivalence policy', () => {
+    const product = validProduct() as unknown as { equivalence: { policy: string } };
+    product.equivalence.policy = 'similar-title';
+    expect(messages([product])).toContain('must use the supported exact-packaged-product policy.');
   });
 
-  it('rejects malformed canonical URL patterns', () => {
-    const comparison = validComparison();
-    comparison.target.canonicalUrlPatterns = ['^['];
-
-    expect(validationMessages([comparison])).toContain('must be a valid regular expression.');
-  });
-
-  it('rejects alternatives that are not verified in stock and new', () => {
-    const comparison = validComparison() as unknown as {
-      alternative: { availability: string; condition: string };
-    };
-    comparison.alternative.availability = 'out-of-stock';
-    comparison.alternative.condition = 'used';
-
-    const messages = validationMessages([comparison]);
-    expect(messages).toContain('must be verified-in-stock.');
-    expect(messages).toContain('must be new.');
-  });
-
-  it('rejects active records whose alternative is not cheaper', () => {
-    const comparison = validComparison();
-    comparison.alternative.price.amountCents = comparison.target.price.amountCents;
-
-    expect(validationMessages([comparison])).toContain(
-      'must be lower than the recorded target price for an active record.',
+  it('requires a canonical identity on active products', () => {
+    const product = validProduct({ upc: undefined, identities: [] });
+    expect(messages([product])).toContain(
+      'active products need a UPC/GTIN or at least one canonical retailer identity.',
     );
   });
 
   it('rejects the intentionally invalid catalog fixture', async () => {
-    const fixtureUrl = new URL(
-      '../../../fixtures/catalog/invalid-comparison.json',
-      import.meta.url,
-    );
-    const fixture = JSON.parse(await readFile(fixtureUrl, 'utf8'));
-
-    expect(validateCatalog(fixture)).toMatchObject({
-      valid: false,
-      issues: [
-        expect.objectContaining({
-          path: '[0].alternative.availability',
-          message: 'must be verified-in-stock.',
-        }),
-      ],
-    });
+    const fixtureUrl = new URL('../../../fixtures/catalog/invalid-product.json', import.meta.url);
+    const fixture = JSON.parse(await readFile(fixtureUrl, 'utf8')) as unknown;
+    expect(validateCatalog(fixture)).toMatchObject({ valid: false });
   });
 });

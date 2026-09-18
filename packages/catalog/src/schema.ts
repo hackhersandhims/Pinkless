@@ -1,10 +1,13 @@
-/**
- * Shared, reviewer-maintained data model for Pinkless comparisons.
- * Monetary values are stored as integer minor units; never use floating point
- * values for prices or savings.
- */
+/** Shared domain types used by the catalog, providers, API, and matcher. */
+
+export const RETAILERS = ['cvs', 'kroger', 'walmart'] as const;
+export type Retailer = (typeof RETAILERS)[number];
+
+export const PRICE_CONTEXTS = ['online', 'store-pickup', 'in-store'] as const;
+export type PriceContext = (typeof PRICE_CONTEXTS)[number];
 
 export type Money = {
+  /** Integer minor units. Floating-point dollar amounts never cross this boundary. */
   amountCents: number;
   currency: 'USD';
 };
@@ -14,43 +17,43 @@ export type Size = {
   unit: 'oz' | 'ml' | 'count';
 };
 
-export type TargetListing = {
-  retailer: string;
-  productId?: string;
+export type RetailerIdentity = {
+  retailer: Retailer;
+  productId: string;
   canonicalUrlPatterns: string[];
+};
+
+export type EquivalencePolicy = 'exact-packaged-product';
+
+export type Product = {
+  id: string;
+  upc?: string;
   name: string;
   brand?: string;
   variant: string;
-  marketedAs: 'women' | 'men' | 'unisex';
-  /** The reviewer-observed regular, one-time price used to validate the record. */
-  price: Money;
-  size: Size;
-};
-
-export type AlternativeListing = {
-  retailer: string;
-  url: string;
-  name: string;
-  price: Money;
-  size: Size;
-  condition: 'new';
-  availability: 'verified-in-stock';
-};
-
-export type Comparison = {
-  id: string;
   category: 'razors' | 'deodorant' | 'body-wash';
-  target: TargetListing;
-  alternative: AlternativeListing;
+  size: Size;
+  identities: RetailerIdentity[];
   equivalence: {
+    /** Phase 1 deliberately permits exact identity matching only. */
+    policy: EquivalencePolicy;
     rationale: string;
     matchedAttributes: string[];
     knownDifferences?: string[];
   };
-  evidence: {
-    /** ISO 8601 date recorded by the reviewer. */
-    verifiedAt: string;
-    sourceUrls: string[];
-  };
   status: 'active' | 'paused' | 'retired';
+};
+
+/** A time-bounded price observation returned by an approved provider. */
+export type Offer = {
+  retailer: Retailer;
+  productId: string;
+  url: string;
+  price: Money;
+  priceContext: PriceContext;
+  condition: 'new';
+  availability: 'in-stock' | 'out-of-stock' | 'unknown';
+  locationId?: string;
+  observedAt: string;
+  expiresAt: string;
 };
