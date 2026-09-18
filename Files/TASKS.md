@@ -7,14 +7,14 @@ add live scraping until the **one-retailer demo path** works end to end.
 
 ## Phase 0 — Decisions and setup
 
-- [ ] Confirm the first supported retailer and three demo product URLs.
-- [ ] Confirm the Marketplace deployment choice: Vercel, Netlify, or GitHub
-  Pages.
-- [ ] Create a TypeScript workspace with `apps/extension`, `apps/marketplace`,
+- [ ] Confirm the first supported retailer (**Target confirmed**) and three demo
+  product URLs (**pending**).
+- [x] Confirm the Marketplace deployment choice: Vercel.
+- [x] Create a TypeScript workspace with `apps/extension`, `apps/marketplace`,
   `packages/catalog`, and `packages/matcher`.
-- [ ] Add a root script for format, typecheck, test, catalog validation, and
+- [x] Add a root script for format, typecheck, test, catalog validation, and
   production builds.
-- [ ] Add `.gitignore`, a concise README, and an environment-free local setup
+- [x] Add `.gitignore`, a concise README, and an environment-free local setup
   guide.
 
 **Done when:** a fresh checkout builds an empty extension and empty static

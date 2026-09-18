@@ -1,0 +1,11 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Keep workspace installs self-contained and identical in local and CI environments.
+enableGlobalVirtualStore: false
+
+onlyBuiltDependencies:
+  - esbuild
+allowBuilds:
+  esbuild: true

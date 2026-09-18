@@ -1,0 +1,9 @@
+{
+  "name": "@pinkless/extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && node scripts/copy-static.mjs"
+  }
+}

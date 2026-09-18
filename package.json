@@ -1,0 +1,29 @@
+{
+  "name": "pinkless",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.21.0",
+  "scripts": {
+    "format": "prettier --check .",
+    "format:write": "prettier --write .",
+    "typecheck": "tsc --noEmit --pretty false -p tsconfig.json",
+    "test": "vitest run --passWithNoTests",
+    "catalog:validate": "node scripts/validate-catalog.mjs",
+    "build:extension": "pnpm --filter @pinkless/extension build",
+    "build:marketplace": "pnpm --filter @pinkless/marketplace build",
+    "build": "pnpm run catalog:validate && pnpm run typecheck && pnpm run build:extension && pnpm run build:marketplace"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "prettier": "^3.8.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18"
+  },
+  "dependencies": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  }
+}
