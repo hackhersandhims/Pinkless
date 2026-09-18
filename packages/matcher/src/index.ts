@@ -1,2 +1,2 @@
 /** Deterministic matching and savings logic lives here. */
-export {};
+export type { ProductView } from './types.js';

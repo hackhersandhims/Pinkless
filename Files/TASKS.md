@@ -7,8 +7,9 @@ add live scraping until the **one-retailer demo path** works end to end.
 
 ## Phase 0 — Decisions and setup
 
-- [ ] Confirm the first supported retailer (**Target confirmed**) and three demo
-  product URLs (**pending**).
+- [x] Confirm the first supported retailer: Target.
+- [ ] Select three Target demo product URLs before beginning the retailer
+  adapter work.
 - [x] Confirm the Marketplace deployment choice: Vercel.
 - [x] Create a TypeScript workspace with `apps/extension`, `apps/marketplace`,
   `packages/catalog`, and `packages/matcher`.
@@ -22,7 +23,7 @@ Marketplace without credentials.
 
 ## Phase 1 — Catalog first
 
-- [ ] Implement the `Comparison`, `ProductView`, `Money`, and `Size` types
+- [x] Implement the `Comparison`, `ProductView`, `Money`, and `Size` types
   defined in [REQUIREMENTS.md](REQUIREMENTS.md).
 - [ ] Create `comparisons.json` with 12–20 manually researched records across
   2–3 categories. Start with records for the three demo URLs.

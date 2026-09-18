@@ -1,2 +1,1 @@
-/** Shared, reviewer-maintained comparison catalog. */
-export {};
+export type { AlternativeListing, Comparison, Money, Size, TargetListing } from './schema.js';
