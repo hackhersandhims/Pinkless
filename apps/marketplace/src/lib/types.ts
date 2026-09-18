@@ -1,31 +1,55 @@
 /**
- * The Marketplace's view contract. Every component renders these shapes and
- * nothing else.
+ * The Marketplace's data and view contracts. Every component renders the view
+ * shapes and nothing else.
  *
- * Adapted from the shared API contract in packages/matcher. Note this differs
- * from an earlier draft that assumed the catalog stored a target/alternative
- * price pair: it does not. The catalog holds product identity and equivalence
- * policy only; both prices come from real provider offers, so savings is a
- * live, computed integer and the "alternative" is the SAME packaged product at
- * a different retailer (not a different product).
+ * The catalog holds product identity and equivalence policy only; both prices
+ * come from real provider offers, so savings is a computed integer and the
+ * "alternative" is the SAME packaged product at a different retailer.
  */
 
-import type {
-  ComparisonOffer,
-  ComparisonsResponse,
-  ProductComparison,
-} from '../../../../packages/matcher/src/comparison.js';
-import type { Money, PriceContext, Product, Retailer, Size } from '../../../../packages/catalog/src/schema.js';
+import type { Offer, PriceContext, Product, Retailer, Size } from '../../../../packages/catalog/src/schema.js';
 
-export type {
-  ComparisonOffer,
-  ComparisonsResponse,
-  Money,
-  PriceContext,
-  Product,
-  ProductComparison,
-  Retailer,
-  Size,
+export type { Money, Offer, PriceContext, Product, Retailer, Size } from '../../../../packages/catalog/src/schema.js';
+
+/**
+ * One side of a listed comparison: a provider offer reduced to what the
+ * Marketplace displays.
+ */
+export type ComparisonOffer = Pick<
+  Offer,
+  'retailer' | 'url' | 'price' | 'priceContext' | 'locationId' | 'observedAt' | 'expiresAt'
+> & { availability: 'in-stock' };
+
+/**
+ * One product and a cheaper offer for it at another supported retailer. Each
+ * entry is a `show` outcome from packages/matcher's `compareOffers()`, so the
+ * Marketplace lists exactly what the extension would badge.
+ */
+export type ProductComparison = {
+  /** `Product.id` from packages/catalog. */
+  productId: string;
+  upc?: string;
+  name: string;
+  brand?: string;
+  variant: string;
+  category: Product['category'];
+  size: Size;
+  equivalence: Product['equivalence'];
+  reference: ComparisonOffer;
+  alternative: ComparisonOffer;
+  /** Integer minor units, always > 0. */
+  savingsCents: number;
+};
+
+/**
+ * The Marketplace's list feed. The Phase 2 API has no list endpoint yet
+ * (`POST /api/compare` answers one product view at a time), so this shape is
+ * the proposed body for a future `GET /api/comparisons`.
+ */
+export type ComparisonsResponse = {
+  comparisons: ProductComparison[];
+  /** ISO date-time the feed was assembled. */
+  generatedAt: string;
 };
 
 /** Fixed display order. Categories with no active comparisons are omitted. */

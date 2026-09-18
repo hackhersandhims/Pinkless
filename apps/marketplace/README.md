@@ -30,21 +30,23 @@ pnpm run build              # catalog validate + typecheck + both app builds
 
 ## The data seam
 
-`src/lib/api.ts` exports `loadComparisons()`, which returns the same
-`ComparisonsResponse` shape (`packages/matcher/src/comparison.ts`) regardless
-of where the data comes from:
+`src/lib/api.ts` exports `loadComparisons()`, which returns a
+`ComparisonsResponse` list feed (`src/lib/types.ts`) regardless of where the
+data comes from:
 
-- If `VITE_PINKLESS_API_URL` is set, it fetches `${VITE_PINKLESS_API_URL}/comparisons`
-  from the real Pinkless comparison API.
-- Otherwise, it builds the identical response **locally**, from
+- If `VITE_PINKLESS_API_URL` is set, it fetches
+  `${VITE_PINKLESS_API_URL}/api/comparisons`.
+- Otherwise, it builds the feed **locally** from
   `packages/catalog/products.json` (product identity only, no prices) plus
-  `src/lib/fixtures/mock-offers.json` (mocked provider offers), applying the
-  same same-price-context, positive-savings rules the real API will enforce.
+  `src/lib/fixtures/mock-offers.json` (mocked provider offers). Every
+  candidate goes through `compareOffers()` from `packages/matcher`, the same
+  function behind `POST /api/compare`, so the Marketplace can never list a
+  comparison the extension would suppress.
 
-**The Phase 2 comparison API (`apps/api`) does not exist yet.** Until it
-ships, the Marketplace always runs in local-build mode. Set
-`VITE_PINKLESS_API_URL` only once that route is live; no other code changes
-should be required to switch over.
+**There is no list endpoint yet.** The Phase 2 API answers one product view
+at a time (`POST /api/compare`), which suits the extension but not a
+browsable feed. Until `GET /api/comparisons` exists, leave
+`VITE_PINKLESS_API_URL` unset; setting it now fetches a route that 404s.
 
 The catalog never stores a price — every price in a `ComparisonView` comes
 from an observed `Offer`/`ComparisonOffer`. "Alternative" always means the
@@ -60,5 +62,8 @@ product.
 - **Output directory:** `dist`
 - **Node version:** 22
 
-Set `VITE_PINKLESS_API_URL` as a Vercel environment variable once the Phase 2
-API is deployed; leave it unset to keep serving the local-build fallback.
+These settings deploy the Marketplace as its own project. The API's Vercel
+Functions live in the repo-root `api/` directory, which this project cannot
+see, so they need a separate project rooted at the repo root (or one
+repo-root project that serves both). Leave `VITE_PINKLESS_API_URL` unset until
+a list endpoint exists.
