@@ -6,21 +6,27 @@
     "brand": "Sample Brand",
     "variant": "5-blade cartridge razor, 4 ct",
     "category": "razors",
-    "size": { "amount": 4, "unit": "count" },
+    "size": {
+      "amount": 4,
+      "unit": "count"
+    },
     "identities": [
       {
         "retailer": "cvs",
         "productId": "cvs-razor-1",
+        "canonicalUrl": "https://www.cvs.com/shop/sample-razor-prodid-cvs-razor-1",
         "canonicalUrlPatterns": ["^https://www\\.cvs\\.com/shop/[a-z0-9-]+-prodid-cvs-razor-1$"]
       },
       {
         "retailer": "kroger",
         "productId": "00012345678905",
+        "canonicalUrl": "https://www.kroger.com/p/sample-razor/00012345678905",
         "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/00012345678905$"]
       },
       {
         "retailer": "walmart",
         "productId": "walmart-razor-1",
+        "canonicalUrl": "https://www.walmart.com/ip/sample-razor/walmart-razor-1",
         "canonicalUrlPatterns": ["^https://www\\.walmart\\.com/ip/[a-z0-9-]+/walmart-razor-1$"]
       }
     ],
@@ -38,16 +44,21 @@
     "brand": "Northbank",
     "variant": "3-blade disposable razor, 6 ct",
     "category": "razors",
-    "size": { "amount": 6, "unit": "count" },
+    "size": {
+      "amount": 6,
+      "unit": "count"
+    },
     "identities": [
       {
         "retailer": "cvs",
         "productId": "cvs-razor-2",
+        "canonicalUrl": "https://www.cvs.com/shop/daily-comfort-disposable-razor-prodid-cvs-razor-2",
         "canonicalUrlPatterns": ["^https://www\\.cvs\\.com/shop/[a-z0-9-]+-prodid-cvs-razor-2$"]
       },
       {
         "retailer": "walmart",
         "productId": "walmart-razor-2",
+        "canonicalUrl": "https://www.walmart.com/ip/daily-comfort-disposable-razor/walmart-razor-2",
         "canonicalUrlPatterns": ["^https://www\\.walmart\\.com/ip/[a-z0-9-]+/walmart-razor-2$"]
       }
     ],
@@ -55,7 +66,9 @@
       "policy": "exact-packaged-product",
       "rationale": "Same manufacturer UPC 036000291452: identical 3-blade disposable razor in a 6-count pack at both retailers.",
       "matchedAttributes": ["upc", "brand", "blade count", "pack count"],
-      "knownDifferences": ["Handle color varies by retailer allocation; the cartridge and blade count are identical."]
+      "knownDifferences": [
+        "Handle color varies by retailer allocation; the cartridge and blade count are identical."
+      ]
     },
     "status": "active"
   },
@@ -66,16 +79,21 @@
     "brand": "Cedarline",
     "variant": "Fresh scent, 2.6 oz",
     "category": "deodorant",
-    "size": { "amount": 2.6, "unit": "oz" },
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
     "identities": [
       {
         "retailer": "kroger",
         "productId": "00079409012341",
+        "canonicalUrl": "https://www.kroger.com/p/invisible-solid-antiperspirant/00079409012341",
         "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/00079409012341$"]
       },
       {
         "retailer": "walmart",
         "productId": "walmart-deo-1",
+        "canonicalUrl": "https://www.walmart.com/ip/invisible-solid-antiperspirant/walmart-deo-1",
         "canonicalUrlPatterns": ["^https://www\\.walmart\\.com/ip/[a-z0-9-]+/walmart-deo-1$"]
       }
     ],
@@ -93,21 +111,27 @@
     "brand": "Cedarline",
     "variant": "Unscented, 3 oz",
     "category": "deodorant",
-    "size": { "amount": 3, "unit": "oz" },
+    "size": {
+      "amount": 3,
+      "unit": "oz"
+    },
     "identities": [
       {
         "retailer": "cvs",
         "productId": "cvs-deo-1",
+        "canonicalUrl": "https://www.cvs.com/shop/clear-gel-antiperspirant-prodid-cvs-deo-1",
         "canonicalUrlPatterns": ["^https://www\\.cvs\\.com/shop/[a-z0-9-]+-prodid-cvs-deo-1$"]
       },
       {
         "retailer": "kroger",
         "productId": "00037000123453",
+        "canonicalUrl": "https://www.kroger.com/p/clear-gel-antiperspirant/00037000123453",
         "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/00037000123453$"]
       },
       {
         "retailer": "walmart",
         "productId": "walmart-deo-2",
+        "canonicalUrl": "https://www.walmart.com/ip/clear-gel-antiperspirant/walmart-deo-2",
         "canonicalUrlPatterns": ["^https://www\\.walmart\\.com/ip/[a-z0-9-]+/walmart-deo-2$"]
       }
     ],
@@ -125,16 +149,21 @@
     "brand": "Havenmoor",
     "variant": "Shea butter, 18 fl oz",
     "category": "body-wash",
-    "size": { "amount": 18, "unit": "oz" },
+    "size": {
+      "amount": 18,
+      "unit": "oz"
+    },
     "identities": [
       {
         "retailer": "cvs",
         "productId": "cvs-wash-1",
+        "canonicalUrl": "https://www.cvs.com/shop/moisturizing-body-wash-prodid-cvs-wash-1",
         "canonicalUrlPatterns": ["^https://www\\.cvs\\.com/shop/[a-z0-9-]+-prodid-cvs-wash-1$"]
       },
       {
         "retailer": "kroger",
         "productId": "00011111000124",
+        "canonicalUrl": "https://www.kroger.com/p/moisturizing-body-wash/00011111000124",
         "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/00011111000124$"]
       }
     ],
@@ -152,16 +181,21 @@
     "brand": "Havenmoor",
     "variant": "Fragrance free, 16 fl oz",
     "category": "body-wash",
-    "size": { "amount": 16, "unit": "oz" },
+    "size": {
+      "amount": 16,
+      "unit": "oz"
+    },
     "identities": [
       {
         "retailer": "kroger",
         "productId": "00003700041236",
+        "canonicalUrl": "https://www.kroger.com/p/sensitive-skin-body-wash/00003700041236",
         "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/00003700041236$"]
       },
       {
         "retailer": "walmart",
         "productId": "walmart-wash-1",
+        "canonicalUrl": "https://www.walmart.com/ip/sensitive-skin-body-wash/walmart-wash-1",
         "canonicalUrlPatterns": ["^https://www\\.walmart\\.com/ip/[a-z0-9-]+/walmart-wash-1$"]
       }
     ],
@@ -179,11 +213,15 @@
     "brand": "Northbank",
     "variant": "5-blade cartridge razor, 3 ct",
     "category": "razors",
-    "size": { "amount": 3, "unit": "count" },
+    "size": {
+      "amount": 3,
+      "unit": "count"
+    },
     "identities": [
       {
         "retailer": "cvs",
         "productId": "cvs-razor-3",
+        "canonicalUrl": "https://www.cvs.com/shop/smooth-glide-razor-prodid-cvs-razor-3",
         "canonicalUrlPatterns": ["^https://www\\.cvs\\.com/shop/[a-z0-9-]+-prodid-cvs-razor-3$"]
       }
     ],
@@ -201,11 +239,15 @@
     "brand": "Cedarline",
     "variant": "Original scent, 2 oz",
     "category": "deodorant",
-    "size": { "amount": 2, "unit": "oz" },
+    "size": {
+      "amount": 2,
+      "unit": "oz"
+    },
     "identities": [
       {
         "retailer": "walmart",
         "productId": "walmart-deo-3",
+        "canonicalUrl": "https://www.walmart.com/ip/original-scent-deodorant/walmart-deo-3",
         "canonicalUrlPatterns": ["^https://www\\.walmart\\.com/ip/[a-z0-9-]+/walmart-deo-3$"]
       }
     ],
