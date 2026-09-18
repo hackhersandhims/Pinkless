@@ -113,15 +113,15 @@ judged demo.
 - [ ] Create a TypeScript/React Marketplace deployed on Vercel.
 - [ ] Read display-safe comparisons from the same API as the extension; do not
   embed provider credentials.
-- [ ] Build a hero section that explains the product without making a legal
+- [x] Build a hero section that explains the product without making a legal
   claim about a specific listing.
-- [ ] Render active comparison results once, grouped by category.
-- [ ] Show both retailers, price context, price difference, equivalence
+- [x] Render active comparison results once, grouped by category.
+- [x] Show both retailers, price context, price difference, equivalence
   rationale, observed time, and outbound purchase link.
-- [ ] Add empty states for a category with no active comparisons.
-- [ ] Add responsive layout, visible focus states, sensible color contrast, and
+- [x] Add empty states for a category with no active comparisons.
+- [x] Add responsive layout, visible focus states, sensible color contrast, and
   descriptive link labels.
-- [ ] Create a detail route or queryable card state only if it improves the
+- [x] Create a detail route or queryable card state only if it improves the
   extension handoff; otherwise link straight to the retailer.
 - [ ] Deploy the static site and put its URL in the extension popup.
 
