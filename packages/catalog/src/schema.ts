@@ -22,6 +22,8 @@ export type TargetListing = {
   brand?: string;
   variant: string;
   marketedAs: 'women' | 'men' | 'unisex';
+  /** The reviewer-observed regular, one-time price used to validate the record. */
+  price: Money;
   size: Size;
 };
 
