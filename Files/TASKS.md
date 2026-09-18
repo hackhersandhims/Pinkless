@@ -31,7 +31,7 @@ Marketplace without credentials.
   one-time price, alternative URL, rationale, sources, and verification date
   for every record.
 - [x] Implement catalog validation.
-- [ ] Make validation fail for duplicated IDs, invalid money, missing evidence,
+- [x] Make validation fail for duplicated IDs, invalid money, missing evidence,
   incompatible sizes, bad URL patterns, inactive alternative, and non-cheaper
   alternative.
 - [ ] Add one intentionally invalid fixture to prove validation works.
