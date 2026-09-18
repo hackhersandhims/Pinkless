@@ -1,8 +1,8 @@
 export function App() {
   return (
     <main>
-      <h1>Pinkless Marketplace</h1>
-      <p>Reviewed product comparisons will appear here.</p>
+      <h1 className="display">Pinkless Marketplace</h1>
+      <p className="body">Reviewed product comparisons will appear here.</p>
     </main>
   );
 }
