@@ -27,6 +27,26 @@ export function formatSavings(cents: number): string {
   return `Save ${formatCents(cents)}`;
 }
 
+/** "$2.00 less". `cents` must be a strictly positive integer savings amount. */
+export function formatLess(cents: number): string {
+  assertIntegerCents(cents, 'formatLess');
+  return `${formatCents(cents)} less`;
+}
+
+/**
+ * Whole-number percent the alternative is below the reference price, from
+ * integer cents. Returns undefined when the reference price is not positive
+ * or the difference rounds to under 1%, so callers show nothing rather than
+ * "0% lower". A display ratio only: no price is ever computed from it.
+ */
+export function percentLower(savingsCents: number, referenceCents: number): number | undefined {
+  assertIntegerCents(savingsCents, 'percentLower');
+  assertIntegerCents(referenceCents, 'percentLower');
+  if (referenceCents <= 0 || savingsCents <= 0) return undefined;
+  const percent = Math.round((savingsCents * 100) / referenceCents);
+  return percent >= 1 ? percent : undefined;
+}
+
 const UNIT_LABELS: Record<Size['unit'], string> = {
   oz: 'oz',
   ml: 'ml',

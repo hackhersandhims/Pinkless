@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
 import type { ComparisonView } from '../lib/types';
-import { formatCents, formatSavings } from '../lib/money';
+import { formatCents, formatSavings, percentLower } from '../lib/money';
 import { formatObservedAt } from '../lib/dates';
+import { ArrowRightIcon } from './icons';
+import { ProductMedia } from './ProductMedia';
+import { SavingsBadge } from './SavingsBadge';
 import styles from './ComparisonCard.module.css';
 
 export type ComparisonCardProps = {
@@ -9,41 +12,58 @@ export type ComparisonCardProps = {
 };
 
 /**
- * Card for one comparison: the same packaged product at two retailers, with
- * the cheaper (alternative) offer and the savings. Links to /compare/:id.
+ * The one product card, used in rails and grids. The whole card is a single
+ * link to /compare/:id (no nested controls); "View comparison" is its visual
+ * affordance, not a second link. The big price is the lower offer; the higher
+ * offer is context ("Compared with"), never a "was" price, because the two are
+ * different retailers rather than a markdown.
  */
 export function ComparisonCard({ item }: ComparisonCardProps) {
-  const savingsLabel = formatSavings(item.savingsCents);
+  const { reference, alternative } = item;
+  const percent = percentLower(item.savingsCents, reference.priceCents);
 
   return (
     <Link
       to={`/compare/${item.id}`}
       className={styles.card}
-      aria-label={`${item.name}: ${savingsLabel} at ${item.alternative.retailerLabel} versus ${item.reference.retailerLabel}`}
+      aria-label={`${item.name}: ${formatCents(alternative.priceCents)} at ${alternative.retailerLabel}. ${formatSavings(item.savingsCents)} versus ${reference.retailerLabel}`}
     >
-      <span className={`label ${styles.category}`}>{item.categoryLabel}</span>
-      <h3 className={`heading ${styles.name}`}>{item.name}</h3>
-      <span className={`caption ${styles.meta}`}>
-        {item.brand ? `${item.brand} · ` : ''}
-        {item.variant}
-      </span>
+      <ProductMedia category={item.category} />
 
-      <div className={styles.offers}>
-        <div className={styles.offerRow}>
-          <span className={`body ${styles.offerLabel}`}>{item.reference.retailerLabel}</span>
-          <span className="body">{formatCents(item.reference.priceCents)}</span>
+      <div className={styles.body}>
+        <span className={`label ${styles.category}`}>{item.categoryLabel}</span>
+        <h3 className={`body ${styles.name}`}>{item.name}</h3>
+        <span className="caption">
+          {item.brand ? `${item.brand} · ` : ''}
+          {item.variant}
+        </span>
+
+        <div className={styles.pricing}>
+          <p className={`display ${styles.price}`}>{formatCents(alternative.priceCents)}</p>
+          <span className="caption">
+            at <span className={styles.retailer}>{alternative.retailerLabel}</span>
+          </span>
         </div>
-        <div className={styles.offerRow}>
-          <span className={`body ${styles.offerLabel}`}>{item.alternative.retailerLabel}</span>
-          <span className="body">{formatCents(item.alternative.priceCents)}</span>
+        <span className="caption">
+          Compared with {formatCents(reference.priceCents)} at{' '}
+          <span className={styles.retailer}>{reference.retailerLabel}</span>
+        </span>
+
+        <div className={styles.savings}>
+          <SavingsBadge cents={item.savingsCents} />
+          {percent !== undefined ? <span className="caption">{percent}% lower</span> : null}
         </div>
       </div>
 
-      <p className={`heading ${styles.savings}`}>{savingsLabel}</p>
-
-      <span className={`caption ${styles.footNote}`}>
-        {item.alternative.priceContextLabel} price · {formatObservedAt(item.alternative.observedAt)}
-      </span>
+      <div className={styles.footer}>
+        <span className={`caption ${styles.fresh}`}>
+          {alternative.priceContextLabel} · {formatObservedAt(alternative.observedAt)}
+        </span>
+        <span className={`label ${styles.action}`}>
+          View comparison
+          <ArrowRightIcon className={styles.arrow} />
+        </span>
+      </div>
     </Link>
   );
 }

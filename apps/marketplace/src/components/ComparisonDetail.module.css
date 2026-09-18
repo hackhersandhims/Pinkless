@@ -1,93 +1,150 @@
 .wrap {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-6) * 1.5);
   color: var(--ink);
 }
 
-.category {
-  display: block;
-  margin-bottom: var(--space-2);
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
+.crumbs li + li::before {
+  content: '/';
+  margin-right: var(--space-2);
+}
+
+.crumbs a {
+  text-underline-offset: 3px;
+}
+
+.summary {
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 48rem) {
+  .summary {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: calc(var(--space-6) * 2);
+    align-items: center;
+  }
+}
+
+.summaryText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.title,
+.savings,
+.savingsNote {
+  margin: 0;
+}
+
+/* Scales the .display token (32px) by ratio: 40px. */
 .title {
-  margin: 0 0 var(--space-2);
+  font-size: 1.25em;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
-.meta {
-  display: block;
-  margin-bottom: var(--space-6);
+.savings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.cta {
+  margin-top: var(--space-4);
+}
+
+.sectionHeading {
+  margin: 0 0 var(--space-4);
+}
+
+.subHeading {
+  margin: var(--space-4) 0 var(--space-2);
+  font-weight: 600;
 }
 
 .offers {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: var(--space-4);
-  margin-bottom: var(--space-6);
 }
 
-@media (min-width: 800px) {
+@media (min-width: 48rem) {
   .offers {
-    flex-direction: row;
+    grid-template-columns: 1fr 1fr;
   }
 }
 
 .offer {
-  flex: 1;
-  background: var(--surface-100);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-2) / 2);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background: var(--tint-ink);
 }
 
-.offerRetailer {
-  margin: 0 0 var(--space-2);
+/* The lower offer takes the plum surface, so the difference reads before any text. */
+.offerEmphasis {
+  background: var(--surface-900);
+  color: var(--on-dark);
+  box-shadow: var(--shadow-lift);
+}
+
+.offerEmphasis .offerKind {
+  color: var(--on-dark-muted);
+}
+
+.offerKind,
+.offerRetailer,
+.offerPrice {
+  margin: 0;
+}
+
+.offerKind {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .offerPrice {
-  margin: 0 0 var(--space-2);
+  margin-block: var(--space-2);
+  letter-spacing: -0.01em;
 }
 
-.offerLine {
-  display: block;
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.savings {
-  margin: 0 0 var(--space-6);
-}
-
-.rationaleSection {
-  margin-bottom: var(--space-6);
-}
-
-.sectionHeading {
-  margin: 0 0 var(--space-2);
+.chip {
+  padding: calc(var(--space-2) / 2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--tint-pink);
 }
 
 .list {
-  margin: 0 0 var(--space-4);
+  margin: 0;
   padding-left: var(--space-4);
-}
-
-/*
- * This is the only filled button in the app. There is no dedicated CTA color
- * token yet (DESIGN_SYSTEM.md open question), so it borrows --surface-900 /
- * --on-dark, matching the header treatment. Replace with a CTA token once
- * defined.
- */
-.cta {
-  display: inline-block;
-  background: var(--surface-900);
-  color: var(--on-dark);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3) var(--space-4);
-  text-decoration: none;
-  margin-bottom: var(--space-6);
-}
-
-.cta:focus-visible {
-  outline: 2px solid var(--surface-900);
-  outline-offset: 2px;
-}
-
-.disclaimer {
-  opacity: 0.7;
-  display: block;
 }

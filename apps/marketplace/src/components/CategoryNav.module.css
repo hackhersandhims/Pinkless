@@ -1,0 +1,48 @@
+/* Quiet, compact row: small type, no borders, hover tint, sideways scroll on narrow screens. */
+.list {
+  display: flex;
+  gap: calc(var(--space-2) / 2);
+  margin-block: 0;
+  padding-block: 0;
+  /* Text (not the hover pill) aligns with the logo and page edge. */
+  padding-inline-start: calc(var(--gutter) - var(--space-3));
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.list::-webkit-scrollbar {
+  display: none;
+}
+
+.link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-target);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.link:hover {
+  background: var(--tint-pink);
+}
+
+/* Inset so the ring is not clipped by the scroll container. */
+.link:focus-visible {
+  outline-offset: -2px;
+}
+
+/* Current page: an underline bar (plus aria-current from NavLink), not color. */
+.active::after {
+  content: '';
+  position: absolute;
+  inset: auto var(--space-3) calc(var(--space-2) / 2);
+  height: 2px;
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+}

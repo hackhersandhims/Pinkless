@@ -1,0 +1,7 @@
+/* Full-bleed tinted band: the section surface shift between the cream top and the plum panel. */
+.band {
+  margin-top: var(--section-space);
+  padding-block: var(--section-space);
+  background: var(--tint-pink);
+  scroll-margin-top: var(--space-4);
+}
