@@ -1,8 +1,10 @@
-// Compiled from packages/tokens/tokens.css — regenerate this string if that file changes.
-// Inlined (not linked) because the badge renders inside a Shadow DOM and cannot
-// inherit page-level or extension-level stylesheets.
-export const TOKENS_CSS = `
-:root,
+// GENERATED from packages/tokens/tokens.css by scripts/tokens.mjs. Do not edit by hand.
+// Run `pnpm run tokens:sync` after changing the tokens; `pnpm run tokens:check` fails on drift.
+//
+// The badge renders in a Shadow DOM and cannot inherit page CSS, so this string is injected
+// into the shadow root's own <style> (see ./shadow-root.ts). If the extension moves to a
+// bundler, replace this file with `import TOKENS_CSS from '<path>/tokens.css?raw'`.
+export const TOKENS_CSS = `:root,
 [data-theme="light"] {
   --surface-100: #f3ede1;
   --surface-pink: #f28fc0;

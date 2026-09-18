@@ -36,6 +36,9 @@ jobs:
       - name: Validate catalog
         run: pnpm run catalog:validate
 
+      - name: Check design tokens
+        run: pnpm run tokens:check
+
       - name: Run marketplace tests
         run: pnpm --filter @pinkless/marketplace test
 
