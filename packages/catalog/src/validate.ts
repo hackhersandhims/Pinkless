@@ -1,22 +1,16 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { Comparison, Money, Size } from './schema.js';
+import type { EquivalencePolicy, Product, Retailer, Size } from './schema.js';
 
-export type ValidationIssue = {
-  path: string;
-  message: string;
-};
+export type ValidationIssue = { path: string; message: string };
+export type ValidationResult = { valid: boolean; issues: ValidationIssue[] };
 
-export type ValidationResult = {
-  valid: boolean;
-  issues: ValidationIssue[];
-};
-
-const categories = new Set<Comparison['category']>(['razors', 'deodorant', 'body-wash']);
-const statuses = new Set<Comparison['status']>(['active', 'paused', 'retired']);
-const marketingLabels = new Set<Comparison['target']['marketedAs']>(['women', 'men', 'unisex']);
+const categories = new Set<Product['category']>(['razors', 'deodorant', 'body-wash']);
+const statuses = new Set<Product['status']>(['active', 'paused', 'retired']);
 const sizeUnits = new Set<Size['unit']>(['oz', 'ml', 'count']);
+const retailers = new Set<Retailer>(['cvs', 'kroger', 'walmart']);
+const equivalencePolicies = new Set<EquivalencePolicy>(['exact-packaged-product']);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -24,90 +18,6 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
-}
-
-function isPositiveFiniteNumber(value: unknown): value is number {
-  return typeof value === 'number' && Number.isFinite(value) && value > 0;
-}
-
-function isValidHttpUrl(value: unknown): value is string {
-  if (!isNonEmptyString(value)) {
-    return false;
-  }
-
-  try {
-    const url = new URL(value);
-    return url.protocol === 'https:' || url.protocol === 'http:';
-  } catch {
-    return false;
-  }
-}
-
-function isIsoDate(value: unknown): value is string {
-  if (!isNonEmptyString(value) || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-    return false;
-  }
-
-  const parsed = new Date(`${value}T00:00:00.000Z`);
-  return !Number.isNaN(parsed.valueOf()) && parsed.toISOString().startsWith(value);
-}
-
-function validateMoney(value: unknown, path: string, issues: ValidationIssue[]): value is Money {
-  if (!isRecord(value)) {
-    issues.push({ path, message: 'must be an object with amountCents and USD currency.' });
-    return false;
-  }
-
-  const amountCents = value.amountCents;
-  if (typeof amountCents !== 'number' || !Number.isSafeInteger(amountCents) || amountCents <= 0) {
-    issues.push({
-      path: `${path}.amountCents`,
-      message: 'must be a positive integer number of cents.',
-    });
-  }
-
-  if (value.currency !== 'USD') {
-    issues.push({ path: `${path}.currency`, message: 'must be USD.' });
-  }
-
-  return (
-    typeof amountCents === 'number' &&
-    Number.isSafeInteger(amountCents) &&
-    amountCents > 0 &&
-    value.currency === 'USD'
-  );
-}
-
-function validateSize(value: unknown, path: string, issues: ValidationIssue[]): value is Size {
-  if (!isRecord(value)) {
-    issues.push({ path, message: 'must be an object with amount and unit.' });
-    return false;
-  }
-
-  if (!isPositiveFiniteNumber(value.amount)) {
-    issues.push({ path: `${path}.amount`, message: 'must be a positive finite number.' });
-  }
-
-  if (!sizeUnits.has(value.unit as Size['unit'])) {
-    issues.push({ path: `${path}.unit`, message: 'must be oz, ml, or count.' });
-  }
-
-  return isPositiveFiniteNumber(value.amount) && sizeUnits.has(value.unit as Size['unit']);
-}
-
-function validateUrlPattern(value: unknown, path: string, issues: ValidationIssue[]): boolean {
-  if (!isNonEmptyString(value) || !value.startsWith('^')) {
-    issues.push({ path, message: 'must be a non-empty, anchored regular expression.' });
-    return false;
-  }
-
-  try {
-    new RegExp(value);
-    return true;
-  } catch {
-    issues.push({ path, message: 'must be a valid regular expression.' });
-    return false;
-  }
 }
 
 function validateStringArray(
@@ -119,11 +29,83 @@ function validateStringArray(
     issues.push({ path, message: 'must be a non-empty array of non-empty strings.' });
     return false;
   }
-
   return true;
 }
 
-function validateComparison(value: unknown, index: number, issues: ValidationIssue[]): void {
+function validateSize(value: unknown, path: string, issues: ValidationIssue[]): value is Size {
+  if (!isRecord(value)) {
+    issues.push({ path, message: 'must be an object with amount and unit.' });
+    return false;
+  }
+
+  const validAmount =
+    typeof value.amount === 'number' && Number.isFinite(value.amount) && value.amount > 0;
+  if (!validAmount) {
+    issues.push({ path: `${path}.amount`, message: 'must be a positive finite number.' });
+  }
+
+  const validUnit = sizeUnits.has(value.unit as Size['unit']);
+  if (!validUnit) {
+    issues.push({ path: `${path}.unit`, message: 'must be oz, ml, or count.' });
+  }
+  return validAmount && validUnit;
+}
+
+/** Validate a GTIN-8, UPC-A/GTIN-12, EAN/GTIN-13, or GTIN-14 check digit. */
+function isValidGtin(value: string): boolean {
+  if (!/^(?:\d{8}|\d{12}|\d{13}|\d{14})$/.test(value)) return false;
+  const digits = [...value].map(Number);
+  const checkDigit = digits.pop();
+  let sum = 0;
+  for (let index = digits.length - 1, position = 0; index >= 0; index -= 1, position += 1) {
+    sum += digits[index]! * (position % 2 === 0 ? 3 : 1);
+  }
+  return (10 - (sum % 10)) % 10 === checkDigit;
+}
+
+const retailerDomains: Record<Retailer, string> = {
+  cvs: 'cvs.com',
+  kroger: 'kroger.com',
+  walmart: 'walmart.com',
+};
+
+function validateUrlPattern(
+  value: unknown,
+  path: string,
+  issues: ValidationIssue[],
+  retailer?: Retailer,
+): boolean {
+  if (
+    !isNonEmptyString(value) ||
+    !value.startsWith('^https://') ||
+    !value.endsWith('$') ||
+    value.length > 512
+  ) {
+    issues.push({
+      path,
+      message: 'must be an anchored HTTPS regular expression of at most 512 characters.',
+    });
+    return false;
+  }
+
+  try {
+    new RegExp(value);
+  } catch {
+    issues.push({ path, message: 'must be a valid regular expression.' });
+    return false;
+  }
+
+  if (retailer && !value.replaceAll('\\.', '.').includes(retailerDomains[retailer])) {
+    issues.push({
+      path,
+      message: `must target the canonical ${retailerDomains[retailer]} domain.`,
+    });
+    return false;
+  }
+  return true;
+}
+
+function validateProduct(value: unknown, index: number, issues: ValidationIssue[]): void {
   const path = `[${index}]`;
   if (!isRecord(value)) {
     issues.push({ path, message: 'must be an object.' });
@@ -133,117 +115,97 @@ function validateComparison(value: unknown, index: number, issues: ValidationIss
   if (!isNonEmptyString(value.id)) {
     issues.push({ path: `${path}.id`, message: 'must be a non-empty string.' });
   }
-
-  if (!categories.has(value.category as Comparison['category'])) {
+  if (value.upc !== undefined && (!isNonEmptyString(value.upc) || !isValidGtin(value.upc))) {
+    issues.push({
+      path: `${path}.upc`,
+      message: 'must be a valid GTIN-8, UPC-A, EAN-13, or GTIN-14.',
+    });
+  }
+  if (!isNonEmptyString(value.name)) {
+    issues.push({ path: `${path}.name`, message: 'must be a non-empty string.' });
+  }
+  if (value.brand !== undefined && !isNonEmptyString(value.brand)) {
+    issues.push({ path: `${path}.brand`, message: 'must be a non-empty string when provided.' });
+  }
+  if (!isNonEmptyString(value.variant)) {
+    issues.push({ path: `${path}.variant`, message: 'must be a non-empty string.' });
+  }
+  if (!categories.has(value.category as Product['category'])) {
     issues.push({ path: `${path}.category`, message: 'must be razors, deodorant, or body-wash.' });
   }
-
-  if (!statuses.has(value.status as Comparison['status'])) {
+  if (!statuses.has(value.status as Product['status'])) {
     issues.push({ path: `${path}.status`, message: 'must be active, paused, or retired.' });
   }
+  validateSize(value.size, `${path}.size`, issues);
 
-  let targetPrice: Money | undefined;
-  let targetSize: Size | undefined;
-  if (!isRecord(value.target)) {
-    issues.push({ path: `${path}.target`, message: 'must be an object.' });
+  const identities = value.identities;
+  if (!Array.isArray(identities)) {
+    issues.push({ path: `${path}.identities`, message: 'must be an array.' });
   } else {
-    if (!isNonEmptyString(value.target.retailer)) {
-      issues.push({ path: `${path}.target.retailer`, message: 'must be a non-empty string.' });
-    }
-    if (!isNonEmptyString(value.target.name)) {
-      issues.push({ path: `${path}.target.name`, message: 'must be a non-empty string.' });
-    }
-    if (!isNonEmptyString(value.target.variant)) {
-      issues.push({ path: `${path}.target.variant`, message: 'must be a non-empty string.' });
-    }
-    if (!marketingLabels.has(value.target.marketedAs as Comparison['target']['marketedAs'])) {
-      issues.push({ path: `${path}.target.marketedAs`, message: 'must be women, men, or unisex.' });
-    }
-    targetPrice = validateMoney(value.target.price, `${path}.target.price`, issues)
-      ? value.target.price
-      : undefined;
-    targetSize = validateSize(value.target.size, `${path}.target.size`, issues)
-      ? value.target.size
-      : undefined;
-
-    const canonicalUrlPatterns = value.target.canonicalUrlPatterns;
-    const patternsValid = validateStringArray(
-      canonicalUrlPatterns,
-      `${path}.target.canonicalUrlPatterns`,
-      issues,
-    );
-    if (patternsValid) {
-      canonicalUrlPatterns.forEach((pattern, patternIndex) => {
-        validateUrlPattern(pattern, `${path}.target.canonicalUrlPatterns[${patternIndex}]`, issues);
-      });
-    }
-
-    if (
-      value.status === 'active' &&
-      !isNonEmptyString(value.target.productId) &&
-      (!Array.isArray(value.target.canonicalUrlPatterns) ||
-        value.target.canonicalUrlPatterns.length === 0)
-    ) {
-      issues.push({
-        path: `${path}.target`,
-        message: 'active records need a productId or canonical URL pattern.',
-      });
-    }
-  }
-
-  let alternativePrice: Money | undefined;
-  let alternativeSize: Size | undefined;
-  if (!isRecord(value.alternative)) {
-    issues.push({ path: `${path}.alternative`, message: 'must be an object.' });
-  } else {
-    if (!isNonEmptyString(value.alternative.retailer)) {
-      issues.push({ path: `${path}.alternative.retailer`, message: 'must be a non-empty string.' });
-    }
-    if (!isNonEmptyString(value.alternative.name)) {
-      issues.push({ path: `${path}.alternative.name`, message: 'must be a non-empty string.' });
-    }
-    if (!isValidHttpUrl(value.alternative.url)) {
-      issues.push({ path: `${path}.alternative.url`, message: 'must be a valid HTTP(S) URL.' });
-    }
-    if (value.alternative.condition !== 'new') {
-      issues.push({ path: `${path}.alternative.condition`, message: 'must be new.' });
-    }
-    if (value.alternative.availability !== 'verified-in-stock') {
-      issues.push({
-        path: `${path}.alternative.availability`,
-        message: 'must be verified-in-stock.',
-      });
-    }
-    alternativePrice = validateMoney(value.alternative.price, `${path}.alternative.price`, issues)
-      ? value.alternative.price
-      : undefined;
-    alternativeSize = validateSize(value.alternative.size, `${path}.alternative.size`, issues)
-      ? value.alternative.size
-      : undefined;
-  }
-
-  if (targetSize && alternativeSize && targetSize.unit !== alternativeSize.unit) {
-    issues.push({
-      path: `${path}.alternative.size.unit`,
-      message: `must match target size unit (${targetSize.unit}).`,
+    const seenRetailers = new Set<string>();
+    identities.forEach((identity, identityIndex) => {
+      const identityPath = `${path}.identities[${identityIndex}]`;
+      if (!isRecord(identity)) {
+        issues.push({ path: identityPath, message: 'must be an object.' });
+        return;
+      }
+      if (!retailers.has(identity.retailer as Retailer)) {
+        issues.push({
+          path: `${identityPath}.retailer`,
+          message: 'must be cvs, kroger, or walmart.',
+        });
+      } else if (seenRetailers.has(identity.retailer as string)) {
+        issues.push({
+          path: `${identityPath}.retailer`,
+          message: `duplicates retailer identity "${String(identity.retailer)}" for this product.`,
+        });
+      } else {
+        seenRetailers.add(identity.retailer as string);
+      }
+      if (!isNonEmptyString(identity.productId)) {
+        issues.push({ path: `${identityPath}.productId`, message: 'must be a non-empty string.' });
+      }
+      if (
+        validateStringArray(
+          identity.canonicalUrlPatterns,
+          `${identityPath}.canonicalUrlPatterns`,
+          issues,
+        )
+      ) {
+        identity.canonicalUrlPatterns.forEach((pattern, patternIndex) =>
+          validateUrlPattern(
+            pattern,
+            `${identityPath}.canonicalUrlPatterns[${patternIndex}]`,
+            issues,
+            retailers.has(identity.retailer as Retailer)
+              ? (identity.retailer as Retailer)
+              : undefined,
+          ),
+        );
+      }
     });
   }
 
   if (
     value.status === 'active' &&
-    targetPrice &&
-    alternativePrice &&
-    alternativePrice.amountCents >= targetPrice.amountCents
+    !isNonEmptyString(value.upc) &&
+    (!Array.isArray(identities) || identities.length === 0)
   ) {
     issues.push({
-      path: `${path}.alternative.price.amountCents`,
-      message: 'must be lower than the recorded target price for an active record.',
+      path,
+      message: 'active products need a UPC/GTIN or at least one canonical retailer identity.',
     });
   }
 
   if (!isRecord(value.equivalence)) {
     issues.push({ path: `${path}.equivalence`, message: 'must be an object.' });
   } else {
+    if (!equivalencePolicies.has(value.equivalence.policy as EquivalencePolicy)) {
+      issues.push({
+        path: `${path}.equivalence.policy`,
+        message: 'must use the supported exact-packaged-product policy.',
+      });
+    }
     if (!isNonEmptyString(value.equivalence.rationale)) {
       issues.push({
         path: `${path}.equivalence.rationale`,
@@ -263,29 +225,6 @@ function validateComparison(value: unknown, index: number, issues: ValidationIss
       );
     }
   }
-
-  if (!isRecord(value.evidence)) {
-    issues.push({ path: `${path}.evidence`, message: 'must be an object.' });
-  } else {
-    if (!isIsoDate(value.evidence.verifiedAt)) {
-      issues.push({
-        path: `${path}.evidence.verifiedAt`,
-        message: 'must be a valid ISO date (YYYY-MM-DD).',
-      });
-    }
-    const sourceUrls = value.evidence.sourceUrls;
-    const sourcesValid = validateStringArray(sourceUrls, `${path}.evidence.sourceUrls`, issues);
-    if (sourcesValid) {
-      sourceUrls.forEach((url, sourceIndex) => {
-        if (!isValidHttpUrl(url)) {
-          issues.push({
-            path: `${path}.evidence.sourceUrls[${sourceIndex}]`,
-            message: 'must be a valid HTTP(S) URL.',
-          });
-        }
-      });
-    }
-  }
 }
 
 export function validateCatalog(value: unknown): ValidationResult {
@@ -295,43 +234,75 @@ export function validateCatalog(value: unknown): ValidationResult {
   }
 
   const seenIds = new Set<string>();
-  value.forEach((comparison, index) => {
-    validateComparison(comparison, index, issues);
+  const seenUpcs = new Set<string>();
+  const seenRetailerProducts = new Set<string>();
+  const seenCanonicalPatterns = new Set<string>();
+  value.forEach((product, index) => {
+    validateProduct(product, index, issues);
+    if (!isRecord(product)) return;
 
-    if (isRecord(comparison) && isNonEmptyString(comparison.id)) {
-      if (seenIds.has(comparison.id)) {
-        issues.push({
-          path: `[${index}].id`,
-          message: `duplicates comparison ID "${comparison.id}".`,
-        });
+    if (isNonEmptyString(product.id)) {
+      if (seenIds.has(product.id)) {
+        issues.push({ path: `[${index}].id`, message: `duplicates product ID "${product.id}".` });
       }
-      seenIds.add(comparison.id);
+      seenIds.add(product.id);
+    }
+    if (isNonEmptyString(product.upc)) {
+      if (seenUpcs.has(product.upc)) {
+        issues.push({ path: `[${index}].upc`, message: `duplicates UPC/GTIN "${product.upc}".` });
+      }
+      seenUpcs.add(product.upc);
+    }
+    if (Array.isArray(product.identities)) {
+      product.identities.forEach((identity, identityIndex) => {
+        if (
+          !isRecord(identity) ||
+          !isNonEmptyString(identity.retailer) ||
+          !isNonEmptyString(identity.productId)
+        )
+          return;
+        const key = `${identity.retailer}:${identity.productId}`;
+        if (seenRetailerProducts.has(key)) {
+          issues.push({
+            path: `[${index}].identities[${identityIndex}].productId`,
+            message: `duplicates retailer product identity "${key}".`,
+          });
+        }
+        seenRetailerProducts.add(key);
+        if (Array.isArray(identity.canonicalUrlPatterns)) {
+          identity.canonicalUrlPatterns.forEach((pattern, patternIndex) => {
+            if (!isNonEmptyString(pattern)) return;
+            if (seenCanonicalPatterns.has(pattern)) {
+              issues.push({
+                path: `[${index}].identities[${identityIndex}].canonicalUrlPatterns[${patternIndex}]`,
+                message: 'duplicates a canonical URL pattern from another product identity.',
+              });
+            }
+            seenCanonicalPatterns.add(pattern);
+          });
+        }
+      });
     }
   });
 
   return { valid: issues.length === 0, issues };
 }
 
-async function main(
-  inputPath = process.argv[2] === '--' ? process.argv[3] : process.argv[2],
-): Promise<void> {
+async function main(inputPath = process.argv[2] === '--' ? process.argv[3] : process.argv[2]) {
   const catalogPath = inputPath
     ? resolve(process.cwd(), inputPath)
-    : fileURLToPath(new URL('../comparisons.json', import.meta.url));
-  const source = await readFile(catalogPath, 'utf8');
-  const catalog = JSON.parse(source);
+    : fileURLToPath(new URL('../products.json', import.meta.url));
+  const catalog = JSON.parse(await readFile(catalogPath, 'utf8')) as unknown;
   const result = validateCatalog(catalog);
-
   if (!result.valid) {
     console.error(`Catalog validation failed (${result.issues.length} issue(s)):`);
     result.issues.forEach((issue) => console.error(`- ${issue.path}: ${issue.message}`));
     process.exitCode = 1;
     return;
   }
-
-  console.log(`Catalog validation passed (${catalog.length} comparison records).`);
+  console.log(
+    `Catalog validation passed (${Array.isArray(catalog) ? catalog.length : 0} product records).`,
+  );
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  await main();
-}
+if (process.argv[1] === fileURLToPath(import.meta.url)) await main();

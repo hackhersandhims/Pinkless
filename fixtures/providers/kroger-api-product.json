@@ -1,0 +1,18 @@
+{
+  "data": {
+    "productId": "00012345678905",
+    "upc": "012345678905",
+    "brand": "Sample Brand",
+    "description": "Sample Razor",
+    "items": [
+      {
+        "itemId": "012345678905",
+        "inventory": { "stockLevel": "HIGH" },
+        "fulfillment": { "curbside": true, "delivery": true },
+        "price": { "regular": 9.99, "promo": 7.99 },
+        "size": "1 count"
+      }
+    ]
+  },
+  "meta": {}
+}

@@ -122,6 +122,19 @@ location to the Pinkless API solely to obtain a comparison.
 - Fail closed when a provider has no approved credentials, returns ambiguous
   identity, lacks a price, or is unavailable.
 
+### Provider configuration
+
+- `PINKLESS_PROVIDER_MODE=mock` enables deterministic local CVS, Kroger, and
+  Walmart fixtures. Any other value uses the fail-closed live registry.
+- `KROGER_CLIENT_ID` and `KROGER_CLIENT_SECRET` are server-only credentials for
+  Kroger's OAuth client-credentials flow. They must be configured in Vercel and
+  must never use the client-visible `VITE_` prefix.
+- CVS and Walmart accept no environment credentials until their approved or
+  licensed product-and-price integrations are implemented. Their provider
+  shells reject every lookup in the meantime.
+- `.env.example` documents variable names only. `.env` and `.env.*` files are
+  ignored so credentials cannot be committed accidentally.
+
 ### Marketplace responsibilities
 
 - Deploy on Vercel and call the same read-only comparison API as the extension.
