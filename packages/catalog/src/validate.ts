@@ -105,6 +105,46 @@ function validateUrlPattern(
   return true;
 }
 
+function validateCanonicalUrl(
+  value: unknown,
+  retailer: Retailer | undefined,
+  path: string,
+  issues: ValidationIssue[],
+): URL | null {
+  if (!isNonEmptyString(value)) {
+    issues.push({ path, message: 'must be a non-empty HTTPS URL.' });
+    return null;
+  }
+  try {
+    const url = new URL(value);
+    if (url.protocol !== 'https:' || url.username || url.password) throw new Error();
+    const hostname = url.hostname.toLowerCase();
+    if (
+      retailer &&
+      hostname !== retailerDomains[retailer] &&
+      !hostname.endsWith(`.${retailerDomains[retailer]}`)
+    ) {
+      issues.push({
+        path,
+        message: `must target the canonical ${retailerDomains[retailer]} domain.`,
+      });
+      return null;
+    }
+    return url;
+  } catch {
+    issues.push({ path, message: 'must be a valid HTTPS URL without credentials.' });
+    return null;
+  }
+}
+
+function patternMatchesUrl(pattern: string, url: URL): boolean {
+  try {
+    return new RegExp(pattern).test(url.href);
+  } catch {
+    return false;
+  }
+}
+
 function validateProduct(value: unknown, index: number, issues: ValidationIssue[]): void {
   const path = `[${index}]`;
   if (!isRecord(value)) {
@@ -165,6 +205,15 @@ function validateProduct(value: unknown, index: number, issues: ValidationIssue[
       if (!isNonEmptyString(identity.productId)) {
         issues.push({ path: `${identityPath}.productId`, message: 'must be a non-empty string.' });
       }
+      const retailer = retailers.has(identity.retailer as Retailer)
+        ? (identity.retailer as Retailer)
+        : undefined;
+      const canonicalUrl = validateCanonicalUrl(
+        identity.canonicalUrl,
+        retailer,
+        `${identityPath}.canonicalUrl`,
+        issues,
+      );
       if (
         validateStringArray(
           identity.canonicalUrlPatterns,
@@ -177,11 +226,18 @@ function validateProduct(value: unknown, index: number, issues: ValidationIssue[
             pattern,
             `${identityPath}.canonicalUrlPatterns[${patternIndex}]`,
             issues,
-            retailers.has(identity.retailer as Retailer)
-              ? (identity.retailer as Retailer)
-              : undefined,
+            retailer,
           ),
         );
+        if (
+          canonicalUrl &&
+          !identity.canonicalUrlPatterns.some((pattern) => patternMatchesUrl(pattern, canonicalUrl))
+        ) {
+          issues.push({
+            path: `${identityPath}.canonicalUrl`,
+            message: 'must match at least one canonical URL pattern for this identity.',
+          });
+        }
       }
     });
   }

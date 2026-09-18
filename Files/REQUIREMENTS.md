@@ -134,6 +134,20 @@ location to the Pinkless API solely to obtain a comparison.
   shells reject every lookup in the meantime.
 - `.env.example` documents variable names only. `.env` and `.env.*` files are
   ignored so credentials cannot be committed accidentally.
+- `PINKLESS_ALLOWED_ORIGINS` is an exact comma-separated allowlist containing
+  the deployed Marketplace origin and final `chrome-extension://` origin.
+
+### Phase 2 API contract
+
+- `GET /api/stores` accepts a supported retailer and US postal code and returns
+  normalized provider locations.
+- `POST /api/compare` accepts a normalized `current` product view and an
+  explicit retailer-to-store-ID `locations` map for store-specific prices.
+- Store IDs are retailer-specific. The API sends each provider only its own
+  selected store ID while treating the submitted map as one user location
+  context.
+- Browser origins must match the configured allowlist. Development may include
+  safe reason codes; production `no-match` and `suppressed` responses do not.
 
 ### Marketplace responsibilities
 
@@ -180,6 +194,7 @@ type Size = {
 type RetailerIdentity = {
   retailer: string;
   productId: string;
+  canonicalUrl: string;
   canonicalUrlPatterns: string[];
 };
 

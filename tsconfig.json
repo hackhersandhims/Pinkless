@@ -17,6 +17,12 @@
     "jsx": "react-jsx",
     "noEmit": true
   },
-  "include": ["apps/**/*.ts", "apps/**/*.tsx", "packages/**/*.ts", "scripts/**/*.mjs"],
+  "include": [
+    "api/**/*.ts",
+    "apps/**/*.ts",
+    "apps/**/*.tsx",
+    "packages/**/*.ts",
+    "scripts/**/*.mjs"
+  ],
   "exclude": ["**/dist", "**/node_modules"]
 }

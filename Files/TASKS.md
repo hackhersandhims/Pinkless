@@ -47,16 +47,16 @@ passes, and unavailable providers never yield invented results.
 
 ## Phase 2 — Vercel comparison API and matcher
 
-- [ ] Add Vercel serverless routes for store lookup and product comparison.
-- [ ] Validate retailer, UPC/product identity, location, and request origin.
-- [ ] Query enabled providers in parallel, normalize results, and cache by
+- [x] Add Vercel serverless routes for store lookup and product comparison.
+- [x] Validate retailer, UPC/product identity, location, and request origin.
+- [x] Query enabled providers in parallel, normalize results, and cache by
   retailer + identity + location + fulfillment context.
-- [ ] Preserve `observedAt`/expiry data and apply provider timeouts/rate limits.
-- [ ] Implement exact UPC, retailer-ID, and canonical-URL matching in that order.
-- [ ] Compare only positive, in-stock, unexpired offers in the same price context.
-- [ ] Return structured `show`, `no-match`, and `suppressed` outcomes with safe
+- [x] Preserve `observedAt`/expiry data and apply provider timeouts/rate limits.
+- [x] Implement exact UPC, retailer-ID, and canonical-URL matching in that order.
+- [x] Compare only positive, in-stock, unexpired offers in the same price context.
+- [x] Return structured `show`, `no-match`, and `suppressed` outcomes with safe
   development-only reason codes.
-- [ ] Test cache hits, provider failures, invalid price/currency, stock,
+- [x] Test cache hits, provider failures, invalid price/currency, stock,
   identity conflicts, unequal contexts, and zero/negative savings.
 
 **Done when:** the API and matcher have no Chrome dependency and suppress every
@@ -130,6 +130,8 @@ savings as the extension.
 
 ## Phase 7 — Integration and demo quality
 
+- [ ] Create and link the Vercel project; configure preview/production domains,
+  allowed origins, server-only credentials, and the first preview deployment.
 - [ ] Register Pinkless with Kroger and store credentials only in Vercel environment variables.
 - [ ] Obtain approved CVS product-and-price data access and activate its provider.
 - [ ] Obtain approved Walmart product-and-price data access and activate its provider.

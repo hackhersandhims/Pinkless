@@ -20,6 +20,8 @@ export type Size = {
 export type RetailerIdentity = {
   retailer: Retailer;
   productId: string;
+  /** Reviewer-approved outbound product URL. */
+  canonicalUrl: string;
   canonicalUrlPatterns: string[];
 };
 

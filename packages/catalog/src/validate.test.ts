@@ -16,6 +16,7 @@ function validProduct(overrides: Partial<Product> = {}): Product {
       {
         retailer: 'kroger',
         productId: '00012345678905',
+        canonicalUrl: 'https://www.kroger.com/p/sample-razor/00012345678905',
         canonicalUrlPatterns: ['^https://www\\.kroger\\.com/p/sample-razor/00012345678905$'],
       },
     ],
@@ -75,6 +76,17 @@ describe('validateCatalog', () => {
 
     product.identities[0]!.canonicalUrlPatterns = ['^https://www\\.walmart\\.com/item$'];
     expect(messages([product])).toContain('must target the canonical kroger.com domain.');
+  });
+
+  it('requires a reviewed outbound URL on the retailer domain that matches its pattern', () => {
+    const product = validProduct();
+    product.identities[0]!.canonicalUrl = 'https://example.com/sample-razor';
+    expect(messages([product])).toContain('must target the canonical kroger.com domain.');
+
+    product.identities[0]!.canonicalUrl = 'https://www.kroger.com/p/another-product';
+    expect(messages([product])).toContain(
+      'must match at least one canonical URL pattern for this identity.',
+    );
   });
 
   it('rejects an unsupported equivalence policy', () => {

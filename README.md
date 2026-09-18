@@ -46,6 +46,10 @@ in Vercel project settings and never expose them through a `VITE_` variable.
 CVS and Walmart intentionally remain unavailable until approved or licensed
 product-and-price integrations are implemented.
 
+The Vercel project is not linked yet. When it is created,
+`PINKLESS_ALLOWED_ORIGINS` must list the deployed Marketplace origin and the
+published `chrome-extension://` origin exactly.
+
 ### Install and build
 
 ```bash
@@ -81,6 +85,7 @@ pnpm --filter @pinkless/marketplace dev
 ## Repository layout
 
 ```text
+api/                Thin Vercel Function entry points for comparison and stores
 apps/api/           Provider contracts and server-only retailer integrations
 apps/extension/     Chrome Manifest V3 extension (page adapters added later)
 apps/marketplace/   Static React/Vite Marketplace for Vercel
@@ -88,6 +93,16 @@ packages/catalog/   Canonical product identity data and validation
 packages/matcher/   Pure matching and savings rules
 fixtures/           Sanitized catalog and provider contract fixtures
 ```
+
+## API contracts
+
+- `GET /api/stores?retailer=kroger&postalCode=45202` returns normalized store
+  choices from the selected provider.
+- `POST /api/compare` accepts `{ current, locations }`, where `current` is a
+  normalized product view and `locations` contains the explicitly selected
+  store ID for each retailer in a store-specific comparison.
+- Both routes enforce an exact origin allowlist. Production suppression and
+  no-match responses omit diagnostic reason codes.
 
 ## Docs
 
