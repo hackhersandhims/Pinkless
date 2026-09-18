@@ -2,8 +2,6 @@
 
 <img src="logo.png" alt="Pinkless logo" width="280" />
 
-# Pinkless
-
 **Reviewed product comparisons, right where you shop.**
 
 Pinkless is a Chrome extension and static Marketplace for reviewed product
