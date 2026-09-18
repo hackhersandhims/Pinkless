@@ -8,8 +8,8 @@ add live scraping until the **one-retailer demo path** works end to end.
 ## Phase 0 — Decisions and setup
 
 - [x] Confirm the first supported retailer: Target.
-- [ ] Select three Target demo product URLs before beginning the retailer
-  adapter work.
+- [x] Select Target demo product URLs: TCIN 14300013, 13969526, 75570189,
+  13942425, 1009133089, and 94892427.
 - [x] Confirm the Marketplace deployment choice: Vercel.
 - [x] Create a TypeScript workspace with `apps/extension`, `apps/marketplace`,
   `packages/catalog`, and `packages/matcher`.
