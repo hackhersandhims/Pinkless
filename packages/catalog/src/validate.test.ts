@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import type { Comparison } from './schema.js';
 import { validateCatalog } from './validate.js';
@@ -102,5 +103,23 @@ describe('validateCatalog', () => {
     expect(validationMessages([comparison])).toContain(
       'must be lower than the recorded target price for an active record.',
     );
+  });
+
+  it('rejects the intentionally invalid catalog fixture', async () => {
+    const fixtureUrl = new URL(
+      '../../../fixtures/catalog/invalid-comparison.json',
+      import.meta.url,
+    );
+    const fixture = JSON.parse(await readFile(fixtureUrl, 'utf8'));
+
+    expect(validateCatalog(fixture)).toMatchObject({
+      valid: false,
+      issues: [
+        expect.objectContaining({
+          path: '[0].alternative.availability',
+          message: 'must be verified-in-stock.',
+        }),
+      ],
+    });
   });
 });

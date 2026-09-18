@@ -34,7 +34,7 @@ Marketplace without credentials.
 - [x] Make validation fail for duplicated IDs, invalid money, missing evidence,
   incompatible sizes, bad URL patterns, inactive alternative, and non-cheaper
   alternative.
-- [ ] Add one intentionally invalid fixture to prove validation works.
+- [x] Add one intentionally invalid fixture to prove validation works.
 
 **Done when:** validation passes for the real catalog and its error messages are
 clear enough for a teammate to correct data without touching matching code.

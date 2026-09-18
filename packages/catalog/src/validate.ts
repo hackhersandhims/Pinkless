@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Comparison, Money, Size } from './schema.js';
 
@@ -311,11 +312,15 @@ export function validateCatalog(value: unknown): ValidationResult {
   return { valid: issues.length === 0, issues };
 }
 
-async function main(): Promise<void> {
-  const catalogUrl = new URL('../comparisons.json', import.meta.url);
-  const catalogPath = fileURLToPath(catalogUrl);
+async function main(
+  inputPath = process.argv[2] === '--' ? process.argv[3] : process.argv[2],
+): Promise<void> {
+  const catalogPath = inputPath
+    ? resolve(process.cwd(), inputPath)
+    : fileURLToPath(new URL('../comparisons.json', import.meta.url));
   const source = await readFile(catalogPath, 'utf8');
-  const result = validateCatalog(JSON.parse(source));
+  const catalog = JSON.parse(source);
+  const result = validateCatalog(catalog);
 
   if (!result.valid) {
     console.error(`Catalog validation failed (${result.issues.length} issue(s)):`);
@@ -324,9 +329,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  console.log(
-    `Catalog validation passed (${source === '[]\n' ? 0 : JSON.parse(source).length} comparison records).`,
-  );
+  console.log(`Catalog validation passed (${catalog.length} comparison records).`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
