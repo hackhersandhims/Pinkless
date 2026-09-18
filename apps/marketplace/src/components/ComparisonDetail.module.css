@@ -1,0 +1,93 @@
+.wrap {
+  color: var(--ink);
+}
+
+.category {
+  display: block;
+  margin-bottom: var(--space-2);
+}
+
+.title {
+  margin: 0 0 var(--space-2);
+}
+
+.meta {
+  display: block;
+  margin-bottom: var(--space-6);
+}
+
+.offers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+@media (min-width: 800px) {
+  .offers {
+    flex-direction: row;
+  }
+}
+
+.offer {
+  flex: 1;
+  background: var(--surface-100);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.offerRetailer {
+  margin: 0 0 var(--space-2);
+}
+
+.offerPrice {
+  margin: 0 0 var(--space-2);
+}
+
+.offerLine {
+  display: block;
+}
+
+.savings {
+  margin: 0 0 var(--space-6);
+}
+
+.rationaleSection {
+  margin-bottom: var(--space-6);
+}
+
+.sectionHeading {
+  margin: 0 0 var(--space-2);
+}
+
+.list {
+  margin: 0 0 var(--space-4);
+  padding-left: var(--space-4);
+}
+
+/*
+ * This is the only filled button in the app. There is no dedicated CTA color
+ * token yet (DESIGN_SYSTEM.md open question), so it borrows --surface-900 /
+ * --on-dark, matching the header treatment. Replace with a CTA token once
+ * defined.
+ */
+.cta {
+  display: inline-block;
+  background: var(--surface-900);
+  color: var(--on-dark);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  text-decoration: none;
+  margin-bottom: var(--space-6);
+}
+
+.cta:focus-visible {
+  outline: 2px solid var(--surface-900);
+  outline-offset: 2px;
+}
+
+.disclaimer {
+  opacity: 0.7;
+  display: block;
+}
