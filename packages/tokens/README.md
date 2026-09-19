@@ -6,8 +6,7 @@ The design system is centralized in this package.
 packages/tokens/
   tokens.json                 source of truth
   tokens.css                  CSS representation consumed by app UI
-  assets/pinkless-lockup.png              the logo (a single flattened image)
-  assets/pinkless-lockup-transparent.png  same pixels, near-black ground keyed to transparent
+  assets/pinkless-lockup.png  the logo (a single flattened image)
 ```
 
 ## Source of truth

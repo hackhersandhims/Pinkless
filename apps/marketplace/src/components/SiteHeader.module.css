@@ -67,29 +67,29 @@
 }
 
 /*
- * Crop window over the 964x612 lockup so only the star and wordmark show
- * (source pixels x 116-676, y 35-507). Percentages are fractions of that
- * window, so the crop scales with the frame height.
+ * Crop window over the 2000x2000 logo.png so only the wordmark shows
+ * (source pixels x 20-1900, y 570-1410). Top is a fraction of the window
+ * height; left and width are fractions of its width.
  */
 .logoFrame {
   position: relative;
   display: block;
-  height: 4rem;
-  aspect-ratio: 560 / 472;
+  height: 2.75rem;
+  aspect-ratio: 1880 / 840;
   overflow: hidden;
 }
 
 @media (min-width: 48rem) {
   .logoFrame {
-    height: 5rem;
+    height: 3.25rem;
   }
 }
 
 .logo {
   position: absolute;
-  top: -7.42%;
-  left: -20.71%;
-  width: 172.14%;
+  top: -67.86%;
+  left: -1.06%;
+  width: 106.38%;
   max-width: none;
   height: auto;
 }

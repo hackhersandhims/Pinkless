@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import logo from '../../../../packages/tokens/assets/pinkless-lockup-transparent.png';
+import logo from '../../../../logo.png';
 import { CategoryNav } from './CategoryNav';
 import { SearchBar } from './SearchBar';
 import { StoreControl } from './StoreControl';
@@ -22,9 +22,9 @@ export function SiteHeader() {
         </a>
         <Link to={link('/')} className={styles.brand}>
           {/*
-           * The lockup with its near-black ground keyed out to transparency
-           * (same pixels otherwise). The frame crops to the star and wordmark,
-           * hiding the tagline.
+           * The repo-root logo.png (2000x2000, transparent). The frame crops
+           * to the wordmark; update the crop in SiteHeader.module.css if the
+           * artwork's position changes.
            */}
           <span className={styles.logoFrame}>
             <img src={logo} alt="Pinkless" className={styles.logo} />
