@@ -1,152 +1,53 @@
-import type { ProductView } from '../adapters/index.js';
-import { RETAILERS, type Retailer } from '../shared/config.js';
-import type { RetailerLocations } from '../shared/settings.js';
-import type {
-  ComparisonApiResponse,
-  Money,
-  PriceContext,
-  ShowComparison,
-} from '../shared/types.js';
+import type { ComparisonOutcome, ProductView } from '../shared/types.js';
 
-const PRICE_CONTEXTS: PriceContext[] = ['online', 'store-pickup', 'in-store'];
-const RETAILER_HOSTS: Record<Retailer, string> = {
-  amazon: 'amazon.com',
-  cvs: 'cvs.com',
-  kroger: 'kroger.com',
-  walmart: 'walmart.com',
-};
+/**
+ * `POST /api/compare` takes exactly `{ current }`: the page's product identity with the selected
+ * Kroger store (`locationId`) and store price context already on it. Nothing else leaves the page.
+ */
+export type CompareRequestBody = { current: ProductView };
+
+export type CompareMessage = { type: 'pinkless:compare'; payload: CompareRequestBody };
+
+export function compareRequestBody(current: ProductView): CompareRequestBody {
+  return { current };
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function isString(value: unknown, maxLength = 2_048): value is string {
-  return typeof value === 'string' && value.trim().length > 0 && value.length <= maxLength;
-}
-
-function isRetailer(value: unknown): value is Retailer {
-  return RETAILERS.includes(value as Retailer);
-}
-
-function isPriceContext(value: unknown): value is PriceContext {
-  return PRICE_CONTEXTS.includes(value as PriceContext);
-}
-
-function isMoney(value: unknown): value is Money {
-  return (
-    isRecord(value) &&
-    Number.isSafeInteger(value.amountCents) &&
-    (value.amountCents as number) > 0 &&
-    value.currency === 'USD'
-  );
-}
-
-function isRetailerUrl(value: unknown, retailer: Retailer): value is string {
-  if (!isString(value)) return false;
-  try {
-    const url = new URL(value);
-    const domain = RETAILER_HOSTS[retailer];
-    return (
-      url.protocol === 'https:' &&
-      !url.username &&
-      !url.password &&
-      (url.hostname === domain || url.hostname.endsWith(`.${domain}`))
-    );
-  } catch {
-    return false;
-  }
-}
-
-function isIsoDate(value: unknown): value is string {
-  return isString(value, 100) && Number.isFinite(Date.parse(value));
-}
-
-function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.length > 0 && value.every((item) => isString(item, 200));
-}
-
-function isProductSummary(value: unknown, audience: 'women' | 'men'): boolean {
-  return (
-    isRecord(value) &&
-    isString(value.id, 200) &&
-    isString(value.name, 500) &&
-    (value.brand === undefined || isString(value.brand, 200)) &&
-    isString(value.variant, 200) &&
-    value.audience === audience &&
-    isRecord(value.size) &&
-    typeof value.size.amount === 'number' &&
-    Number.isFinite(value.size.amount) &&
-    value.size.amount > 0 &&
-    ['oz', 'ml', 'count'].includes(String(value.size.unit))
-  );
-}
-
-function parseShow(value: Record<string, unknown>): ShowComparison | null {
-  if (
-    !isProductSummary(value.product, 'women') ||
-    !isProductSummary(value.alternativeProduct, 'men') ||
-    !isRecord(value.current) ||
-    !isRetailer(value.current.retailer) ||
-    !isMoney(value.current.price) ||
-    !isPriceContext(value.current.priceContext) ||
-    (value.current.locationId !== undefined && !isString(value.current.locationId, 128)) ||
-    !isRecord(value.alternative) ||
-    !isRetailer(value.alternative.retailer) ||
-    value.alternative.retailer !== value.current.retailer ||
-    !isString(value.alternative.productId, 128) ||
-    !isRetailerUrl(value.alternative.url, value.alternative.retailer) ||
-    !isMoney(value.alternative.price) ||
-    !isPriceContext(value.alternative.priceContext) ||
-    value.alternative.priceContext !== value.current.priceContext ||
-    value.alternative.condition !== 'new' ||
-    value.alternative.availability !== 'in-stock' ||
-    (value.alternative.locationId !== undefined && !isString(value.alternative.locationId, 128)) ||
-    !isIsoDate(value.alternative.observedAt) ||
-    !isIsoDate(value.alternative.expiresAt) ||
-    Date.parse(value.alternative.observedAt) >= Date.parse(value.alternative.expiresAt) ||
-    Date.parse(value.alternative.expiresAt) <= Date.now() ||
-    !isMoney(value.savings) ||
-    value.current.price.amountCents - value.alternative.price.amountCents !==
-      value.savings.amountCents ||
-    (value.current.priceContext !== 'online' &&
-      (!isString(value.current.locationId, 128) ||
-        !isString(value.alternative.locationId, 128) ||
-        value.alternative.locationId !== value.current.locationId)) ||
-    !isString(value.rationale, 1_000) ||
-    !isStringArray(value.matchedAttributes) ||
-    (value.knownDifferences !== undefined && !isStringArray(value.knownDifferences)) ||
-    !['upc', 'retailer-product-id', 'canonical-url'].includes(String(value.matchedBy))
-  ) {
-    return null;
-  }
-  return value as unknown as ShowComparison;
-}
-
-export function parseComparisonResponse(value: unknown): ComparisonApiResponse | null {
+/**
+ * Accepts only the three outcome shapes. A `show` payload is passed on as-is: `toBadgeModel`
+ * re-validates every field it renders and turns anything inconsistent into silence. Production
+ * `no-match`/`suppressed` responses carry no reason code.
+ */
+export function parseComparisonResponse(value: unknown): ComparisonOutcome | null {
   if (!isRecord(value)) return null;
-  if (value.status === 'show') return parseShow(value);
+  if (value.status === 'show') return value as unknown as ComparisonOutcome;
   if (value.status !== 'no-match' && value.status !== 'suppressed') return null;
-  if (value.reason !== undefined && !isString(value.reason, 100)) return null;
   return {
     status: value.status,
-    ...(typeof value.reason === 'string' ? { reason: value.reason } : {}),
-  };
+    ...(typeof value.reason === 'string' && value.reason.length <= 100
+      ? { reason: value.reason }
+      : {}),
+  } as ComparisonOutcome;
 }
 
+type SendMessage = (message: CompareMessage) => Promise<unknown>;
+
+const sendToBackground: SendMessage = (message) => chrome.runtime.sendMessage(message);
+
+/**
+ * Asks the background service worker (which holds the extension origin the API allowlists) for a
+ * comparison. Rejects when no valid answer came back, so the controller stays quiet and retries
+ * later rather than caching a failure as "no match".
+ */
 export async function requestComparison(
   current: ProductView,
-  locations: RetailerLocations,
-  signal?: AbortSignal,
-): Promise<ComparisonApiResponse | null> {
-  try {
-    if (signal?.aborted) return null;
-    const response: unknown = await chrome.runtime.sendMessage({
-      type: 'pinkless:compare',
-      payload: { current, locations },
-    });
-    if (signal?.aborted) return null;
-    return parseComparisonResponse(response);
-  } catch {
-    return null;
-  }
+  send: SendMessage = sendToBackground,
+): Promise<ComparisonOutcome> {
+  const response = await send({ type: 'pinkless:compare', payload: compareRequestBody(current) });
+  const outcome = parseComparisonResponse(response);
+  if (!outcome) throw new Error('Pinkless comparison unavailable');
+  return outcome;
 }

@@ -1,4 +1,5 @@
-import type { IdentityMatchMethod, PriceContext, Retailer } from '../../shared/types.js';
+import type { MarketedTo } from '../../../../../packages/catalog/src/schema.js';
+import type { StorePriceContext } from '../../shared/types.js';
 
 /**
  * Display formatting for the badge. Money is integer cents end to end (AGENTS.md §4): the
@@ -20,31 +21,31 @@ export function formatCents(amountCents: number): string {
 const CHECKED_FORMATTER = new Intl.DateTimeFormat('en-US', {
   month: 'short',
   day: 'numeric',
-  year: 'numeric',
   timeZone: 'UTC',
 });
 
-/** "Checked Sep 18, 2026". `iso` must already be a valid date-time. */
-export function formatChecked(iso: string): string {
-  return `Checked ${CHECKED_FORMATTER.format(new Date(iso))}`;
+/**
+ * "Sep 19". `iso` must already be a valid date-time. UTC, like the Marketplace, so the day shown
+ * does not depend on the viewer's time zone.
+ */
+export function formatCheckedDay(iso: string): string {
+  return CHECKED_FORMATTER.format(new Date(iso));
 }
 
-export const RETAILER_LABELS: Record<Retailer, string> = {
-  amazon: 'Amazon',
-  cvs: 'CVS',
-  kroger: 'Kroger',
-  walmart: 'Walmart',
+/** Label for the equivalent's line. Only men's and neutral products are ever alternatives. */
+export const ALTERNATIVE_LABELS: Partial<Record<MarketedTo, string>> = {
+  men: "Men's version",
+  neutral: 'Neutral version',
 };
 
-/** Store-specific prices are never described as online prices, or the reverse (REQUIREMENTS §7). */
-export const PRICE_CONTEXT_LABELS: Record<PriceContext, string> = {
-  online: 'online price',
+/** Store-specific prices are never described as online prices (REQUIREMENTS §7). */
+export const PRICE_CONTEXT_LABELS: Record<StorePriceContext, string> = {
   'store-pickup': 'store pickup price',
   'in-store': 'in-store price',
 };
 
-export const MATCH_METHOD_LABELS: Record<IdentityMatchMethod, string> = {
-  upc: 'Exact UPC',
-  'retailer-product-id': 'Retailer product ID',
-  'canonical-url': 'Reviewed product page',
-};
+/** Ends a catalog sentence with a period so sentences can be joined. */
+export function asSentence(text: string): string {
+  const trimmed = text.trim();
+  return /[.!?…]$/.test(trimmed) ? trimmed : `${trimmed}.`;
+}

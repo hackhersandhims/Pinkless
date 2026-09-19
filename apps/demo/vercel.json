@@ -1,3 +1,3 @@
 {
-  "rewrites": [{ "source": "/product/:retailer", "destination": "/index.html" }]
+  "rewrites": [{ "source": "/product/kroger", "destination": "/index.html" }]
 }

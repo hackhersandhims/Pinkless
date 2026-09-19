@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import type { ComparisonView } from '../lib/types';
-import { formatCents, formatSavings, percentLower } from '../lib/money';
-import { formatObservedAt } from '../lib/dates';
+import type { ComparisonView, ProductSide } from '../lib/types';
+import { formatCents } from '../lib/money';
+import { comparisonHeadline, comparisonSummary, freshnessLine } from '../lib/copy';
+import { useStoreLink } from '../routes/useStore';
 import { ArrowRightIcon } from './icons';
 import { ProductMedia } from './ProductMedia';
 import { SavingsBadge } from './SavingsBadge';
@@ -11,44 +12,69 @@ export type ComparisonCardProps = {
   item: ComparisonView;
 };
 
-/** Same-retailer women-to-men comparison card. The whole card is one link. */
+function SideRow({ side, emphasis }: { side: ProductSide; emphasis?: boolean }) {
+  return (
+    <div className={`${styles.side} ${emphasis ? styles.sideEmphasis : ''}`}>
+      <span className={`label ${styles.marketed}`}>{side.marketedToLabel}</span>
+      <span className={`caption ${styles.sideName}`}>{side.name}</span>
+      <span className={`heading ${styles.sidePrice}`}>{formatCents(side.priceCents)}</span>
+    </div>
+  );
+}
+
+/**
+ * The one comparison card, used in rails and grids. The whole card is a
+ * single link to /compare/:id (no nested controls). It always shows both
+ * products and both prices, the store, the price context, and the date the
+ * prices were checked; the cheaper men's or neutral version is emphasized.
+ */
 export function ComparisonCard({ item }: ComparisonCardProps) {
-  const { reference, alternative } = item;
-  const percent = percentLower(item.savingsCents, reference.priceCents);
+  const link = useStoreLink();
+  const [firstDifference] = item.knownDifferences;
 
   return (
     <Link
-      to={`/compare/${item.id}`}
+      to={link(`/compare/${item.id}`)}
       className={styles.card}
-      aria-label={`${item.alternativeName}: ${formatCents(alternative.priceCents)} at ${reference.retailerLabel}. ${formatSavings(item.savingsCents)} versus ${item.name}`}
+      aria-label={comparisonSummary(item)}
     >
-      <ProductMedia category={item.category} />
+      <div className={styles.media}>
+        <ProductMedia
+          category={item.category}
+          size="thumb"
+          image={{ krogerProductId: item.womens.krogerProductId, alt: item.womens.name }}
+        />
+        <ProductMedia
+          category={item.category}
+          size="thumb"
+          image={{ krogerProductId: item.other.krogerProductId, alt: item.other.name }}
+        />
+      </div>
 
       <div className={styles.body}>
         <span className={`label ${styles.category}`}>{item.categoryLabel}</span>
-        <h3 className={`body ${styles.name}`}>{item.alternativeName}</h3>
-        <span className="caption">{item.alternativeVariant}</span>
-
-        <div className={styles.pricing}>
-          <p className={`display ${styles.price}`}>{formatCents(alternative.priceCents)}</p>
-          <span className="caption">
-            at <span className={styles.retailer}>{alternative.retailerLabel}</span>
-          </span>
-        </div>
-        <span className="caption">
-          Compared with {item.name} at {formatCents(reference.priceCents)}
-        </span>
-
+        <h3 className={`heading ${styles.headline}`}>{comparisonHeadline(item)}</h3>
         <div className={styles.savings}>
           <SavingsBadge cents={item.savingsCents} />
-          {percent !== undefined ? <span className="caption">{percent}% lower</span> : null}
+          {item.percentLower !== undefined ? (
+            <span className="caption">{item.percentLower}% lower</span>
+          ) : null}
         </div>
+
+        <div className={styles.sides}>
+          <SideRow side={item.womens} />
+          <SideRow side={item.other} emphasis />
+        </div>
+
+        {firstDifference ? (
+          <p className={`caption ${styles.difference}`}>
+            <span className={styles.differenceLabel}>Differs:</span> {firstDifference}
+          </p>
+        ) : null}
       </div>
 
       <div className={styles.footer}>
-        <span className={`caption ${styles.fresh}`}>
-          {alternative.priceContextLabel} · {formatObservedAt(alternative.observedAt)}
-        </span>
+        <span className={`caption ${styles.fresh}`}>{freshnessLine(item)}</span>
         <span className={`label ${styles.action}`}>
           View comparison
           <ArrowRightIcon className={styles.arrow} />

@@ -10,10 +10,12 @@ import {
   PageContainer,
   PageHeading,
   ResultsList,
+  StoreRequired,
 } from '../components/index.js';
 import buttons from '../components/Button.module.css';
 import { useComparisons } from './useComparisons.js';
 import { NotFoundPage } from './NotFoundPage.js';
+import { useStoreLink } from './useStore.js';
 
 function isCategorySlug(value: string | undefined): value is CategorySlug {
   return CATEGORY_ORDER.includes(value as CategorySlug);
@@ -22,6 +24,7 @@ function isCategorySlug(value: string | undefined): value is CategorySlug {
 export function CategoryPage() {
   const { slug } = useParams<{ slug: string }>();
   const { state, reload } = useComparisons();
+  const link = useStoreLink();
   const label = isCategorySlug(slug) ? CATEGORY_LABELS[slug] : undefined;
   useDocumentTitle(label);
 
@@ -39,9 +42,10 @@ export function CategoryPage() {
       <PageHeading
         eyebrow="Category"
         title={CATEGORY_LABELS[slug]}
-        description={`Verified price comparisons for ${CATEGORY_LABELS[slug].toLowerCase()}.`}
+        description={`Reviewed ${CATEGORY_LABELS[slug].toLowerCase()} pairs where the men’s or neutral version costs less at this store.`}
       />
 
+      {state.status === 'no-store' && <StoreRequired />}
       {state.status === 'loading' && <LoadingCards />}
       {state.status === 'error' && <ErrorState onRetry={reload} />}
       {state.status === 'ready' &&
@@ -49,10 +53,10 @@ export function CategoryPage() {
           <ResultsList items={group.items} />
         ) : (
           <EmptyState
-            title="No comparisons yet"
-            body={`We haven't reviewed a verified comparison in ${CATEGORY_LABELS[slug].toLowerCase()} yet.`}
+            title="No comparisons here at this store"
+            body={`None of our reviewed ${CATEGORY_LABELS[slug].toLowerCase()} pairs is cheaper in the men’s or neutral version at this store right now.`}
           >
-            <Link to="/search" className={`body ${buttons.button} ${buttons.dark}`}>
+            <Link to={link('/search')} className={`body ${buttons.button} ${buttons.dark}`}>
               Browse all comparisons
             </Link>
           </EmptyState>

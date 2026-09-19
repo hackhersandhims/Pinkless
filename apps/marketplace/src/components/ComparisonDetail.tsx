@@ -1,8 +1,13 @@
 import { Link } from 'react-router-dom';
-import type { ComparisonView, OfferView } from '../lib/types';
-import { formatCents, formatSavings, percentLower } from '../lib/money';
+import type { ComparisonView, ProductSide } from '../lib/types';
+import { formatCents } from '../lib/money';
 import { formatObservedAt } from '../lib/dates';
+import { storeLabel } from '../lib/catalog';
+import { comparisonHeadline, freshnessLine } from '../lib/copy';
+import { useStoreLink } from '../routes/useStore';
+import { ArrowRightIcon } from './icons';
 import { ProductMedia } from './ProductMedia';
+import { SavingsBadge } from './SavingsBadge';
 import buttons from './Button.module.css';
 import styles from './ComparisonDetail.module.css';
 
@@ -10,101 +15,147 @@ export type ComparisonDetailProps = {
   item: ComparisonView;
 };
 
-function OfferPanel({
-  offer,
-  heading,
-  productName,
+function ProductPanel({
+  item,
+  side,
   emphasis,
 }: {
-  offer: OfferView;
-  heading: string;
-  productName: string;
+  item: ComparisonView;
+  side: ProductSide;
   emphasis?: boolean;
 }) {
   return (
     <div className={`${styles.offer} ${emphasis ? styles.offerEmphasis : ''}`}>
-      <p className={`label ${styles.offerKind}`}>{heading}</p>
-      <p className={`heading ${styles.offerRetailer}`}>{productName}</p>
-      <p className={`display ${styles.offerPrice}`}>{formatCents(offer.priceCents)}</p>
+      <ProductMedia
+        category={item.category}
+        size="card"
+        image={{ krogerProductId: side.krogerProductId, alt: side.name }}
+      />
+      <p className={`label ${styles.offerKind}`}>{side.marketedToLabel}</p>
+      <h3 className={`heading ${styles.offerName}`}>{side.name}</h3>
       <span className="caption">
-        {offer.retailerLabel} · {offer.priceContextLabel} price
+        {side.brand ? `${side.brand} · ` : ''}
+        {side.variant}
       </span>
-      <span className="caption">{formatObservedAt(offer.observedAt)}</span>
+      <p className={`display ${styles.offerPrice}`}>{formatCents(side.priceCents)}</p>
+      <span className="caption">
+        {item.priceContextLabel} price at {storeLabel(item.store)}
+      </span>
+      <span className="caption">{formatObservedAt(side.observedAt)}</span>
+      <a
+        href={side.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`body ${styles.offerLink}`}
+      >
+        View on Kroger
+        <span className="visually-hidden">: {side.name} (opens in a new tab)</span>
+        <ArrowRightIcon className={styles.arrow} />
+      </a>
     </div>
   );
 }
 
-/** Full detail for two reviewed products priced at the same retailer. */
+/**
+ * Comparison page body: the difference and both products up top, both
+ * Kroger listings side by side (women's, then the cheaper men's or neutral
+ * version), then why the pair was matched and what still differs. Both
+ * prices come from one store in one price context, so the difference is a
+ * plain subtraction of integer cents.
+ */
 export function ComparisonDetail({ item }: ComparisonDetailProps) {
-  const percent = percentLower(item.savingsCents, item.reference.priceCents);
+  const link = useStoreLink();
 
   return (
     <article className={styles.wrap}>
       <nav aria-label="Breadcrumb">
         <ol className={`caption ${styles.crumbs}`}>
           <li>
-            <Link to="/">Marketplace</Link>
+            <Link to={link('/')}>Marketplace</Link>
           </li>
           <li>
-            <Link to={`/category/${item.category}`}>{item.categoryLabel}</Link>
+            <Link to={link(`/category/${item.category}`)}>{item.categoryLabel}</Link>
           </li>
         </ol>
       </nav>
 
       <div className={styles.summary}>
-        <ProductMedia category={item.category} size="stage" />
+        <div className={styles.pairMedia}>
+          <ProductMedia
+            category={item.category}
+            size="thumb"
+            image={{ krogerProductId: item.womens.krogerProductId, alt: item.womens.name }}
+          />
+          <ProductMedia
+            category={item.category}
+            size="thumb"
+            image={{ krogerProductId: item.other.krogerProductId, alt: item.other.name }}
+          />
+        </div>
         <div className={styles.summaryText}>
           <span className={`label ${styles.eyebrow}`}>{item.categoryLabel}</span>
           <div className="display">
-            <h1 className={styles.title}>{item.alternativeName}</h1>
+            <h1 className={styles.title}>{comparisonHeadline(item)}</h1>
           </div>
-          <span className="caption">{item.alternativeVariant}</span>
-
-          <p className={`display ${styles.savings}`}>{formatSavings(item.savingsCents)}</p>
           <p className={`body ${styles.savingsNote}`}>
-            {percent !== undefined ? `${percent}% lower than ` : 'Lower than '}
-            {item.name} at {item.reference.retailerLabel}.
+            {item.other.name} costs {formatCents(item.other.priceCents)}.{' '}
+            {item.womens.name} costs {formatCents(item.womens.priceCents)}.
           </p>
+          <div className={styles.savings}>
+            <SavingsBadge cents={item.savingsCents} />
+            {item.percentLower !== undefined ? (
+              <span className="caption">{item.percentLower}% lower</span>
+            ) : null}
+          </div>
+          <p className={`caption ${styles.fresh}`}>{freshnessLine(item)}</p>
 
-          <a
-            href={item.alternative.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`body ${buttons.button} ${buttons.dark} ${styles.cta}`}
-            aria-label={`See men's alternative at ${item.alternative.retailerLabel} (opens in a new tab)`}
-          >
-            See men's alternative
-          </a>
+          <div className={styles.actions}>
+            <a
+              href={item.other.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`body ${buttons.button} ${buttons.dark}`}
+              aria-label={`See the ${item.versionLabel} on Kroger: ${item.other.name} (opens in a new tab)`}
+            >
+              See the {item.versionLabel}
+            </a>
+            <a
+              href={item.womens.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`body ${buttons.button} ${buttons.outline}`}
+              aria-label={`See the women’s version on Kroger: ${item.womens.name} (opens in a new tab)`}
+            >
+              See the women’s version
+            </a>
+          </div>
         </div>
       </div>
 
       <section aria-labelledby="compare-offers">
         <h2 id="compare-offers" className={`heading ${styles.sectionHeading}`}>
-          Two reviewed products, one retailer
+          Both prices, same store
         </h2>
         <div className={styles.offers}>
-          <OfferPanel offer={item.reference} heading="Women's product" productName={item.name} />
-          <OfferPanel
-            offer={item.alternative}
-            heading="Men's alternative"
-            productName={item.alternativeName}
-            emphasis
-          />
+          <ProductPanel item={item} side={item.womens} />
+          <ProductPanel item={item} side={item.other} emphasis />
         </div>
       </section>
 
       <section aria-labelledby="why-matched">
         <h2 id="why-matched" className={`heading ${styles.sectionHeading}`}>
-          Why this was matched
+          Why these match
         </h2>
         <p className="body">{item.rationale}</p>
-        <ul className={styles.chips}>
-          {item.matchedAttributes.map((attribute) => (
-            <li key={attribute} className={`label ${styles.chip}`}>
-              {attribute}
-            </li>
-          ))}
-        </ul>
+        {item.matchedAttributes.length > 0 ? (
+          <ul className={styles.chips} aria-label="Matched attributes">
+            {item.matchedAttributes.map((attribute) => (
+              <li key={attribute} className={`label ${styles.chip}`}>
+                {attribute}
+              </li>
+            ))}
+          </ul>
+        ) : null}
 
         {item.knownDifferences.length > 0 ? (
           <>
@@ -120,10 +171,11 @@ export function ComparisonDetail({ item }: ComparisonDetailProps) {
         ) : null}
       </section>
 
-      <span className="caption">
-        Prices verified on the date shown and may have changed. Pinkless shows reviewed comparisons;
-        it does not make claims about pricing intent.
-      </span>
+      <p className={`caption ${styles.disclaimer}`}>
+        Prices are Kroger’s {item.priceContextLabel.toLowerCase()} prices at {storeLabel(item.store)}{' '}
+        on the date shown and may have changed. Pinkless shows reviewed comparisons; it does not say
+        why prices differ.
+      </p>
     </article>
   );
 }

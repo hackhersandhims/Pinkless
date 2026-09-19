@@ -1,13 +1,18 @@
-import type { Product } from '../../../../packages/catalog/src/schema.js';
-import { compareOffers } from '../../../../packages/matcher/src/compare.js';
+import type { Catalog, Offer, Product } from '../../../../packages/catalog/src/schema.js';
+import {
+  compareOffers,
+  equivalentsFor,
+  listComparisons,
+} from '../../../../packages/matcher/src/compare.js';
 import { resolveProduct } from '../../../../packages/matcher/src/resolve.js';
 import type {
   ComparisonOutcome,
   ProductView,
-  RetailerLocationSelection,
+  ShowOutcome,
+  StoreContext,
   SuppressionReason,
 } from '../../../../packages/matcher/src/types.js';
-import { ProviderGateway, type ProviderLookupState } from './gateway.js';
+import { ProviderGateway, type OfferLookupResult, type ProviderLookupState } from './gateway.js';
 
 function stateReason(state: ProviderLookupState): SuppressionReason {
   if (state === 'timeout') return 'provider-timeout';
@@ -16,62 +21,86 @@ function stateReason(state: ProviderLookupState): SuppressionReason {
   return 'provider-unavailable';
 }
 
+export type ListResult =
+  | { status: 'ok'; comparisons: ShowOutcome[] }
+  | { status: 'suppressed'; reason: SuppressionReason };
+
 export class ComparisonService {
   constructor(
-    private readonly products: Product[],
+    private readonly catalog: Catalog,
     private readonly gateway: ProviderGateway,
     private readonly now: () => Date = () => new Date(),
   ) {}
 
-  async compare(
-    current: ProductView,
-    locations: RetailerLocationSelection = {},
-  ): Promise<ComparisonOutcome> {
-    const preliminary = compareOffers(this.products, current, [], this.now(), locations);
-    if (
-      preliminary.status === 'suppressed' ||
-      (preliminary.status === 'no-match' && preliminary.reason === 'unknown-product')
-    ) {
-      return preliminary;
-    }
-
-    const resolution = resolveProduct(this.products, current);
-    if (resolution.status !== 'matched') return preliminary;
-    const catalogAlternatives = resolution.product.reviewedAlternatives.flatMap((relationship) => {
-      const product = this.products.find(
-        (candidate) => candidate.id === relationship.productId && candidate.status === 'active',
-      );
-      if (!product) return [];
-      const identity = product.identities.find(
-        (candidate) => candidate.retailer === current.retailer,
-      );
-      return identity ? [{ product, identity }] : [];
-    });
-    if (catalogAlternatives.length === 0) {
-      return { status: 'no-match', reason: 'no-alternative-identity' };
-    }
-
-    const results = await Promise.all(
-      catalogAlternatives.map(({ product, identity }) =>
-        this.gateway.lookupOffers(current.retailer, {
-          productId: identity.productId,
-          ...(product.upc ? { upc: product.upc } : {}),
-          url: identity.canonicalUrl,
-          priceContext: current.priceContext!,
-          ...(current.priceContext !== 'online' ? { locationId: current.locationId! } : {}),
-        }),
+  /** Prices every Kroger identity of the given products at one store, in parallel. */
+  private priceProducts(products: Product[], store: StoreContext): Promise<OfferLookupResult[]> {
+    return Promise.all(
+      products.flatMap((product) =>
+        product.identities.map((identity) =>
+          this.gateway.lookupOffers(identity.retailer, {
+            productId: identity.productId,
+            url: identity.canonicalUrl,
+            priceContext: store.priceContext,
+            locationId: store.locationId,
+          }),
+        ),
       ),
     );
+  }
+
+  /**
+   * Compares the shopper's page against its reviewed equivalents. Both sides
+   * are priced by the provider; the page's own price is only a consistency
+   * check inside the matcher.
+   */
+  async compare(current: ProductView): Promise<ComparisonOutcome> {
+    // Runs every page-state check with no offers, so a bad request never
+    // reaches the provider.
+    const preliminary = compareOffers(this.catalog, current, [], this.now());
+    if (preliminary.status !== 'suppressed' || preliminary.reason !== 'current-offer-unavailable') {
+      return preliminary;
+    }
+    const resolution = resolveProduct(this.catalog.products, current);
+    if (resolution.status !== 'matched') return preliminary;
+
+    const store: StoreContext = {
+      locationId: current.locationId!,
+      priceContext: current.priceContext!,
+    };
+    const products = [
+      resolution.product,
+      ...equivalentsFor(this.catalog, resolution.product.id).map(({ product }) => product),
+    ];
+    const results = await this.priceProducts(products, store);
     const outcome = compareOffers(
-      this.products,
+      this.catalog,
       current,
       results.flatMap((result) => result.offers),
       this.now(),
-      locations,
     );
     if (outcome.status === 'show') return outcome;
 
     const failed = results.find((result) => result.state !== 'ok');
     return failed ? { status: 'suppressed', reason: stateReason(failed.state) } : outcome;
+  }
+
+  /** Every active pair with a positive saving at one store (Marketplace list feed). */
+  async list(store: StoreContext): Promise<ListResult> {
+    const byId = new Map(this.catalog.products.map((product) => [product.id, product]));
+    const ids = new Set(
+      this.catalog.equivalences
+        .filter((equivalence) => equivalence.status === 'active')
+        .flatMap((equivalence) => equivalence.productIds),
+    );
+    const products = [...ids].flatMap((id) => {
+      const product = byId.get(id);
+      return product && product.status === 'active' ? [product] : [];
+    });
+    const results = await this.priceProducts(products, store);
+    const failed = results.find((result) => result.state !== 'ok');
+    // A partially priced list would silently hide pairs; fail the whole list instead.
+    if (failed) return { status: 'suppressed', reason: stateReason(failed.state) };
+    const offers: Offer[] = results.flatMap((result) => result.offers);
+    return { status: 'ok', comparisons: listComparisons(this.catalog, offers, store, this.now()) };
   }
 }

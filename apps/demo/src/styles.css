@@ -1,3 +1,4 @@
+/* Tokens only (packages/tokens). Border widths are structural, as in the Marketplace. */
 :root {
   color: var(--ink);
   background: var(--surface-100);
@@ -13,7 +14,18 @@ a {
   font: inherit;
 }
 
-.demo-shell {
+a {
+  color: var(--ink);
+}
+
+.demo-banner {
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface-pink);
+  border-block-end: 1px solid var(--border);
+  text-align: center;
+}
+
+.product-page {
   display: grid;
   gap: var(--space-6);
   margin: 0 auto;
@@ -21,39 +33,59 @@ a {
   padding: var(--space-6) var(--space-4);
 }
 
-.demo-header,
-.product-card,
-.offers-section {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6);
+.breadcrumbs {
+  color: var(--ink);
 }
 
-.demo-header {
+.product-layout {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.product-image {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   background: var(--surface-pink);
 }
 
-.product-card {
-  background: var(--surface-100);
+.product-summary {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
 }
 
-.retailer-links,
+.product-summary > * {
+  margin: 0;
+}
+
+.product-price {
+  margin: var(--space-2) 0;
+}
+
+.size-options,
 .scenario-control {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-2);
 }
 
-.retailer-link,
-.scenario-button {
+.size-option,
+.scenario-button,
+.add-to-cart {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--ink);
   padding: var(--space-2) var(--space-3);
 }
 
-.retailer-link {
-  background: var(--surface-100);
+.size-option[aria-checked='true'],
+.scenario-button[aria-pressed='true'] {
+  background: var(--surface-900);
+  color: var(--on-dark);
 }
 
 .scenario-button {
@@ -61,33 +93,31 @@ a {
   cursor: pointer;
 }
 
-.scenario-button[aria-pressed='true'] {
-  background: var(--surface-900);
-  color: var(--on-dark);
+.add-to-cart {
+  justify-self: start;
+  background: var(--surface-100);
+  cursor: not-allowed;
 }
 
-.product-price {
-  margin: var(--space-4) 0;
-}
-
-.offer-list {
+.scenario-panel {
   display: grid;
   gap: var(--space-3);
-  list-style: none;
-  margin: var(--space-4) 0;
-  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
 }
 
-.offer-card {
-  display: grid;
-  gap: var(--space-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
+.scenario-panel > * {
+  margin: 0;
+}
+
+:is(a, button):focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: var(--space-2);
 }
 
 @media (min-width: 48rem) {
-  .offer-list {
-    grid-template-columns: repeat(3, 1fr);
+  .product-layout {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
   }
 }

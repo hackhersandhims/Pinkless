@@ -22,7 +22,10 @@ by a reviewed product record and a real provider offer.
 | Different size, refill, bundle, condition, or pack count | Suppress unless a reviewed catalog record explicitly covers it. |
 | Current product or alternative offer is out of stock | Suppress. |
 | One offer is online and the other is store-specific | Suppress rather than imply an equivalent local-store price. |
-| CVS or Walmart credentials/data access are unavailable | Suppress that retailer; return no partial or invented price. |
+| Kroger credentials or API unavailable | Suppress; return no partial or invented price. |
+| Offers from different Kroger stores, or no store selected | Suppress. |
+| Page price disagrees with the provider price | Suppress. |
+| Product is not marketed to women, or has no active reviewed pair | Stay quiet. |
 | Third-party marketplace seller | Exclude from the initial catalog. |
 | Page is an ad, search result, category page, or quick-view modal | Suppress. |
 | Retailer changes DOM / extracted data is incomplete | Suppress, log a development-only diagnostic, rely on fallback demo page. |
@@ -44,8 +47,10 @@ by a reviewed product record and a real provider offer.
 - [ ] Does out-of-stock (current product or alternative offer) suppress?
 - [ ] Does comparing an `online` offer to a `store-pickup`/`in-store` offer
       suppress instead of treating them as equivalent?
-- [ ] If CVS or Walmart credentials/data access are unavailable, does that
-      retailer's offer suppress — never a partial or invented price?
+- [ ] If Kroger credentials or the API are unavailable, does the
+      comparison suppress — never a partial or invented price?
+- [ ] Are both prices from the same Kroger store and price context, and is
+      the badge limited to women's products with an active reviewed pair?
 - [ ] Are third-party marketplace sellers excluded rather than matched?
 - [ ] Does this change avoid rendering on ad/search-result/category/
       quick-view pages?

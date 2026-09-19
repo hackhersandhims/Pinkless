@@ -13,9 +13,9 @@ score, or invent prices itself. All retailer calls happen server-side in
 
 ## Content script scoping
 
-- The content script runs **only** on declared CVS, Kroger, and Walmart
-  domains — explicit `matches` entries in `manifest.json`, never a wildcard
-  broader than the three supported retailers.
+- The content script runs **only** on declared Kroger domains — explicit
+  `matches` entries in `manifest.json`, never a broader wildcard. Kroger is
+  the only supported retailer.
 - One page adapter per retailer, extracting a normalized `ProductView`:
 
   ```ts

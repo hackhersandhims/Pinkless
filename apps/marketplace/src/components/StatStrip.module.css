@@ -33,12 +33,11 @@
   font-weight: 700;
 }
 
-/* Phones: three equal columns with the value stacked over its label, so nothing wraps raggedly. */
+/* Phones: two columns with the value stacked over its label; the store name takes a full row. */
 @media (max-width: 47.99rem) {
   .strip {
     display: grid;
-    grid-template-columns: repeat(3, auto);
-    justify-content: space-between;
+    grid-template-columns: 1fr 1fr;
     gap: var(--space-3);
   }
 
@@ -50,5 +49,16 @@
 
   .stat + .stat {
     padding-left: var(--space-3);
+  }
+
+  .wide {
+    grid-column: 1 / -1;
+  }
+
+  .stat.wide {
+    padding-top: var(--space-3);
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid var(--hairline);
   }
 }

@@ -1,0 +1,8 @@
+/* The same pink stage the home hero uses for the picker. */
+.stage {
+  width: 100%;
+  max-width: 36rem;
+  padding: var(--space-6);
+  border-radius: calc(var(--radius-lg) * 2);
+  background: var(--surface-pink);
+}
