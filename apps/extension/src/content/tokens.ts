@@ -24,6 +24,7 @@ export const TOKENS_CSS = `:root,
   --radius-lg: 16px;
 
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-brand: "Snell Roundhand", "Brush Script MT", "Segoe Script", cursive;
 }
 
 .display { font-family: var(--font-sans); font-size: 32px; line-height: 40px; font-weight: 700; }

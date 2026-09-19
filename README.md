@@ -64,11 +64,23 @@ pnpm build
 pnpm --filter @pinkless/marketplace dev
 ```
 
+### Run the controlled fallback demo
+
+```bash
+pnpm --filter @pinkless/demo dev
+```
+
+Then open `http://localhost:4174/product/cvs` (or `kroger` or `walmart`). See
+the [fallback demo guide](apps/demo/README.md) for the incognito rehearsal.
+
 ### Try the extension
 
 1. Run `pnpm build:extension`.
 2. Open `chrome://extensions` and enable **Developer mode**.
 3. Choose **Load unpacked** and select `apps/extension/dist`.
+
+See the [extension guide](apps/extension/README.md) for local API, store-selection,
+and browser-testing details.
 
 ## Commands
 
@@ -80,6 +92,7 @@ pnpm --filter @pinkless/marketplace dev
 | `pnpm catalog:validate`  | Validate the product identity catalog     |
 | `pnpm build`             | Validate, typecheck, then build both apps |
 | `pnpm build:extension`   | Build only the Chrome extension           |
+| `pnpm build:demo`        | Build only the controlled fallback demo   |
 | `pnpm build:marketplace` | Build only the Marketplace                |
 
 ## Repository layout
@@ -87,11 +100,12 @@ pnpm --filter @pinkless/marketplace dev
 ```text
 api/                Thin Vercel Function entry points for comparison and stores
 apps/api/           Provider contracts and server-only retailer integrations
-apps/extension/     Chrome Manifest V3 extension (page adapters added later)
+apps/extension/     Chrome MV3 extension, retailer adapters, popup, and badge
+apps/demo/          Controlled static fallback product page for judging
 apps/marketplace/   Static React/Vite Marketplace for Vercel
 packages/catalog/   Canonical product identity data and validation
 packages/matcher/   Pure matching and savings rules
-fixtures/           Sanitized catalog and provider contract fixtures
+fixtures/           Sanitized retailer, catalog, and provider fixtures
 ```
 
 ## API contracts
@@ -106,5 +120,8 @@ fixtures/           Sanitized catalog and provider contract fixtures
 
 ## Docs
 
+- [Local development](LOCAL_DEVELOPMENT.md): run the Marketplace, API, and unpacked Chrome extension
 - [Requirements](Files/REQUIREMENTS.md): detailed product and delivery requirements
 - [Tasks](Files/TASKS.md): implementation checklist
+
+Hello

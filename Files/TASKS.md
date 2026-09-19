@@ -64,43 +64,43 @@ ambiguous or unavailable result.
 
 ## Phase 3 — CVS, Kroger, and Walmart page adapters
 
-- [ ] Define a `RetailerAdapter` interface with `canHandle(url)` and
+- [x] Define a `RetailerAdapter` interface with `canHandle(url)` and
   `extract(document, location): ProductView | null`.
-- [ ] Inspect product pages from CVS, Kroger, and Walmart.
-- [ ] Build page adapters for title, UPC/product ID, selected variant, ordinary
+- [x] Inspect product pages from CVS, Kroger, and Walmart.
+- [x] Build page adapters for title, UPC/product ID, selected variant, ordinary
   one-time price, price context, currency, and stock state.
-- [ ] Capture sanitized fixtures for every retailer: happy path, unknown item,
+- [x] Capture sanitized fixtures for every retailer: happy path, unknown item,
   promotion/subscription display, out-of-stock state, and variant switch.
-- [ ] Test every adapter entirely against fixtures and fail closed for ambiguity.
-- [ ] Add a debounced page-change observer plan for navigation and variants.
+- [x] Test every adapter entirely against fixtures and fail closed for ambiguity.
+- [x] Add a debounced page-change observer plan for navigation and variants.
 
 **Done when:** each supported retailer produces a valid `ProductView` in
 fixtures and no incomplete page can trigger a comparison.
 
 ## Phase 4 — Extension core
 
-- [ ] Create a Manifest V3 extension with content-script matches restricted to
+- [x] Create a Manifest V3 extension with content-script matches restricted to
   CVS, Kroger, and Walmart domains.
-- [ ] Connect page adapter → Pinkless API → matcher → renderer in the content script.
-- [ ] Add explicit user store selection or ZIP-based store lookup.
-- [ ] Build a small badge in a Shadow DOM root with a stable, unique root ID.
-- [ ] Add keyboard-accessible `See alternative`, `Why this was matched`, and
+- [x] Connect page adapter → Pinkless API → matcher → renderer in the content script.
+- [x] Add explicit user store selection or ZIP-based store lookup.
+- [x] Build a small badge in a Shadow DOM root with a stable, unique root ID.
+- [x] Add keyboard-accessible `See alternative`, `Why this was matched`, and
   dismiss controls.
-- [ ] Open the vetted alternative URL in a new tab from the primary action.
-- [ ] Ensure repeated content-script execution or DOM updates cannot create a
+- [x] Open the vetted alternative URL in a new tab from the primary action.
+- [x] Ensure repeated content-script execution or DOM updates cannot create a
   duplicate badge.
-- [ ] Add a minimal popup: provider status, store selection, Marketplace link, and version.
-- [ ] Load the extension unpacked and manually test a product page for each retailer.
+- [x] Add a minimal popup: provider status, store selection, Marketplace link, and version.
+- [x] Load the extension unpacked and manually test a product page for each retailer.
 
 **Done when:** the full extension flow works with activated providers and
 silently fails when a product, price, provider, or location is unsafe.
 
 ## Phase 5 — Fallback demo page
 
-- [ ] Create a static product page controlled by the team that exposes the same
+- [x] Create a static product page controlled by the team that exposes the same
   product information needed by the adapter.
-- [ ] Add that page as a separately supported demo host/path.
-- [ ] Seed it with mocked CVS, Kroger, and Walmart offers plus an interactive
+- [x] Add that page as a separately supported demo host/path.
+- [x] Seed it with mocked CVS, Kroger, and Walmart offers plus an interactive
   variant that changes its price.
 - [ ] Rehearse the full fallback flow in an incognito Chrome profile with the
   unpacked extension.
@@ -132,6 +132,8 @@ savings as the extension.
 
 - [ ] Create and link the Vercel project; configure preview/production domains,
   allowed origins, server-only credentials, and the first preview deployment.
+- [ ] Replace the extension's local API/Marketplace URLs and local API host
+  permission with the final Vercel origins.
 - [ ] Register Pinkless with Kroger and store credentials only in Vercel environment variables.
 - [ ] Obtain approved CVS product-and-price data access and activate its provider.
 - [ ] Obtain approved Walmart product-and-price data access and activate its provider.

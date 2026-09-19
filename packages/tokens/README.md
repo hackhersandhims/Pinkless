@@ -20,6 +20,7 @@ If token values change in `tokens.json`, update `tokens.css` to match, then run:
 pnpm run tokens:sync    # regenerates apps/extension/src/content/tokens.ts from tokens.css
 pnpm run tokens:check   # fails if json, css, and the extension copy disagree
 ```
+```
 
 `tokens:check` runs as part of `pnpm run build` and in CI. It also fails if `tokens.css` declares a
 token that `tokens.json` does not, so a token cannot be added on one side only.
