@@ -16,21 +16,21 @@ history and stores only the ZIP code and the chosen Kroger store on this
 device. A comparison request sends exactly `{ current }`: the page's product
 identity with the selected store's `locationId` and `priceContext: "in-store"`.
 
-## Local API setup
+## API setup
 
-Until Phase 7 creates the Vercel deployment, the extension calls
-`http://localhost:3000` and the Marketplace link opens
-`http://localhost:5173`. Run the API in mock-provider mode and add the unpacked
-extension origin shown on `chrome://extensions` to `PINKLESS_ALLOWED_ORIGINS`:
+The production build calls `https://pinkless-marketplace.vercel.app` for both
+the Pinkless API and Marketplace. In the Vercel project, set
+`PINKLESS_ALLOWED_ORIGINS` to an exact comma-separated list containing the
+Marketplace origin and the unpacked extension origin shown on
+`chrome://extensions`:
 
 ```dotenv
-PINKLESS_PROVIDER_MODE=mock
-PINKLESS_ALLOWED_ORIGINS=chrome-extension://your-extension-id
+PINKLESS_ALLOWED_ORIGINS=https://pinkless-marketplace.vercel.app,chrome-extension://your-extension-id
 ```
 
-After Vercel exists, replace the two local URLs in
-`src/shared/config.ts`, add the exact API host to `public/manifest.json`, and
-configure the production origin allowlist before publishing.
+After changing the Vercel environment variable, redeploy the production
+deployment so its serverless functions receive the new value. For local API
+development, see [`LOCAL_DEVELOPMENT.md`](../../LOCAL_DEVELOPMENT.md).
 
 ## Expected behavior
 

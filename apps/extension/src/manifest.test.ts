@@ -42,6 +42,6 @@ describe('manifest scope', () => {
 
   it('can reach only the Pinkless API', async () => {
     const { json } = await manifest();
-    expect(json.host_permissions).toEqual(['http://localhost:3000/*']);
+    expect(json.host_permissions).toEqual(['https://pinkless-marketplace.vercel.app/*']);
   });
 });

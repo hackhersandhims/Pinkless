@@ -1,4 +1,9 @@
-import { PINKLESS_API_BASE_URL, RETAILER } from '../shared/config.js';
+import {
+  PINKLESS_API_BASE_URL,
+  PINKLESS_EXTENSION_ORIGIN_HEADER,
+  RETAILER,
+  runtimeExtensionOrigin,
+} from '../shared/config.js';
 import type { StoreLocation } from '../shared/types.js';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -34,12 +39,19 @@ export function parseStoreLocation(value: unknown): StoreLocation | null {
 export async function lookupStores(
   postalCode: string,
   fetcher: typeof fetch = fetch,
+  extensionOrigin = runtimeExtensionOrigin(),
 ): Promise<StoreLocation[] | null> {
   if (!/^\d{5}(?:-\d{4})?$/.test(postalCode)) return null;
   try {
     const url = new URL('/api/stores', PINKLESS_API_BASE_URL);
     url.searchParams.set('postalCode', postalCode);
-    const response = await fetcher(url, { credentials: 'omit', referrerPolicy: 'no-referrer' });
+    const response = await fetcher(url, {
+      ...(extensionOrigin
+        ? { headers: { [PINKLESS_EXTENSION_ORIGIN_HEADER]: extensionOrigin } }
+        : {}),
+      credentials: 'omit',
+      referrerPolicy: 'no-referrer',
+    });
     if (!response.ok) return null;
     const payload = (await response.json()) as unknown;
     if (!isRecord(payload) || payload.status !== 'ok' || !Array.isArray(payload.locations)) {

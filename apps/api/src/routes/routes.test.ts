@@ -13,7 +13,11 @@ import { createStoresHandler } from './stores.js';
 
 const now = new Date('2026-09-18T16:30:00.000Z');
 const allowedOrigin = 'http://localhost:5173';
-const environment = { NODE_ENV: 'test', PINKLESS_ALLOWED_ORIGINS: allowedOrigin };
+const extensionOrigin = 'chrome-extension://abcdefghijklmnopabcdefghijklmnop';
+const environment = {
+  NODE_ENV: 'test',
+  PINKLESS_ALLOWED_ORIGINS: `${allowedOrigin},${extensionOrigin}`,
+};
 
 const SOLEIL = catalog.products.find((product) => product.marketedTo === 'women')!;
 const COMFORT = catalog.products.find((product) => product.marketedTo === 'men')!;
@@ -199,6 +203,34 @@ describe('stores route', () => {
     );
     expect(response.status).toBe(400);
   });
+
+  it('accepts the allowlisted extension claim only when the browser Origin is absent', async () => {
+    const allowed = await handler()(
+      new Request('https://pinkless.test/api/stores?postalCode=45202', {
+        headers: { 'x-pinkless-extension-origin': extensionOrigin },
+      }),
+    );
+    expect(allowed.status).toBe(200);
+
+    const spoofedByWebsite = await handler()(
+      new Request('https://pinkless.test/api/stores?postalCode=45202', {
+        headers: {
+          origin: 'https://evil.example',
+          'x-pinkless-extension-origin': extensionOrigin,
+        },
+      }),
+    );
+    expect(spoofedByWebsite.status).toBe(403);
+
+    const unknownExtension = await handler()(
+      new Request('https://pinkless.test/api/stores?postalCode=45202', {
+        headers: {
+          'x-pinkless-extension-origin': 'chrome-extension://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        },
+      }),
+    );
+    expect(unknownExtension.status).toBe(403);
+  });
 });
 
 describe('CORS preflight', () => {
@@ -213,5 +245,8 @@ describe('CORS preflight', () => {
     expect(response.status).toBe(204);
     expect(await response.text()).toBe('');
     expect(response.headers.get('access-control-allow-origin')).toBe(allowedOrigin);
+    expect(response.headers.get('access-control-allow-headers')).toBe(
+      'content-type, x-pinkless-extension-origin',
+    );
   });
 });

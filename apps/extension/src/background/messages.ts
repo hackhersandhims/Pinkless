@@ -1,4 +1,10 @@
-import { isControlledDemoUrl, PINKLESS_API_BASE_URL, RETAILER_HOSTS } from '../shared/config.js';
+import {
+  isControlledDemoUrl,
+  PINKLESS_API_BASE_URL,
+  PINKLESS_EXTENSION_ORIGIN_HEADER,
+  RETAILER_HOSTS,
+  runtimeExtensionOrigin,
+} from '../shared/config.js';
 
 type CompareMessage = {
   type: 'pinkless:compare';
@@ -40,13 +46,17 @@ export async function handleExtensionMessage(
   message: unknown,
   senderUrl: string | undefined,
   fetcher: typeof fetch = fetch,
+  extensionOrigin = runtimeExtensionOrigin(),
 ): Promise<unknown> {
   if (!isCompareMessage(message) || !isAllowedSender(senderUrl)) return null;
 
   try {
     const response = await fetcher(`${PINKLESS_API_BASE_URL}/api/compare`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        ...(extensionOrigin ? { [PINKLESS_EXTENSION_ORIGIN_HEADER]: extensionOrigin } : {}),
+      },
       body: JSON.stringify({ current: message.payload.current }),
       credentials: 'omit',
       referrerPolicy: 'no-referrer',

@@ -3,6 +3,7 @@ import { handleExtensionMessage } from './messages.js';
 
 const KROGER_PAGE =
   'https://www.kroger.com/p/bic-soleil-smooth-scented-disposable-3-blade-razors/0007033071417';
+const EXTENSION_ORIGIN = 'chrome-extension://abcdefghijklmnopabcdefghijklmnop';
 const current = {
   retailer: 'kroger',
   canonicalUrl: KROGER_PAGE,
@@ -31,15 +32,20 @@ describe('extension background messaging', () => {
       { type: 'pinkless:compare', payload: { current } },
       KROGER_PAGE,
       fetcher,
+      EXTENSION_ORIGIN,
     );
     expect(result).toEqual({ status: 'no-match' });
     expect(fetcher).toHaveBeenCalledWith(
-      'http://localhost:3000/api/compare',
+      'https://pinkless-marketplace.vercel.app/api/compare',
       expect.objectContaining({ method: 'POST', credentials: 'omit' }),
     );
     const body = JSON.parse(fetcher.mock.calls[0]![1].body as string) as Record<string, unknown>;
     expect(body).toEqual({ current });
     expect(Object.keys(body)).toEqual(['current']);
+    expect(fetcher.mock.calls[0]![1].headers).toMatchObject({
+      'content-type': 'application/json',
+      'x-pinkless-extension-origin': EXTENSION_ORIGIN,
+    });
   });
 
   it('drops anything else in the payload, including a legacy locations map', async () => {
