@@ -76,7 +76,7 @@ Every pair is written and reviewed by a person, never guessed automatically.
 ```mermaid
 flowchart LR
     subgraph Surfaces
-        EXT["Chrome extension<br/>content script · side panel"]
+        EXT["Chrome extension<br/>content script · in-page comparison panel"]
         MKT["Marketplace<br/>React + Vite"]
     end
 
@@ -138,7 +138,7 @@ states prices, store, date, and who a product is marketed to; it never says why 
 | ----------- | -------------------------------------------------------------------------------------------------- |
 | Language    | TypeScript 5.9                                                                                     |
 | Marketplace | React 19, React Router 7, Vite 7, CSS Modules                                                      |
-| Extension   | Chrome Manifest V3 (content script, service worker, side panel), bundled with Vite                 |
+| Extension   | Chrome Manifest V3 (content script, service worker, toolbar popup), bundled with Vite              |
 | API         | Vercel Functions (`api/`), Web-standard `Request`/`Response` handlers                              |
 | Data source | Kroger public API (Products and Locations), OAuth client credentials, `product.compact` scope only |
 | Design      | Shared design tokens in `packages/tokens` ([DESIGN_SYSTEM.md](DESIGN_SYSTEM.md))                   |

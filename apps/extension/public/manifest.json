@@ -4,16 +4,14 @@
   "version": "0.1.0",
   "description": "On a women's product at Kroger, see a reviewed men's or neutral equivalent that costs less at the same store.",
   "action": {
-    "default_title": "Pinkless"
-  },
-  "side_panel": {
-    "default_path": "popup.html"
+    "default_title": "Pinkless",
+    "default_popup": "popup.html"
   },
   "background": {
     "service_worker": "background/index.js",
     "type": "module"
   },
-  "permissions": ["storage", "sidePanel"],
+  "permissions": ["storage"],
   "host_permissions": ["https://pinkless-marketplace.vercel.app/*"],
   "content_scripts": [
     {

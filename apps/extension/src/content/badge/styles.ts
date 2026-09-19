@@ -22,7 +22,8 @@ export const BADGE_CSS = `
 .pinkless {
   position: fixed;
   inset-block-end: var(--space-4);
-  inset-inline-start: var(--space-4);
+  /* Keep the full comparison on the page's right edge, away from Kroger's main product copy. */
+  inset-inline-end: var(--space-4);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
