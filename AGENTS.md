@@ -29,10 +29,14 @@ identity/equivalence records; `apps/marketplace` calls the same read-only API.
   about primary/CTA color; don't silently resolve it).
 - The extension badge renders inside a Shadow DOM and cannot inherit
   page-level CSS. Never link an external stylesheet into the shadow root —
-  inline `TOKENS_CSS` from `apps/extension/src/content/tokens.ts` into the
-  shadow root's own `<style>` tag (see `getBadgeShadowRoot()` in
-  `apps/extension/src/content/index.ts`). If `packages/tokens/tokens.css`
-  changes, regenerate that inlined copy to match.
+  use `mountBadgeRoot()` from `apps/extension/src/content/shadow-root.ts`,
+  which injects the generated `TOKENS_CSS` into the shadow root's own
+  `<style>`. **Render all badge markup inside the `container` it returns:**
+  the token variables live on `:root, [data-theme="light"]`, `:root` never
+  matches in a shadow tree, so they only exist on/below the container's
+  `data-theme="light"`. After changing `packages/tokens`, run
+  `pnpm run tokens:sync`; `pnpm run tokens:check` (part of `build` and CI)
+  fails on drift between `tokens.json`, `tokens.css`, and the extension copy.
 - Accessibility bar (REQUIREMENTS §6), non-negotiable for every badge/popup
   control: keyboard-operable with descriptive accessible labels; no
   assertive ARIA live regions; never steal focus on mount/update; never

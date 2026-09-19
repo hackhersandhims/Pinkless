@@ -9,9 +9,11 @@
     "typecheck": "tsc --noEmit --pretty false -p tsconfig.json",
     "test": "vitest run --passWithNoTests",
     "catalog:validate": "node --experimental-strip-types packages/catalog/src/validate.ts",
+    "tokens:sync": "node scripts/tokens.mjs sync",
+    "tokens:check": "node scripts/tokens.mjs check",
     "build:extension": "pnpm --filter @pinkless/extension build",
     "build:marketplace": "pnpm --filter @pinkless/marketplace build",
-    "build": "pnpm run catalog:validate && pnpm run typecheck && pnpm run build:extension && pnpm run build:marketplace"
+    "build": "pnpm run catalog:validate && pnpm run tokens:check && pnpm run typecheck && pnpm run build:extension && pnpm run build:marketplace"
   },
   "devDependencies": {
     "@types/node": "^26.6.1",

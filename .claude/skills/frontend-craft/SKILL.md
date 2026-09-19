@@ -26,12 +26,19 @@ Applies to `apps/marketplace/**` (React + Vite) and `apps/extension/src/popup/**
 
 - The badge renders inside a Shadow DOM root and cannot inherit page-level or
   extension-level CSS (REQUIREMENTS §3/§6).
-- Never link an external stylesheet into the shadow root. Inject the tokens by
-  inlining `TOKENS_CSS` from `apps/extension/src/content/tokens.ts` into the
-  shadow root's own `<style>` tag — see `getBadgeShadowRoot()` in
-  `apps/extension/src/content/index.ts` for the existing helper.
-- If `packages/tokens/tokens.css` changes, `apps/extension/src/content/tokens.ts`
-  must be regenerated to match (it's a hand-inlined copy, not an import).
+- Never link an external stylesheet into the shadow root. Use
+  `mountBadgeRoot()` from `apps/extension/src/content/shadow-root.ts`: it
+  injects the generated `TOKENS_CSS` into the shadow root's own `<style>`
+  (always first, so component CSS can use the variables).
+- **Render all badge markup inside the `container` it returns.** The token
+  variables are declared on `:root, [data-theme="light"]`; `:root` never
+  matches inside a shadow tree, so they only exist on and below the
+  container's `data-theme="light"`. Markup appended to the shadow root
+  directly gets no `var(--…)` values (the `.display`/`.body` classes still
+  work).
+- `apps/extension/src/content/tokens.ts` is generated — never hand-edit it.
+  After changing `packages/tokens`, run `pnpm run tokens:sync`;
+  `pnpm run tokens:check` fails on drift.
 
 ## Accessibility bar (REQUIREMENTS §6)
 

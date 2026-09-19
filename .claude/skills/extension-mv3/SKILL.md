@@ -62,7 +62,7 @@ score, or invent prices itself. All retailer calls happen server-side in
 
 - Render **exactly one** badge, ever, inside a Shadow DOM root.
 - Use a fixed, unique root element ID (see `BADGE_ROOT_ID` in
-  `apps/extension/src/content/index.ts`). On remount, **replace** the
+  `apps/extension/src/content/shadow-root.ts`). On remount, **replace** the
   existing root's contents — never `appendChild` a second badge instance.
 - See the `frontend-craft` skill for how tokens get inlined into that shadow
   root's `<style>`.

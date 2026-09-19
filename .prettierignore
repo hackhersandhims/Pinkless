@@ -4,3 +4,6 @@ coverage/
 .pnpm-store/
 Files/
 pnpm-lock.yaml
+packages/tokens/tokens.css
+packages/tokens/tokens.json
+apps/extension/src/content/tokens.ts
