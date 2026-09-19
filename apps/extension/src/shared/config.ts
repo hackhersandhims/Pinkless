@@ -30,6 +30,17 @@ export function isControlledDemoUrl(url: URL): boolean {
   );
 }
 
-// Phase 7 replaces these local origins when the Vercel projects exist.
-export const PINKLESS_API_BASE_URL = 'http://localhost:3000';
-export const PINKLESS_MARKETPLACE_URL = 'http://localhost:5173';
+/** Production deployment serving both the Marketplace and its read-only API routes. */
+export const PINKLESS_API_BASE_URL = 'https://pinkless-marketplace.vercel.app';
+export const PINKLESS_MARKETPLACE_URL = 'https://pinkless-marketplace.vercel.app';
+export const PINKLESS_EXTENSION_ORIGIN_HEADER = 'x-pinkless-extension-origin';
+
+/**
+ * Privileged Chrome extension fetches can omit the HTTP Origin header. This explicit claim is
+ * accepted by the API only when the normal Origin header is absent and this exact extension
+ * origin is present in PINKLESS_ALLOWED_ORIGINS.
+ */
+export function runtimeExtensionOrigin(): string | undefined {
+  const runtimeId = typeof chrome !== 'undefined' ? chrome.runtime?.id : undefined;
+  return runtimeId && /^[a-p]{32}$/.test(runtimeId) ? `chrome-extension://${runtimeId}` : undefined;
+}

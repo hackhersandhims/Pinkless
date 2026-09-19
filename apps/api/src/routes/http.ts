@@ -6,18 +6,33 @@ export type RouteEnvironment = {
   PINKLESS_DEBUG_REASONS?: string;
 };
 
+export const PINKLESS_EXTENSION_ORIGIN_HEADER = 'x-pinkless-extension-origin';
+
+function allowedOrigins(environment: RouteEnvironment): string[] {
+  return (environment.PINKLESS_ALLOWED_ORIGINS ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
 export function requestOrigin(request: Request): string | null {
   return request.headers.get('origin');
 }
 
 export function isAllowedOrigin(request: Request, environment: RouteEnvironment): boolean {
   const origin = requestOrigin(request);
-  if (!origin) return request.headers.get('sec-fetch-site') === 'same-origin';
+  const allowed = allowedOrigins(environment);
+  if (!origin) {
+    const extensionOrigin = request.headers.get(PINKLESS_EXTENSION_ORIGIN_HEADER);
+    if (extensionOrigin) {
+      return (
+        /^chrome-extension:\/\/[a-p]{32}$/.test(extensionOrigin) &&
+        allowed.includes(extensionOrigin)
+      );
+    }
+    return request.headers.get('sec-fetch-site') === 'same-origin';
+  }
   if (origin === new URL(request.url).origin) return true;
-  const allowed = (environment.PINKLESS_ALLOWED_ORIGINS ?? '')
-    .split(',')
-    .map((value) => value.trim())
-    .filter(Boolean);
   return allowed.includes(origin);
 }
 
@@ -42,7 +57,10 @@ export function json(body: unknown, status: number, origin: string | null = null
   if (origin) {
     headers.set('access-control-allow-origin', origin);
     headers.set('access-control-allow-methods', 'GET, POST, OPTIONS');
-    headers.set('access-control-allow-headers', 'content-type');
+    headers.set(
+      'access-control-allow-headers',
+      `content-type, ${PINKLESS_EXTENSION_ORIGIN_HEADER}`,
+    );
   }
   return new Response(status === 204 ? null : JSON.stringify(body), { status, headers });
 }

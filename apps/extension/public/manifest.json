@@ -14,7 +14,7 @@
     "type": "module"
   },
   "permissions": ["storage", "sidePanel"],
-  "host_permissions": ["http://localhost:3000/*"],
+  "host_permissions": ["https://pinkless-marketplace.vercel.app/*"],
   "content_scripts": [
     {
       "matches": ["https://www.kroger.com/*", "http://localhost:4174/product/kroger*"],
