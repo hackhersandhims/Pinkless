@@ -49,7 +49,6 @@ export type Product = {
   brand?: string;
   variant: string;
   category: 'razors' | 'deodorant' | 'body-wash';
-  audience: ProductAudience;
   size: Size;
   marketedTo: MarketedTo;
   identities: RetailerIdentity[];

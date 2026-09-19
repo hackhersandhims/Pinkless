@@ -10,7 +10,6 @@ export {
   type ProductEquivalence,
   type Retailer,
   type RetailerIdentity,
-  type ReviewedAlternative,
   type Size,
   type StorePriceContext,
 } from './schema.js';

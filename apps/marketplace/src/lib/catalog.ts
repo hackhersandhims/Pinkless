@@ -32,7 +32,10 @@ function isKrogerUrl(value: unknown): value is string {
   if (typeof value !== 'string') return false;
   try {
     const url = new URL(value);
-    return url.protocol === 'https:' && (url.hostname === 'kroger.com' || url.hostname.endsWith('.kroger.com'));
+    return (
+      url.protocol === 'https:' &&
+      (url.hostname === 'kroger.com' || url.hostname.endsWith('.kroger.com'))
+    );
   } catch {
     return false;
   }
@@ -86,10 +89,16 @@ export function toView(
   }
   if (priceContext === 'online') return undefined;
   if (product.marketedTo !== 'women' || alternativeProduct.marketedTo === 'women') return undefined;
-  if (!CATEGORY_ORDER.includes(product.category) || product.category !== alternativeProduct.category) {
+  if (
+    !CATEGORY_ORDER.includes(product.category) ||
+    product.category !== alternativeProduct.category
+  ) {
     return undefined;
   }
-  if (!validOffer(current, locationId, priceContext) || !validOffer(alternative, locationId, priceContext)) {
+  if (
+    !validOffer(current, locationId, priceContext) ||
+    !validOffer(alternative, locationId, priceContext)
+  ) {
     return undefined;
   }
   const savingsCents = current.price.amountCents - alternative.price.amountCents;

@@ -31,9 +31,3 @@ export function extractProductView(
   const adapter = adapterForUrl(url, adapters);
   return adapter ? adapter.extract(doc, loc, store) : null;
 }
-export { amazonAdapter } from './amazon.js';
-export { cvsAdapter } from './cvs.js';
-export { cvsDemoAdapter, krogerDemoAdapter, walmartDemoAdapter } from './demo.js';
-export { krogerAdapter } from './kroger.js';
-export type { PageLocation, ProductView, RetailerAdapter } from './types.js';
-export { walmartAdapter } from './walmart.js';

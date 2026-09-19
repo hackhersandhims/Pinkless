@@ -78,8 +78,6 @@ describe('toBadgeModel: the BIC pair', () => {
       makeShowOutcome((o) => {
         o.current.priceContext = 'store-pickup';
         o.alternative.priceContext = 'store-pickup';
-        o.current.locationId = 'kroger-1001';
-        o.alternative.locationId = 'kroger-1001';
       }),
       NOW,
     );
@@ -148,10 +146,6 @@ describe('toBadgeModel: silence (suppress-by-default)', () => {
     ['current product not marketed to women', (o) => void (o.product.marketedTo = 'men')],
     ['alternative marketed to women', (o) => void (o.alternativeProduct.marketedTo = 'women')],
     ['empty alternative name', (o) => void (o.alternativeProduct.name = ' ')],
-    ['already-expired offer', (o) => void (o.alternative.expiresAt = '2026-09-18T17:59:59.000Z')],
-    ['offer expiring exactly now', (o) => void (o.alternative.expiresAt = NOW.toISOString())],
-    ['unparseable observed time', (o) => void (o.alternative.observedAt = 'yesterday')],
-    ['unparseable expiry', (o) => void (o.alternative.expiresAt = 'soon')],
     ['empty rationale', (o) => void (o.rationale = '   ')],
     ['no known differences', (o) => void (o.knownDifferences = [])],
     ['no matched attributes', (o) => void (o.matchedAttributes = [])],

@@ -120,7 +120,9 @@ describe('with a store chosen', () => {
     const rail = screen.getByRole('region', { name: 'Biggest differences' });
     const [card] = within(rail).getAllByRole('link', { name: /costs \$0\.80 less/ });
     expect(card).toHaveAttribute('href', `/compare/${PAIR_ID}?${STORE_QUERY}`);
-    expect(within(card!).getByText('BIC Soleil Smooth Scented Disposable 3-Blade Razors')).toBeInTheDocument();
+    expect(
+      within(card!).getByText('BIC Soleil Smooth Scented Disposable 3-Blade Razors'),
+    ).toBeInTheDocument();
     expect(within(card!).getByText('BIC Comfort 3 Advance Disposable Razors')).toBeInTheDocument();
     expect(within(card!).getByText('$6.79')).toBeInTheDocument();
     expect(within(card!).getByText('$5.99')).toBeInTheDocument();

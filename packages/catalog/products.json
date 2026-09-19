@@ -5,7 +5,6 @@
     "brand": "BIC",
     "variant": "3-blade disposable razor, 4 pk",
     "category": "razors",
-    "audience": "women",
     "size": {
       "amount": 4,
       "unit": "count"
@@ -27,7 +26,6 @@
     "brand": "BIC",
     "variant": "3-blade disposable razor, 4 ct",
     "category": "razors",
-    "audience": "men",
     "size": {
       "amount": 4,
       "unit": "count"

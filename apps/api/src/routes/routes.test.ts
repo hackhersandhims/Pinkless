@@ -18,35 +18,6 @@ const environment = { NODE_ENV: 'test', PINKLESS_ALLOWED_ORIGINS: allowedOrigin 
 const SOLEIL = catalog.products.find((product) => product.marketedTo === 'women')!;
 const COMFORT = catalog.products.find((product) => product.marketedTo === 'men')!;
 
-function mockDataWithAlternative(retailer: Retailer) {
-  const data = createMockData(retailer, now);
-  const details = alternativeIdentityDetails[retailer];
-  const existingOffer = data.offers[0]!;
-  return {
-    ...data,
-    products: [
-      ...data.products,
-      {
-        retailer,
-        productId: details.productId,
-        upc: '036602301972',
-        name: "Men's Sample Razor",
-        brand: 'Sample Brand',
-        size: '1 count',
-      },
-    ],
-    offers: [
-      ...data.offers,
-      {
-        ...existingOffer,
-        productId: details.productId,
-        url: details.url,
-        price: { amountCents: 899, currency: 'USD' as const },
-      },
-    ],
-  };
-}
-
 function mockRegistry(): ProviderRegistry {
   return { kroger: new MockRetailerProvider('kroger', createMockData(now)) };
 }

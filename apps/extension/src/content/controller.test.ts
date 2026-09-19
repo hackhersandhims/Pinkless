@@ -210,7 +210,7 @@ describe('never a stale badge', () => {
     stale.resolve(cheaperBy(500)); // the slow answer for A arrives last
     await settle(0);
 
-    expect(shownHeadlines(surface)).toEqual(["Men's alternative: save $1.00"]);
+    expect(shownHeadlines(surface)).toEqual(['Comparable alternative: save $1.00']);
   });
 
   it('discards an in-flight answer if the page stops being a product page', async () => {

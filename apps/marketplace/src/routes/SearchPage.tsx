@@ -46,7 +46,9 @@ export function SearchPage() {
       {state.status === 'ready' &&
         (results.length === 0 ? (
           <EmptyState
-            title={query ? `No comparisons match “${query}”` : 'No comparisons at this store right now'}
+            title={
+              query ? `No comparisons match “${query}”` : 'No comparisons at this store right now'
+            }
             body={
               query
                 ? 'Try a shorter or different word, or browse by category.'

@@ -15,19 +15,15 @@ describe.each(RETAILERS)('%s provider contract fixture', (retailer) => {
     const data = await fixture(retailer);
     const provider = new MockRetailerProvider(retailer, data);
     const expectedProduct = data.products[0]!;
+    const expectedLocation = data.locations[0]!;
     const expectedOffer = data.offers[0]!;
 
     await expect(provider.lookupProduct({ upc: expectedProduct.upc })).resolves.toEqual(
       expectedProduct,
     );
-    if (data.locations[0]) {
-      const expectedLocation = data.locations[0];
-      await expect(
-        provider.lookupLocations({ postalCode: expectedLocation.address.postalCode }),
-      ).resolves.toEqual([expectedLocation]);
-    } else {
-      await expect(provider.lookupLocations({ postalCode: '45202' })).resolves.toEqual([]);
-    }
+    await expect(
+      provider.lookupLocations({ postalCode: expectedLocation.address.postalCode }),
+    ).resolves.toEqual([expectedLocation]);
     const offers = await provider.lookupOffers({
       upc: expectedProduct.upc,
       url: expectedOffer.url,
@@ -50,7 +46,7 @@ describe.each(RETAILERS)('%s provider contract fixture', (retailer) => {
       provider.lookupOffers({
         productId: 'unknown',
         url: data.offers[0]!.url,
-        priceContext: data.offers[0]!.priceContext,
+        priceContext: 'store-pickup',
       }),
     ).resolves.toEqual([]);
   });

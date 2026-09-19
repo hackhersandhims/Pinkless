@@ -7,7 +7,12 @@ import { MemoryRouter } from 'react-router-dom';
 import type { ReactElement } from 'react';
 import { vi } from 'vitest';
 import type { ComparisonView, ProductSide, StoreLocation } from './lib/types';
-import { CATEGORY_LABELS, MARKETED_TO_LABELS, PRICE_CONTEXT_LABELS, VERSION_LABELS } from './lib/types';
+import {
+  CATEGORY_LABELS,
+  MARKETED_TO_LABELS,
+  PRICE_CONTEXT_LABELS,
+  VERSION_LABELS,
+} from './lib/types';
 import { buildFixtureFeed, FIXTURE_STORE_ID } from './lib/fixtures/fixture-feed';
 
 let counter = 0;

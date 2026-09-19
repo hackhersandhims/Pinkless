@@ -7,8 +7,6 @@ export type {
   Retailer,
   StorePriceContext,
 } from '../../../../packages/catalog/src/schema.js';
-import type { Retailer } from '../../../../packages/catalog/src/schema.js';
-import type { ComparisonOutcome } from '../../../../packages/matcher/src/types.js';
 export type {
   ComparisonOutcome,
   IdentityMatchMethod,

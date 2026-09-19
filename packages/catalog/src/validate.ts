@@ -8,7 +8,6 @@ export type ValidationResult = { valid: boolean; issues: ValidationIssue[] };
 
 const categories = new Set<Product['category']>(['razors', 'deodorant', 'body-wash']);
 const statuses = new Set<Product['status']>(['active', 'paused', 'retired']);
-const audiences = new Set<ProductAudience>(['women', 'men', 'unisex']);
 const sizeUnits = new Set<Size['unit']>(['oz', 'ml', 'count']);
 const audiences = new Set<MarketedTo>(['women', 'men', 'neutral']);
 // Mirrors RETAILERS in schema.ts; this file runs under --experimental-strip-types, so it
@@ -174,9 +173,6 @@ function validateProduct(value: unknown, index: number, issues: ValidationIssue[
   if (!categories.has(value.category as Product['category'])) {
     issues.push({ path: `${path}.category`, message: 'must be razors, deodorant, or body-wash.' });
   }
-  if (!audiences.has(value.audience as ProductAudience)) {
-    issues.push({ path: `${path}.audience`, message: 'must be women, men, or unisex.' });
-  }
   if (!statuses.has(value.status as Product['status'])) {
     issues.push({ path: `${path}.status`, message: 'must be active, paused, or retired.' });
   }
@@ -253,60 +249,6 @@ function validateProduct(value: unknown, index: number, issues: ValidationIssue[
   if (value.status === 'active' && (!Array.isArray(identities) || identities.length === 0)) {
     issues.push({ path, message: 'active products need a canonical Kroger identity.' });
   }
-
-  if (!Array.isArray(value.reviewedAlternatives)) {
-    issues.push({
-      path: `${path}.reviewedAlternatives`,
-      message: 'must be an array of explicit reviewed product links.',
-    });
-  } else {
-    const seenAlternativeIds = new Set<string>();
-    value.reviewedAlternatives.forEach((alternative, alternativeIndex) => {
-      const alternativePath = `${path}.reviewedAlternatives[${alternativeIndex}]`;
-      if (!isRecord(alternative)) {
-        issues.push({ path: alternativePath, message: 'must be an object.' });
-        return;
-      }
-      if (!isNonEmptyString(alternative.productId)) {
-        issues.push({
-          path: `${alternativePath}.productId`,
-          message: 'must be a non-empty catalog product ID.',
-        });
-      } else {
-        if (alternative.productId === value.id) {
-          issues.push({
-            path: `${alternativePath}.productId`,
-            message: 'must not link to itself.',
-          });
-        }
-        if (seenAlternativeIds.has(alternative.productId)) {
-          issues.push({
-            path: `${alternativePath}.productId`,
-            message: `duplicates reviewed alternative "${alternative.productId}".`,
-          });
-        }
-        seenAlternativeIds.add(alternative.productId);
-      }
-      if (!isNonEmptyString(alternative.rationale)) {
-        issues.push({
-          path: `${alternativePath}.rationale`,
-          message: 'must be a non-empty string.',
-        });
-      }
-      validateStringArray(
-        alternative.matchedAttributes,
-        `${alternativePath}.matchedAttributes`,
-        issues,
-      );
-      if (alternative.knownDifferences !== undefined) {
-        validateStringArray(
-          alternative.knownDifferences,
-          `${alternativePath}.knownDifferences`,
-          issues,
-        );
-      }
-    });
-  }
 }
 
 export function validateCatalog(value: unknown): ValidationResult {
@@ -365,71 +307,6 @@ export function validateCatalog(value: unknown): ValidationResult {
         }
       });
     }
-  });
-
-  const productsById = new Map<string, { product: Record<string, unknown>; index: number }>();
-  value.forEach((product, index) => {
-    if (isRecord(product) && isNonEmptyString(product.id)) {
-      productsById.set(product.id, { product, index });
-    }
-  });
-  value.forEach((source, sourceIndex) => {
-    if (!isRecord(source) || !Array.isArray(source.reviewedAlternatives)) return;
-    source.reviewedAlternatives.forEach((alternative, alternativeIndex) => {
-      if (!isRecord(alternative) || !isNonEmptyString(alternative.productId)) return;
-      const path = `[${sourceIndex}].reviewedAlternatives[${alternativeIndex}]`;
-      const targetEntry = productsById.get(alternative.productId);
-      if (!targetEntry) {
-        issues.push({ path: `${path}.productId`, message: 'must reference an existing product.' });
-        return;
-      }
-      const target = targetEntry.product;
-      if (source.audience !== 'women' || target.audience !== 'men') {
-        issues.push({
-          path: `${path}.productId`,
-          message: 'reviewed alternatives must link a women product to a men product.',
-        });
-      }
-      if (target.status !== 'active') {
-        issues.push({ path: `${path}.productId`, message: 'must reference an active product.' });
-      }
-      if (source.category !== target.category) {
-        issues.push({ path: `${path}.productId`, message: 'must remain in the same category.' });
-      }
-
-      const sourceRetailers = new Set(
-        Array.isArray(source.identities)
-          ? source.identities.flatMap((identity) =>
-              isRecord(identity) && isNonEmptyString(identity.retailer) ? [identity.retailer] : [],
-            )
-          : [],
-      );
-      const sharesRetailer =
-        Array.isArray(target.identities) &&
-        target.identities.some(
-          (identity) =>
-            isRecord(identity) &&
-            isNonEmptyString(identity.retailer) &&
-            sourceRetailers.has(identity.retailer),
-        );
-      if (!sharesRetailer) {
-        issues.push({
-          path: `${path}.productId`,
-          message: 'must share at least one retailer identity with the source product.',
-        });
-      }
-
-      const sourceSize = isRecord(source.size) ? source.size : undefined;
-      const targetSize = isRecord(target.size) ? target.size : undefined;
-      const sameSize =
-        sourceSize?.amount === targetSize?.amount && sourceSize?.unit === targetSize?.unit;
-      if (!sameSize && !Array.isArray(alternative.knownDifferences)) {
-        issues.push({
-          path: `${path}.knownDifferences`,
-          message: 'must document a reviewed package-size difference.',
-        });
-      }
-    });
   });
 
   return { valid: issues.length === 0, issues };
