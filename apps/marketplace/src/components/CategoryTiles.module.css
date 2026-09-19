@@ -1,88 +1,184 @@
-.section {
-  padding-block: var(--section-space) 0;
+/* Broad, faintly pink band: contrasts with the cream page without becoming another box. */
+.band {
+  padding-block: var(--section-space);
+  margin-top: 0;
+  background: color-mix(in srgb, var(--surface-pink) 8%, var(--surface-100));
 }
 
-/* 2 columns from phone width, 4 across on desktop. */
+.viewAll {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.viewAll:hover {
+  text-decoration: underline;
+}
+
+.viewAllArrow {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
+/* Columns follow the data: 2–3 categories get wider tiles instead of empty slots. */
 .list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-@media (min-width: 48rem) {
+@media (min-width: 30rem) {
   .list {
-    gap: var(--space-4);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 64rem) {
   .list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--space-6);
   }
+
+  .list[data-columns='2'] .stage {
+    aspect-ratio: 2 / 1;
+  }
+
+  .list[data-columns='3'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .list[data-columns='4'] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
-/* No outline: a soft tinted surface with a pink icon disc and a big target area. */
 .tile {
-  position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: var(--space-4);
   height: 100%;
-  min-height: 10rem;
-  padding: var(--space-4);
   border-radius: var(--radius-lg);
-  background: var(--tint-pink);
+  background: var(--surface-100);
+  box-shadow: var(--shadow-soft);
   color: var(--ink);
   text-decoration: none;
-}
-
-/* The "all" tile is a plain cream card so pink stays on the category tiles. */
-.all {
-  background: var(--tint-ink);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .tile {
-    transition:
-      transform 180ms ease-out,
-      box-shadow 180ms ease-out;
-  }
-
-  .tile:hover {
-    transform: translateY(-3px);
-  }
-
-  .arrow {
-    transition: transform 180ms ease-out;
-  }
-
-  .tile:hover .arrow {
-    transform: translateX(4px);
-  }
+  overflow: hidden;
 }
 
 .tile:hover {
   box-shadow: var(--shadow-lift);
 }
 
-.iconWrap {
+.tile:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* Image stage: tinted surface with a soft radial "spotlight" whose position varies per tile. */
+.stage {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  aspect-ratio: 16 / 10;
+  background:
+    radial-gradient(
+      circle at var(--spot-x, 50%) var(--spot-y, 60%),
+      var(--surface-100) 0 30%,
+      transparent 62%
+    ),
+    var(--tint-pink);
+}
+
+.tile[data-variant='1'] .stage {
+  --spot-x: 35%;
+  --spot-y: 70%;
+}
+
+.tile[data-variant='2'] .stage {
+  --spot-x: 65%;
+  --spot-y: 55%;
+}
+
+.visual {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  background: var(--surface-pink);
+  width: 100%;
+  height: 100%;
 }
 
-.all .iconWrap {
-  background: var(--surface-100);
-  box-shadow: var(--shadow-soft);
+/* Photos are big: the front product fills most of the stage, the equivalent peeks behind it. */
+.photo {
+  position: absolute;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+/* One floor shadow under the pair (a drop-shadow filter would box each white-backed photo). */
+.visual::after {
+  content: '';
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  bottom: 1%;
+  height: 7%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--surface-900) 22%, transparent),
+    transparent
+  );
+}
+
+/*
+ * Side by side, not stacked: multiply-blended photos that overlap darken into
+ * a muddy patch where they cross. The front product is larger; the equivalent
+ * stands beside it.
+ */
+.photoFront {
+  height: 86%;
+  bottom: 4%;
+  left: 10%;
+  width: 50%;
+}
+
+.photoBack {
+  height: 66%;
+  bottom: 6%;
+  right: 6%;
+  width: 34%;
+  opacity: 0.95;
+}
+
+.tile[data-variant='1'] .photoFront {
+  left: 42%;
+  height: 90%;
+}
+
+.tile[data-variant='1'] .photoBack {
+  right: auto;
+  left: 6%;
+  height: 62%;
+}
+
+.tile[data-variant='2'] .photoFront {
+  height: 80%;
+  bottom: 8%;
+}
+
+.disc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--surface-pink);
 }
 
 .icon {
@@ -93,35 +189,75 @@
 .text {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--space-2) / 2);
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-4) var(--space-6);
 }
 
 .label {
   font-weight: 700;
 }
 
+.explore {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
 .arrow {
-  position: absolute;
-  top: var(--space-4);
-  right: var(--space-4);
-  width: var(--space-6);
-  height: var(--space-6);
+  width: var(--space-4);
+  height: var(--space-4);
 }
 
 @media (min-width: 64rem) {
-  .tile {
-    gap: var(--space-6);
-    min-height: 12rem;
+  .text {
     padding: var(--space-6);
   }
+}
 
-  .iconWrap {
-    width: 4.5rem;
-    height: 4.5rem;
-  }
-
+@media (prefers-reduced-motion: no-preference) {
+  .tile,
   .arrow {
-    top: var(--space-6);
-    right: var(--space-6);
+    transition:
+      transform 220ms ease-out,
+      box-shadow 220ms ease-out;
   }
+
+  .tile:hover {
+    transform: translateY(-4px);
+  }
+
+  /*
+   * The zoom lives on the photos, not .visual: a transform on .visual makes it a
+   * stacking context, which stops the photos' multiply blend from reaching the
+   * stage behind them and shows Kroger's white photo background as a box.
+   */
+  .photo {
+    transition: transform 220ms ease-out;
+  }
+
+  .tile:hover .photo {
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  .tile:hover .arrow {
+    transform: translateX(4px);
+  }
+}
+
+/* === WILD MOTION === */
+@media (prefers-reduced-motion: no-preference) {
+
+  .photoFront { animation: ct-bob 5s ease-in-out infinite; }
+  .photoBack { animation: ct-bob 6s 700ms ease-in-out infinite reverse; }
+  .stage { background-size: 160% 160%, auto; animation: ct-spot 8s ease-in-out infinite alternate; }
+  .tile:hover { transform: translateY(-10px) rotate(-0.5deg); }
+  .tile:hover .photoFront { transform: translateY(-6px) scale(1.07) rotate(-2deg); }
+  .tile:hover .photoBack { transform: translateY(-3px) scale(1.05) rotate(3deg); }
+  .tile:hover .arrow { animation: ct-nudge 700ms ease-in-out infinite; }
+  .item[data-reveal='pending'] { transform: translateY(48px) scale(0.92) rotate(-1.5deg); }
+  @keyframes ct-bob { 50% { translate: 0 -7px; } }
+  @keyframes ct-spot { to { background-position: 100% 60%, 0 0; } }
+  @keyframes ct-nudge { 50% { transform: translateX(7px); } }
+
 }

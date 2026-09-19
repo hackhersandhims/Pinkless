@@ -6,8 +6,8 @@
 .panel {
   position: relative;
   display: grid;
-  gap: calc(var(--space-6) * 1.5);
-  padding: var(--space-6);
+  gap: calc(var(--space-6) * 2);
+  padding: calc(var(--space-6) * 1.5) var(--space-6);
   overflow: hidden;
   isolation: isolate;
   border-radius: calc(var(--radius-lg) * 2);
@@ -15,36 +15,66 @@
   color: var(--on-dark);
 }
 
+/* Asymmetric editorial split: narrow statement, wide steps, offset down. */
 @media (min-width: 64rem) {
   .panel {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-    gap: var(--space-6) calc(var(--space-6) * 3);
-    padding: calc(var(--space-6) * 3);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: calc(var(--space-6) * 4);
+    row-gap: calc(var(--space-6) * 2);
+    padding: calc(var(--space-6) * 4) calc(var(--space-6) * 3.5);
   }
-}
 
-/* Depth: one large soft disc of the brand pink, mixed down into the plum. */
-.panel::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  top: -35%;
-  right: -12%;
-  width: 55%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--surface-pink) 22%, var(--surface-900));
+  .steps {
+    padding-top: calc(var(--space-6) * 3);
+  }
 }
 
 .panel :focus-visible {
   outline-color: var(--on-dark);
 }
 
+/*
+ * Motif: two concentric rings in the brand pink, mixed into the plum and
+ * cropped off the top-right edge. Pure palette geometry, not the logo.
+ */
+.motif {
+  position: absolute;
+  z-index: -1;
+  top: -28%;
+  right: -18%;
+  width: 62%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle,
+      transparent 44%,
+      color-mix(in srgb, var(--surface-pink) 14%, transparent) 44.3%,
+      color-mix(in srgb, var(--surface-pink) 14%, transparent) 45%,
+      transparent 45.3%
+    ),
+    radial-gradient(
+      circle,
+      color-mix(in srgb, var(--surface-pink) 18%, var(--surface-900)) 0 30%,
+      transparent 30.3%
+    );
+}
+
+@media (max-width: 47.99rem) {
+  /* Keep the motif clear of the text column on phones. */
+  .motif {
+    top: -12%;
+    right: -40%;
+    width: 90%;
+    opacity: 0.6;
+  }
+}
+
 .intro {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-4);
+  gap: var(--space-6);
 }
 
 .eyebrow,
@@ -55,20 +85,20 @@
 .eyebrow {
   color: var(--on-dark-muted);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
 }
 
-/* Scales the .display token (32px) by ratio: 40px, then 48px on wide screens. */
+/* Scales the .display token (32px) by ratio: 44px, then 60px on wide screens. */
 .title {
   margin: 0;
-  font-size: 1.25em;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  font-size: 1.375em;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
 }
 
 @media (min-width: 64rem) {
   .title {
-    font-size: 1.5em;
+    font-size: 1.875em;
   }
 }
 
@@ -76,48 +106,74 @@
   display: block;
 }
 
+.accent {
+  color: var(--surface-pink);
+}
+
+.support {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid color-mix(in srgb, var(--on-dark) 20%, transparent);
+}
+
 .lead {
-  max-width: 30rem;
+  max-width: 26rem;
   color: var(--on-dark-muted);
 }
 
 .steps {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .step {
-  display: flex;
-  gap: var(--space-4);
-  padding-bottom: var(--space-4);
-  border-bottom: 1px solid color-mix(in srgb, var(--on-dark) 18%, transparent);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--space-6);
+  align-items: start;
+  padding-block: var(--space-6);
+  border-top: 1px solid color-mix(in srgb, var(--on-dark) 18%, transparent);
 }
 
-.step:last-child {
-  padding-bottom: 0;
-  border-bottom: 0;
+.step:first-child {
+  padding-top: 0;
+  border-top: 0;
 }
 
+/* Oversized numerals: pink on plum, tabular so 01-03 align. */
 .number {
-  display: flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: var(--tap-target);
-  height: var(--tap-target);
-  border-radius: 50%;
-  background: var(--surface-pink);
-  color: var(--ink);
+  min-width: 2ch;
+  font-family: var(--font-sans);
+  font-size: calc(var(--space-6) * 2.5);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  color: var(--surface-pink);
+}
+
+@media (min-width: 64rem) {
+  .number {
+    font-size: calc(var(--space-6) * 3.25);
+  }
+
+  /* Controlled asymmetry: the middle step steps in. */
+  .step:nth-child(2) {
+    margin-left: calc(var(--space-6) * 2);
+  }
 }
 
 .stepText {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--space-2) / 2);
+  gap: var(--space-2);
+  padding-top: var(--space-2);
 }
 
 .stepTitle,
@@ -125,11 +181,8 @@
   margin: 0;
 }
 
-.stepTitle {
-  font-weight: 600;
-}
-
 .stepBody {
+  max-width: 34rem;
   color: var(--on-dark-muted);
 }
 
@@ -142,4 +195,20 @@
   .note {
     grid-column: 1 / -1;
   }
+}
+
+/* === WILD MOTION === */
+@media (prefers-reduced-motion: no-preference) {
+
+  .motif { animation: hw-spin 40s linear infinite, hw-breathe 6s ease-in-out infinite alternate; }
+  .number { display: inline-block; animation: hw-bounce 3s ease-in-out infinite; }
+  .step:nth-child(2) .number { animation-delay: 300ms; } .step:nth-child(3) .number { animation-delay: 600ms; }
+  .step { transition: transform 220ms ease-out; }
+  .step:hover { transform: translateX(10px); }
+  .step:hover .number { animation: hw-wiggle 500ms ease-in-out; }
+  @keyframes hw-spin { to { rotate: 360deg; } }
+  @keyframes hw-breathe { to { scale: 1.12; } }
+  @keyframes hw-bounce { 0%, 80%, 100% { translate: 0 0; } 90% { translate: 0 -8px; } }
+  @keyframes hw-wiggle { 25% { rotate: -6deg; } 75% { rotate: 6deg; } }
+
 }

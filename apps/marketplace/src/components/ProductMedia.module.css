@@ -19,6 +19,15 @@
   aspect-ratio: 1;
 }
 
+/* Hero scene: a taller frame and a snug photo, so the package is the subject. */
+.hero {
+  aspect-ratio: 5 / 4;
+}
+
+.hero .photo {
+  padding: var(--space-2);
+}
+
 /*
  * Kroger's photos sit on white. Multiply blends that white into the token
  * tint, so the product reads as placed on the stage rather than boxed.
@@ -60,4 +69,33 @@
 .icon {
   width: 55%;
   height: 55%;
+}
+
+/* Photo only: the parent supplies the stage, tint, and shadow. */
+.bare {
+  height: 100%;
+  aspect-ratio: auto;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
+}
+
+.bare .photo {
+  padding: 0;
+}
+
+.bare .disc {
+  width: 3rem;
+  height: 3rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bare .photo {
+    transition: transform 200ms ease-out;
+  }
+
+  :global(a):hover .bare .photo,
+  :global(a):focus-visible .bare .photo {
+    transform: scale(1.02);
+  }
 }

@@ -1,5 +1,6 @@
 .hero {
-  padding-block: var(--space-6) var(--section-space);
+  overflow-x: clip;
+  padding-block: var(--space-6) calc(var(--space-6) * 2);
 }
 
 .inner {
@@ -13,6 +14,14 @@
     /* ~55% copy / ~45% visual */
     grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
     gap: calc(var(--space-6) * 3);
+  }
+}
+
+/* No store yet: the picker is the page's job, so it gets half the row instead of 45%. */
+@media (min-width: 64rem) {
+  .innerPicker {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: calc(var(--space-6) * 2);
   }
 }
 
@@ -68,20 +77,115 @@
   margin-top: var(--space-2);
 }
 
-/* The store picker on the same pink stage the featured comparison uses. */
+/*
+ * No store yet: the picker is a cream shopper card floating over a pink
+ * plane, with two blank product-card silhouettes behind it. The silhouettes
+ * are decorative only: no names or prices until a store is chosen.
+ */
 .pickerStage {
+  position: relative;
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 36rem;
-  padding: var(--space-6);
+  padding: var(--space-4);
   border-radius: calc(var(--radius-lg) * 2);
-  background: var(--surface-pink);
+  isolation: isolate;
+}
+
+.pickerBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 80% 18%, color-mix(in srgb, var(--surface-100) 30%, transparent), transparent 48%),
+    radial-gradient(circle at 12% 92%, color-mix(in srgb, var(--surface-900) 14%, transparent), transparent 42%),
+    var(--surface-pink);
+}
+
+.ghostCard {
+  position: absolute;
+  z-index: -1;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface-100) 55%, transparent);
+  box-shadow: var(--shadow-soft);
+}
+
+.ghostBack {
+  top: 7%;
+  right: 7%;
+  width: 34%;
+  height: 38%;
+  transform: rotate(3deg);
+}
+
+.ghostFront {
+  bottom: 6%;
+  right: 16%;
+  width: 28%;
+  height: 30%;
+  transform: rotate(-2deg);
+}
+
+.pickerCard {
+  position: relative;
+  width: 100%;
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background: var(--surface-100);
+  box-shadow: var(--shadow-lift);
+  transition: box-shadow 200ms ease-out;
 }
 
 @media (min-width: 48rem) {
-  .pickerStage {
-    min-height: 28rem;
-    padding: calc(var(--space-6) * 2);
+  .pickerCard {
+    padding: calc(var(--space-6) * 1.5);
   }
+}
+
+.pickerCard:focus-within {
+  box-shadow: var(--shadow-lift), 0 0 0 2px var(--surface-900);
+}
+
+.pickerEyebrow {
+  margin: 0 0 var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Text assembles in a quick stagger; the scene settles behind it. */
+@media (prefers-reduced-motion: no-preference) {
+  .eyebrow { animation: hero-in-8 360ms ease-out both; }
+  .headline { animation: hero-in-14 420ms 60ms ease-out both; }
+  .sub { animation: hero-in-10 400ms 140ms ease-out both; }
+  .actions { animation: hero-in-8 360ms 220ms ease-out both; }
+  .pickerBackdrop { animation: hero-plane 480ms ease-out both; }
+  .ghostCard { animation: hero-fade 400ms 160ms ease-out both; }
+  .pickerCard { animation: hero-in-12 440ms 200ms ease-out both; }
+}
+
+@keyframes hero-in-8 { from { opacity: 0; translate: 0 8px; } }
+@keyframes hero-in-10 { from { opacity: 0; translate: 0 10px; } }
+@keyframes hero-in-12 { from { opacity: 0; translate: 0 12px; } }
+@keyframes hero-in-14 { from { opacity: 0; translate: 0 14px; } }
+@keyframes hero-plane { from { opacity: 0; scale: 0.97; } }
+@keyframes hero-fade { from { opacity: 0; } }
+
+/* The card is centered on the pink stage: equal padding on every side, no overhang. */
+@media (min-width: 48rem) {
+  .pickerStage {
+    min-height: 30rem;
+    padding: calc(var(--space-6) * 1.5);
+  }
+}
+
+/* === WILD MOTION === */
+@media (prefers-reduced-motion: no-preference) {
+
+  .pickerBackdrop { animation: hero-plane 480ms ease-out both, hero-pan 9s ease-in-out infinite alternate; background-size: 150% 150%, 150% 150%, auto; }
+  .ghostBack { animation: hero-fade 400ms 160ms ease-out both, hero-bob 6s ease-in-out infinite; }
+  .ghostFront { animation: hero-fade 400ms 160ms ease-out both, hero-bob 4.5s 500ms ease-in-out infinite reverse; }
+  @keyframes hero-pan { to { background-position: 100% 100%, 0% 0%, 0 0; } }
+  @keyframes hero-bob { 50% { translate: 0 -8px; } }
+
 }

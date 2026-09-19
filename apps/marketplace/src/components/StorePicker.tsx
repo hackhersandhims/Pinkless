@@ -15,6 +15,8 @@ export type StorePickerProps = {
   onSelected?: (store: StoreLocation) => void;
   /** Focus the ZIP field on mount. Only for pickers the shopper just opened. */
   autoFocus?: boolean;
+  /** "hero" is the oversized home-page variant; "default" fits popovers and panels. */
+  size?: 'default' | 'hero';
 };
 
 type Lookup =
@@ -33,7 +35,9 @@ export function StorePicker({
   headingLevel = 2,
   onSelected,
   autoFocus = false,
+  size = 'default',
 }: StorePickerProps) {
+  const big = size === 'hero';
   const uid = useId();
   const navigate = useNavigate();
   const location = useLocation();
@@ -90,16 +94,16 @@ export function StorePicker({
           : '';
 
   return (
-    <section className={styles.picker} aria-labelledby={`${uid}-title`}>
-      <Heading id={`${uid}-title`} className={`heading ${styles.title}`}>
+    <section className={styles.picker} data-size={size} aria-labelledby={`${uid}-title`}>
+      <Heading id={`${uid}-title`} className={`${big ? 'display' : 'heading'} ${styles.title}`}>
         {title}
       </Heading>
-      <p className={`caption ${styles.intro}`}>
+      <p className={`${big ? 'body' : 'caption'} ${styles.intro}`}>
         Prices come from Kroger for the store you pick. Your store stays in the page address only.
       </p>
 
       <form className={styles.form} onSubmit={onSubmit} noValidate>
-        <label htmlFor={`${uid}-zip`} className="label">
+        <label htmlFor={`${uid}-zip`} className={big ? `body ${styles.zipLabel}` : 'label'}>
           ZIP code
         </label>
         <div className={styles.row}>
@@ -107,7 +111,7 @@ export function StorePicker({
             ref={inputRef}
             id={`${uid}-zip`}
             name="postalCode"
-            className={`body ${styles.input}`}
+            className={`${big ? 'heading' : 'body'} ${styles.input}`}
             inputMode="numeric"
             autoComplete="postal-code"
             maxLength={5}
@@ -117,7 +121,7 @@ export function StorePicker({
             aria-describedby={invalid ? `${uid}-zip-error` : undefined}
             onChange={(event) => setPostalCode(event.target.value)}
           />
-          <button type="submit" className={`body ${styles.submit}`}>
+          <button type="submit" className={`${big ? 'heading' : 'body'} ${styles.submit}`}>
             Find stores
             <ArrowRightIcon className={styles.arrow} />
           </button>

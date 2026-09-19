@@ -103,3 +103,13 @@ main:focus {
     scroll-behavior: auto !important;
   }
 }
+
+/* === WILD MOTION === */
+@media (prefers-reduced-motion: no-preference) {
+
+  @supports (animation-timeline: scroll()) {
+    body::before { content: ''; position: fixed; inset: 0 0 auto 0; height: 4px; z-index: 100; transform-origin: 0 50%; background: linear-gradient(90deg, var(--surface-pink), var(--surface-900)); animation: page-progress linear both; animation-timeline: scroll(root); }
+  }
+  @keyframes page-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+}

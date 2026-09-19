@@ -189,4 +189,12 @@ describe('list helpers', () => {
     );
     expect(krogerImageUrl('../../x')).toBeUndefined();
   });
+
+  it('supports the large resolution and skips products with a blank Kroger photo', () => {
+    expect(krogerImageUrl('0007033071417', 'large')).toBe(
+      'https://www.kroger.com/product/images/large/front/0007033071417',
+    );
+    // Kroger serves a blank PNG for this product; the UI shows its category mark instead.
+    expect(krogerImageUrl('0003700080819')).toBeUndefined();
+  });
 });

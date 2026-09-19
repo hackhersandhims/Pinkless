@@ -1,6 +1,43 @@
 .header {
+  position: relative;
+  z-index: 20;
   background: var(--surface-100);
   border-bottom: 1px solid var(--hairline);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--surface-900) 6%, transparent);
+}
+
+/* Phones: the four-row header is too tall to pin; it scrolls away. Pinned from tablet up. */
+@media (min-width: 48rem) {
+  .header {
+    position: sticky;
+    top: 0;
+  }
+}
+
+/* Entrance: brand, search, store, utility rise in a quick stagger. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .brand,
+  .search,
+  .store,
+  .utility {
+    animation: rise 320ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .search {
+    animation-delay: 60ms;
+  }
+  .store {
+    animation-delay: 120ms;
+  }
+  .utility {
+    animation-delay: 180ms;
+  }
 }
 
 .bar {
@@ -63,6 +100,7 @@
   grid-area: brand;
   display: block;
   justify-self: start;
+  margin-inline-end: var(--space-2);
   border-radius: var(--radius-md);
 }
 
@@ -114,6 +152,27 @@
   white-space: nowrap;
 }
 
-.utility:hover {
-  background: var(--tint-pink);
+.utility {
+  position: relative;
+}
+
+.utility::after {
+  content: '';
+  position: absolute;
+  inset: auto var(--space-3) var(--space-2);
+  height: 2px;
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .utility::after {
+    transition: transform 200ms ease-out;
+  }
+}
+
+.utility:hover::after {
+  transform: scaleX(1);
 }

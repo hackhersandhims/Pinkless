@@ -26,7 +26,7 @@ export function Hero({ store, featured, loading = false }: HeroProps) {
 
   return (
     <section className={styles.hero} aria-labelledby="hero-title">
-      <div className={`container ${styles.inner}`}>
+      <div className={`container ${styles.inner} ${store ? '' : styles.innerPicker}`}>
         {/*
          * .display supplies family and weight; the h1 scales its size by ratio
          * from that token (see module CSS).
@@ -62,10 +62,16 @@ export function Hero({ store, featured, loading = false }: HeroProps) {
         </div>
 
         {store ? (
-          <HeroComparison item={featured} loading={loading} />
+          <HeroComparison item={featured} storeName={storeLabel(store)} loading={loading} />
         ) : (
           <div className={styles.pickerStage}>
-            <StorePicker title="Start with your Kroger store" />
+            <span className={styles.pickerBackdrop} aria-hidden="true" />
+            <span className={`${styles.ghostCard} ${styles.ghostBack}`} aria-hidden="true" />
+            <span className={`${styles.ghostCard} ${styles.ghostFront}`} aria-hidden="true" />
+            <div className={styles.pickerCard}>
+              <p className={`label ${styles.pickerEyebrow}`}>Your store</p>
+              <StorePicker size="hero" title="Start with your Kroger store" />
+            </div>
           </div>
         )}
       </div>

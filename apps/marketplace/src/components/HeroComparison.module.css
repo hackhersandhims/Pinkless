@@ -6,11 +6,8 @@
   position: relative;
   display: block;
   width: 100%;
-  max-width: 36rem;
   min-height: 34rem;
-  overflow: hidden;
   border-radius: calc(var(--radius-lg) * 2);
-  background: var(--surface-pink);
   color: var(--ink);
   text-decoration: none;
   isolation: isolate;
@@ -24,13 +21,31 @@
 
 @media (min-width: 64rem) {
   .stage {
-    min-height: 32rem;
+    max-width: 36rem;
+    min-height: 29rem;
   }
 }
 
-/* Depth: two soft cream discs behind the cards. */
-.stage::before,
-.stage::after {
+/*
+ * Background plane: pink with token-derived light, clipped to the rounded
+ * stage. The stage itself doesn't clip, so cards and the savings chip can
+ * break out of the pink by a few pixels on desktop.
+ */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 80% 18%, color-mix(in srgb, var(--surface-100) 30%, transparent), transparent 48%),
+    radial-gradient(circle at 10% 95%, color-mix(in srgb, var(--surface-900) 14%, transparent), transparent 42%),
+    var(--surface-pink);
+}
+
+/* Cropped cream discs inside the backdrop. */
+.backdrop::before,
+.backdrop::after {
   content: '';
   position: absolute;
   z-index: -1;
@@ -38,14 +53,14 @@
   background: color-mix(in srgb, var(--surface-100) 28%, transparent);
 }
 
-.stage::before {
+.backdrop::before {
   width: 70%;
   aspect-ratio: 1;
   top: -22%;
   right: -18%;
 }
 
-.stage::after {
+.backdrop::after {
   width: 46%;
   aspect-ratio: 1;
   bottom: -20%;
@@ -68,7 +83,7 @@
   left: 7%;
   width: 48%;
   gap: calc(var(--space-2) / 2);
-  transform: rotate(-3deg);
+  transform: rotate(-2deg);
 }
 
 .front {
@@ -77,7 +92,6 @@
   width: 62%;
   padding: var(--space-3);
   box-shadow: var(--shadow-lift);
-  transform: rotate(2deg);
 }
 
 .frontBody {
@@ -98,14 +112,14 @@
 }
 
 /*
- * Savings bridges the gap between the two cards. On phones the front card
- * reaches the bottom of the stage, so a bottom-anchored chip would cover its
- * store and date line.
+ * The savings chip rides the front card's top-left corner, straddling its
+ * edge, so it always belongs to the cheaper product and never covers text.
  */
 .savings {
   position: absolute;
-  top: 30%;
-  left: 6%;
+  top: calc(var(--space-3) * -1);
+  left: calc(var(--space-4) * -1);
+  z-index: 4;
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -129,11 +143,6 @@
     bottom: 8%;
     width: 50%;
   }
-
-  .savings {
-    top: 42%;
-    bottom: auto;
-  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -143,11 +152,11 @@
   }
 
   a.stage:hover .front {
-    transform: rotate(1deg) translateY(-6px);
+    transform: translateY(-3px);
   }
 
   a.stage:hover .back {
-    transform: rotate(-4deg) translateY(-2px);
+    transform: rotate(-3deg) translateY(-2px);
   }
 }
 
@@ -182,4 +191,172 @@
 .markIcon {
   width: 55%;
   height: 55%;
+}
+
+/* Store context: the shopper's real Kroger, pinned to the scene's top edge. */
+.storeChip {
+  position: absolute;
+  top: calc(var(--space-4) * -1);
+  right: 8%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  max-width: 60%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--surface-100);
+  box-shadow: var(--shadow-soft);
+  transform: rotate(1deg);
+}
+
+.storeName {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.back {
+  z-index: 1;
+}
+
+.front {
+  z-index: 2;
+}
+
+.front :global(img) {
+  transition: transform 240ms ease-out;
+}
+
+/* Desktop: the front card breaks out below the pink plane. */
+@media (min-width: 64rem) {
+  .front {
+    bottom: calc(var(--space-6) * -1);
+  }
+
+  .back {
+    left: calc(var(--space-4) * -1);
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .storeChip {
+    top: calc(var(--space-2) * -1);
+  }
+}
+
+/* Entrance: backdrop settles, cards slide into place, savings chip lands last. */
+@media (prefers-reduced-motion: no-preference) {
+  .backdrop {
+    animation: hc-plane 480ms ease-out both;
+  }
+
+  .storeChip {
+    animation: hc-rise 420ms 120ms ease-out both;
+  }
+
+  .back {
+    animation: hc-back 460ms 180ms ease-out both;
+  }
+
+  .front {
+    animation: hc-front 480ms 260ms ease-out both;
+  }
+
+  .savings {
+    animation: hc-pop 320ms 440ms ease-out both;
+  }
+
+  a.stage:hover .front :global(img) {
+    transform: scale(1.02);
+  }
+
+  a.stage:hover .savings {
+    transform: translateY(-3px);
+  }
+}
+
+/* Animate `translate`, not `transform`, so each card keeps its rotation. */
+@keyframes hc-plane {
+  from { opacity: 0; scale: 0.97; }
+}
+
+@keyframes hc-rise {
+  from { opacity: 0; translate: 0 12px; }
+}
+
+@keyframes hc-back {
+  from { opacity: 0; translate: -12px -8px; }
+}
+
+@keyframes hc-front {
+  from { opacity: 0; translate: 16px 14px; }
+}
+
+@keyframes hc-fade {
+  from { opacity: 0; }
+}
+
+@keyframes hc-pop {
+  0% { opacity: 0; scale: 0.9; }
+  70% { opacity: 1; scale: 1.04; }
+  100% { scale: 1; }
+}
+
+/*
+ * Phones: the scene is a vertical stack, not an overlap. Absolute cards on a
+ * 350px-wide stage covered the women's name and price, so both cards sit in
+ * flow, offset left and right, and the back card becomes a compact row.
+ */
+@media (max-width: 47.99rem) {
+  .stage {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-height: 0;
+    padding: calc(var(--space-6) * 2) var(--space-4) var(--space-6);
+  }
+
+  .card {
+    position: relative;
+    inset: auto;
+  }
+
+  .back {
+    display: grid;
+    grid-template-columns: 36% minmax(0, 1fr);
+    column-gap: var(--space-3);
+    align-content: start;
+    align-self: flex-start;
+    width: 88%;
+  }
+
+  .back > :first-child {
+    grid-row: 1 / span 3;
+    align-self: center;
+  }
+
+  .front {
+    align-self: flex-end;
+    width: 92%;
+  }
+}
+
+/* === WILD MOTION === */
+@media (prefers-reduced-motion: no-preference) {
+
+  .stage { perspective: 60rem; transform-style: preserve-3d; transform: rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg)); transition: transform 200ms ease-out; }
+  .back { animation: hc-back 460ms 180ms ease-out both, hc-float 5.5s 900ms ease-in-out infinite; }
+  .front { animation: hc-front 480ms 260ms ease-out both, hc-float 4.5s 1200ms ease-in-out infinite reverse; }
+  .storeChip { animation: hc-rise 420ms 120ms ease-out both, hc-float 6s 1s ease-in-out infinite; }
+  .backdrop { animation: hc-plane 480ms ease-out both, hc-hue 9s ease-in-out infinite alternate; background-size: 140% 140%, 140% 140%, auto; }
+  .backdrop::before { animation: hc-drift 11s ease-in-out infinite alternate; }
+  .backdrop::after { animation: hc-drift 8s ease-in-out infinite alternate-reverse; }
+  .mark { animation: hc-float 4s ease-in-out infinite; }
+  .mark:nth-child(2) { animation-delay: 400ms; }
+  .mark:nth-child(3) { animation-delay: 800ms; }
+  @keyframes hc-float { 50% { translate: 0 -10px; } }
+  @keyframes hc-drift { to { translate: -14% 12%; scale: 1.18; } }
+  @keyframes hc-hue { to { background-position: 100% 100%, 0% 0%, 0 0; } }
+
 }

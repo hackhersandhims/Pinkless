@@ -71,3 +71,14 @@
 .quiet:hover {
   background: var(--tint-pink);
 }
+
+/* === WILD MOTION === */
+@media (prefers-reduced-motion: no-preference) {
+
+  .button { position: relative; overflow: hidden; }
+  .button:hover { transform: translateY(-3px) scale(1.03); }
+  .button:active { transform: scale(0.97); }
+  .dark { animation: btn-pulse 2.4s ease-out infinite; }
+  @keyframes btn-pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--surface-900) 45%, transparent); } 100% { box-shadow: 0 0 0 14px transparent; } }
+
+}

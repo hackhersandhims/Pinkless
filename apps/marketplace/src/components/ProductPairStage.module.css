@@ -1,0 +1,108 @@
+/*
+ * One neutral stage for both packages. Photos multiply onto the tint (see
+ * ProductMedia .bare), so they read as objects placed on a shelf, not boxes.
+ */
+.stage {
+  position: relative;
+  aspect-ratio: 5 / 4;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(
+      ellipse 70% 55% at 50% 100%,
+      color-mix(in srgb, var(--surface-pink) 22%, transparent),
+      transparent 70%
+    ),
+    var(--tint-ink);
+}
+
+.feature {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+}
+
+.product {
+  position: absolute;
+  bottom: 11%;
+  height: 80%;
+  width: 56%;
+  /*
+   * The wrapper, not the photo, multiplies onto the stage: z-index and hover
+   * transforms make each wrapper a stacking context, which would isolate a
+   * blend set on the photo and show Kroger's white photo background.
+   */
+  mix-blend-mode: multiply;
+}
+
+/* A floor shadow under each package (a filter: drop-shadow would box the photo). */
+.product::before {
+  content: '';
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: -4%;
+  height: 8%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--surface-900) 22%, transparent),
+    transparent
+  );
+}
+
+/* Reference product: back, a touch higher and smaller. */
+.back {
+  left: 2%;
+  bottom: 19%;
+  height: 70%;
+}
+
+/* Lower-priced version: front, closer, slightly overlapping. */
+.front {
+  right: 2%;
+  z-index: 1;
+}
+
+/* Straddles the stage edge so it belongs to both products. */
+.bridge {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 2;
+  transform: translate(-50%, 50%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .product,
+  .bridge {
+    transition: transform 200ms ease-out;
+  }
+
+  :global(a):hover .back,
+  :global(a):focus-visible .back {
+    transform: translateY(-1px);
+  }
+
+  :global(a):hover .front,
+  :global(a):focus-visible .front {
+    transform: translateY(-2px);
+  }
+
+  :global(a):hover .bridge,
+  :global(a):focus-visible .bridge {
+    transform: translate(-50%, calc(50% - 2px));
+  }
+}
+
+/* === WILD MOTION === */
+@media (prefers-reduced-motion: no-preference) {
+
+  .back { animation: pp-bob 5s ease-in-out infinite; }
+  .front { animation: pp-bob 4s 600ms ease-in-out infinite reverse; }
+  .bridge { animation: pp-pop 2.6s ease-in-out infinite; }
+  :global(a):hover .back { transform: translateY(-4px) rotate(-4deg); }
+  :global(a):hover .front { transform: translateY(-8px) rotate(3deg) scale(1.05); }
+  @keyframes pp-bob { 50% { translate: 0 -5px; } }
+  @keyframes pp-pop { 0%, 80%, 100% { scale: 1; } 90% { scale: 1.08; } }
+
+}
