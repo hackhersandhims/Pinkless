@@ -14,6 +14,34 @@ function jsonResponse(value: unknown, status = 200): Response {
   });
 }
 
+function productResponseWithRegularPrice(regular: unknown): unknown {
+  return {
+    data: {
+      productId: '00012345678905',
+      upc: '012345678905',
+      description: 'Sample Razor',
+      items: [
+        {
+          inventory: { stockLevel: 'HIGH' },
+          fulfillment: { curbside: true },
+          price: { regular },
+        },
+      ],
+    },
+  };
+}
+
+function providerForRegularPrice(regular: unknown): KrogerProvider {
+  return new KrogerProvider({
+    clientId: 'fixture-client',
+    clientSecret: 'fixture-secret',
+    fetch: async (input) =>
+      String(input).endsWith('/connect/oauth2/token')
+        ? jsonResponse({ access_token: 'fixture-token', expires_in: 1800 })
+        : jsonResponse(productResponseWithRegularPrice(regular)),
+  });
+}
+
 describe('KrogerProvider', () => {
   it('uses documented auth, location, and product endpoints and normalizes regular price', async () => {
     const productFixture = await jsonFixture('kroger-api-product.json');
@@ -95,6 +123,25 @@ describe('KrogerProvider', () => {
     await expect(provider.lookupOffers({ ...base, priceContext: 'store-pickup' })).resolves.toEqual(
       [],
     );
+  });
+
+  it('parses Kroger decimal prices as integer cents without rounding floating-point values', async () => {
+    const base = {
+      upc: '012345678905',
+      locationId: 'kroger-1001',
+      priceContext: 'store-pickup' as const,
+      url: 'https://www.kroger.com/p/sample-razor/00012345678905',
+    };
+    await expect(providerForRegularPrice(9.99).lookupOffers(base)).resolves.toMatchObject([
+      { price: { amountCents: 999, currency: 'USD' } },
+    ]);
+    await expect(providerForRegularPrice(0.01).lookupOffers(base)).resolves.toMatchObject([
+      { price: { amountCents: 1, currency: 'USD' } },
+    ]);
+    await expect(providerForRegularPrice(Number('0.30000000000000004')).lookupOffers(base)).resolves.toEqual(
+      [],
+    );
+    await expect(providerForRegularPrice(9.999).lookupOffers(base)).resolves.toEqual([]);
   });
 
   it('rejects missing credentials and non-Kroger outbound URLs', async () => {

@@ -35,9 +35,12 @@ function requiredString(value: unknown): string | null {
 }
 
 function toCents(value: unknown): number | null {
-  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return null;
-  const cents = Math.round(value * 100);
-  return Math.abs(cents / 100 - value) < 1e-9 && Number.isSafeInteger(cents) ? cents : null;
+  if (typeof value !== 'number' || !Number.isFinite(value)) return null;
+  const decimal = String(value);
+  if (!/^(?:0|[1-9]\d{0,8})(?:\.\d{1,2})?$/.test(decimal)) return null;
+  const [whole, fraction = ''] = decimal.split('.');
+  const cents = Number(whole) * 100 + Number(fraction.padEnd(2, '0'));
+  return Number.isSafeInteger(cents) && cents > 0 ? cents : null;
 }
 
 function identityFrom(query: ProductLookup): string | null {
