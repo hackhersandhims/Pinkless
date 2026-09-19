@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { devApi } from './dev-api';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 // The repo root, two levels up from apps/marketplace. Marketplace source
@@ -11,7 +12,8 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(dirname, '../..');
 
 export default defineConfig({
-  plugins: [react()],
+  // devApi serves the repo-root api/ functions during `vite dev` only.
+  plugins: [react(), devApi(repoRoot)],
   resolve: {
     alias: {
       '@': path.resolve(dirname, 'src'),

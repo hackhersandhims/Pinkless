@@ -5,13 +5,11 @@
     "name": "Invalid fixture",
     "variant": "One count",
     "category": "razors",
-    "size": { "amount": 0, "unit": "count" },
-    "identities": [],
-    "equivalence": {
-      "policy": "similar-title",
-      "rationale": "Not an approved matching policy.",
-      "matchedAttributes": ["title"]
+    "size": {
+      "amount": 0,
+      "unit": "count"
     },
+    "identities": [],
     "status": "active"
   }
 ]

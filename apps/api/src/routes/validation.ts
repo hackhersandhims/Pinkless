@@ -1,18 +1,15 @@
 import {
   PRICE_CONTEXTS,
   RETAILERS,
+  STORE_PRICE_CONTEXTS,
   type PriceContext,
   type Retailer,
+  type StorePriceContext,
 } from '../../../../packages/catalog/src/schema.js';
-import type {
-  ProductView,
-  RetailerLocationSelection,
-} from '../../../../packages/matcher/src/types.js';
+import type { ProductView, StoreContext } from '../../../../packages/matcher/src/types.js';
 
 const retailerDomains: Record<Retailer, string> = {
-  cvs: 'cvs.com',
   kroger: 'kroger.com',
-  walmart: 'walmart.com',
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -72,19 +69,9 @@ export function parseProductView(value: unknown): ProductView | null {
   return value as ProductView;
 }
 
-export function parseLocations(value: unknown): RetailerLocationSelection | null {
-  if (value === undefined) return {};
-  if (!isRecord(value)) return null;
-  const locations: RetailerLocationSelection = {};
-  for (const [retailer, locationId] of Object.entries(value)) {
-    if (!RETAILERS.includes(retailer as Retailer) || !nonEmptyString(locationId, 128)) return null;
-    locations[retailer as Retailer] = locationId;
-  }
-  return locations;
-}
-
 export function parseStoreQuery(url: URL): { retailer: Retailer; postalCode: string } | null {
-  const retailer = url.searchParams.get('retailer');
+  // `retailer` is optional now that Kroger is the only one; any other value is rejected.
+  const retailer = url.searchParams.get('retailer') ?? 'kroger';
   const postalCode = url.searchParams.get('postalCode');
   if (
     !RETAILERS.includes(retailer as Retailer) ||
@@ -94,4 +81,18 @@ export function parseStoreQuery(url: URL): { retailer: Retailer; postalCode: str
     return null;
   }
   return { retailer: retailer as Retailer, postalCode };
+}
+
+/** `?locationId=…&priceContext=in-store|store-pickup` for the list feed. */
+export function parseStoreContext(url: URL): StoreContext | null {
+  const locationId = url.searchParams.get('locationId');
+  const priceContext = url.searchParams.get('priceContext') ?? 'in-store';
+  if (
+    !nonEmptyString(locationId, 128) ||
+    !/^[A-Za-z0-9-]+$/.test(locationId) ||
+    !STORE_PRICE_CONTEXTS.includes(priceContext as StorePriceContext)
+  ) {
+    return null;
+  }
+  return { locationId, priceContext: priceContext as StorePriceContext };
 }

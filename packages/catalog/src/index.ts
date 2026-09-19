@@ -1,12 +1,15 @@
 export {
   PRICE_CONTEXTS,
   RETAILERS,
-  type EquivalencePolicy,
+  STORE_PRICE_CONTEXTS,
+  type Catalog,
   type Money,
   type Offer,
   type PriceContext,
   type Product,
+  type ProductEquivalence,
   type Retailer,
   type RetailerIdentity,
   type Size,
+  type StorePriceContext,
 } from './schema.js';

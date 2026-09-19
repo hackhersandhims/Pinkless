@@ -8,7 +8,7 @@ import {
   requestOrigin,
   type RouteEnvironment,
 } from './http.js';
-import { parseLocations, parseProductView } from './validation.js';
+import { parseProductView } from './validation.js';
 
 export function createCompareHandler(
   service: ComparisonService,
@@ -39,20 +39,12 @@ export function createCompareHandler(
       typeof payload === 'object' && payload !== null && 'current' in payload
         ? parseProductView((payload as { current: unknown }).current)
         : null;
-    const locations =
-      typeof payload === 'object' && payload !== null && 'locations' in payload
-        ? parseLocations((payload as { locations: unknown }).locations)
-        : {};
-    if (
-      !current ||
-      !locations ||
-      (current.priceContext !== 'online' && locations[current.retailer] !== current.locationId)
-    ) {
+    if (!current) {
       const outcome: ComparisonOutcome = { status: 'suppressed', reason: 'invalid-request' };
       return json(publicOutcome(outcome, includeReasons), 400, origin);
     }
 
-    const outcome = await service.compare(current, locations);
+    const outcome = await service.compare(current);
     return json(publicOutcome(outcome, includeReasons), 200, origin);
   };
 }

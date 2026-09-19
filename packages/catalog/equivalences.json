@@ -1,0 +1,15 @@
+[
+  {
+    "id": "bic-soleil-smooth-vs-comfort-3-advance",
+    "productIds": ["bic-soleil-smooth-scented-3blade-4pk", "bic-comfort-3-advance-4ct"],
+    "rationale": "Both are BIC 3-blade disposable razors sold in a 4-count pack.",
+    "matchedAttributes": ["brand", "blade count", "disposable", "pack count"],
+    "knownDifferences": [
+      "Soleil Smooth is listed as scented; Comfort 3 Advance is not.",
+      "Handle shape and color differ."
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  }
+]

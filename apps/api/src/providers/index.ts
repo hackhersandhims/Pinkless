@@ -1,5 +1,6 @@
 export { KrogerProvider } from './kroger.js';
 export { MockRetailerProvider, type MockProviderData } from './mock.js';
+export { createMockData, MOCK_KROGER_LOCATION_ID } from './mock-data.js';
 export {
   createProviderRegistry,
   type ProviderEnvironment,
@@ -15,4 +16,4 @@ export {
   type RetailerLocation,
   type RetailerProvider,
 } from './types.js';
-export { CvsProvider, UnavailableRetailerProvider, WalmartProvider } from './unavailable.js';
+export { UnavailableRetailerProvider } from './unavailable.js';

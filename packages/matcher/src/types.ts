@@ -21,9 +21,6 @@ export type ProductView = {
 
 export type IdentityMatchMethod = 'upc' | 'retailer-product-id' | 'canonical-url';
 
-/** Explicit retailer store selections that belong to one user location context. */
-export type RetailerLocationSelection = Partial<Record<Retailer, string>>;
-
 export type SuppressionReason =
   | 'identity-conflict'
   | 'variant-conflict'
@@ -31,7 +28,10 @@ export type SuppressionReason =
   | 'invalid-currency'
   | 'current-unavailable'
   | 'missing-price-context'
+  | 'unsupported-price-context'
   | 'missing-location'
+  | 'current-offer-unavailable'
+  | 'page-price-mismatch'
   | 'provider-unavailable'
   | 'provider-timeout'
   | 'provider-rate-limited'
@@ -40,22 +40,40 @@ export type SuppressionReason =
   | 'origin-not-allowed';
 
 export type NoMatchReason =
-  'unknown-product' | 'no-alternative-identity' | 'no-eligible-offer' | 'no-positive-savings';
+  'unknown-product' | 'no-equivalent' | 'no-eligible-offer' | 'no-positive-savings';
+
+export type ProductSummary = Pick<
+  Product,
+  'id' | 'name' | 'brand' | 'variant' | 'size' | 'category' | 'marketedTo'
+>;
+
+/**
+ * A women's product (`product`/`current`) and its reviewed men's or neutral
+ * equivalent (`alternativeProduct`/`alternative`), both priced by the provider
+ * at the same store in the same price context. `current` always costs more.
+ */
+export type ShowOutcome = {
+  status: 'show';
+  equivalenceId: string;
+  product: ProductSummary;
+  current: Offer;
+  alternativeProduct: ProductSummary;
+  alternative: Offer;
+  savings: Money;
+  rationale: string;
+  matchedAttributes: string[];
+  knownDifferences: string[];
+  /** How the shopper's page was identified; absent for list comparisons. */
+  matchedBy?: IdentityMatchMethod;
+};
 
 export type ComparisonOutcome =
-  | {
-      status: 'show';
-      product: Pick<Product, 'id' | 'name' | 'brand' | 'variant' | 'size'>;
-      current: {
-        retailer: Retailer;
-        price: Money;
-        priceContext: PriceContext;
-        locationId?: string;
-      };
-      alternative: Offer;
-      savings: Money;
-      rationale: string;
-      matchedBy: IdentityMatchMethod;
-    }
+  | ShowOutcome
   | { status: 'no-match'; reason: NoMatchReason }
   | { status: 'suppressed'; reason: SuppressionReason };
+
+/** The store and price context every offer in one comparison must share. */
+export type StoreContext = {
+  locationId: string;
+  priceContext: PriceContext;
+};

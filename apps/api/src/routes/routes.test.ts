@@ -1,98 +1,54 @@
 import { describe, expect, it } from 'vitest';
-import type { Product, Retailer } from '../../../../packages/catalog/src/schema.js';
+import { catalog } from '../catalog.js';
 import { ComparisonService } from '../core/comparison-service.js';
 import { ProviderGateway } from '../core/gateway.js';
-import { createMockData } from '../providers/mock-data.js';
+import { createMockData, MOCK_KROGER_LOCATION_ID } from '../providers/mock-data.js';
 import { MockRetailerProvider } from '../providers/mock.js';
 import type { ProviderRegistry } from '../providers/registry.js';
 import { UnavailableRetailerProvider } from '../providers/unavailable.js';
 import { createCompareHandler } from './compare.js';
+import { createComparisonsHandler } from './comparisons.js';
 import { optionsResponse } from './http.js';
 import { createStoresHandler } from './stores.js';
 
 const now = new Date('2026-09-18T16:30:00.000Z');
 const allowedOrigin = 'http://localhost:5173';
+const environment = { NODE_ENV: 'test', PINKLESS_ALLOWED_ORIGINS: allowedOrigin };
 
-const identityDetails = {
-  cvs: {
-    productId: 'cvs-razor-1',
-    url: 'https://www.cvs.com/shop/sample-razor-prodid-cvs-razor-1',
-  },
-  kroger: {
-    productId: '00012345678905',
-    url: 'https://www.kroger.com/p/sample-razor/00012345678905',
-  },
-  walmart: {
-    productId: 'walmart-razor-1',
-    url: 'https://www.walmart.com/ip/sample-razor/walmart-razor-1',
-  },
-} as const;
-
-function catalogProduct(): Product {
-  return {
-    id: 'sample-razor',
-    upc: '012345678905',
-    name: 'Sample Razor',
-    brand: 'Sample Brand',
-    variant: 'One handle',
-    category: 'razors',
-    size: { amount: 1, unit: 'count' },
-    identities: (Object.keys(identityDetails) as Retailer[]).map((retailer) => {
-      const details = identityDetails[retailer];
-      return {
-        retailer,
-        productId: details.productId,
-        canonicalUrl: details.url,
-        canonicalUrlPatterns: [`^${details.url.replaceAll('.', '\\.')}$`],
-      };
-    }),
-    equivalence: {
-      policy: 'exact-packaged-product',
-      rationale: 'All identities use the same UPC and package size.',
-      matchedAttributes: ['UPC', 'package size'],
-    },
-    status: 'active',
-  };
-}
+const SOLEIL = catalog.products.find((product) => product.marketedTo === 'women')!;
+const COMFORT = catalog.products.find((product) => product.marketedTo === 'men')!;
 
 function mockRegistry(): ProviderRegistry {
-  return {
-    cvs: new MockRetailerProvider('cvs', createMockData('cvs', now)),
-    kroger: new MockRetailerProvider('kroger', createMockData('kroger', now)),
-    walmart: new MockRetailerProvider('walmart', createMockData('walmart', now)),
-  };
+  return { kroger: new MockRetailerProvider('kroger', createMockData(now)) };
 }
 
-function compareBody() {
+function service(registry = mockRegistry()) {
+  return new ComparisonService(
+    catalog,
+    new ProviderGateway(registry, { now: () => now }),
+    () => now,
+  );
+}
+
+function compareBody(product = SOLEIL, currentPriceCents = 679) {
+  const identity = product.identities[0]!;
   return {
     current: {
-      retailer: 'cvs',
-      canonicalUrl: identityDetails.cvs.url,
-      productId: identityDetails.cvs.productId,
-      upc: '012345678905',
-      title: 'Sample Razor',
-      selectedVariant: 'One handle',
-      currentPriceCents: 1299,
+      retailer: 'kroger',
+      canonicalUrl: identity.canonicalUrl,
+      productId: identity.productId,
+      title: product.name,
+      currentPriceCents,
       currency: 'USD',
-      priceContext: 'store-pickup',
-      locationId: 'cvs-1001',
+      priceContext: 'in-store',
+      locationId: MOCK_KROGER_LOCATION_ID,
       availability: 'in-stock',
-    },
-    locations: {
-      cvs: 'cvs-1001',
-      kroger: 'kroger-1001',
-      walmart: 'walmart-1001',
     },
   };
 }
 
 function compareHandler(registry = mockRegistry(), nodeEnv = 'test') {
-  const gateway = new ProviderGateway(registry, { now: () => now });
-  const service = new ComparisonService([catalogProduct()], gateway, () => now);
-  return createCompareHandler(service, {
-    NODE_ENV: nodeEnv,
-    PINKLESS_ALLOWED_ORIGINS: allowedOrigin,
-  });
+  return createCompareHandler(service(registry), { ...environment, NODE_ENV: nodeEnv });
 }
 
 function post(body: unknown, origin = allowedOrigin): Request {
@@ -104,15 +60,31 @@ function post(body: unknown, origin = allowedOrigin): Request {
 }
 
 describe('comparison route', () => {
-  it('returns the cheapest verified offer from providers queried in parallel', async () => {
+  it("shows the men's equivalent on the women's product, priced at the same store", async () => {
     const response = await compareHandler()(post(compareBody()));
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({
       status: 'show',
-      alternative: { retailer: 'walmart', price: { amountCents: 899 } },
-      savings: { amountCents: 400, currency: 'USD' },
+      product: { id: SOLEIL.id, marketedTo: 'women' },
+      current: { price: { amountCents: 679 }, locationId: MOCK_KROGER_LOCATION_ID },
+      alternativeProduct: { id: COMFORT.id, marketedTo: 'men' },
+      alternative: { price: { amountCents: 599 }, locationId: MOCK_KROGER_LOCATION_ID },
+      savings: { amountCents: 80, currency: 'USD' },
     });
     expect(response.headers.get('access-control-allow-origin')).toBe(allowedOrigin);
+  });
+
+  it("stays quiet on the men's product", async () => {
+    const response = await compareHandler()(post(compareBody(COMFORT, 599)));
+    await expect(response.json()).resolves.toEqual({ status: 'no-match', reason: 'no-equivalent' });
+  });
+
+  it('suppresses when the page price disagrees with the provider', async () => {
+    const response = await compareHandler()(post(compareBody(SOLEIL, 629)));
+    await expect(response.json()).resolves.toEqual({
+      status: 'suppressed',
+      reason: 'page-price-mismatch',
+    });
   });
 
   it('rejects unknown origins and malformed requests', async () => {
@@ -133,11 +105,9 @@ describe('comparison route', () => {
     await expect(response.json()).resolves.toEqual({ status: 'suppressed' });
   });
 
-  it('suppresses a comparison when alternative providers are unavailable', async () => {
+  it('suppresses a comparison when Kroger is unavailable', async () => {
     const registry: ProviderRegistry = {
-      cvs: new MockRetailerProvider('cvs', createMockData('cvs', now)),
       kroger: new UnavailableRetailerProvider('kroger', 'fixture'),
-      walmart: new UnavailableRetailerProvider('walmart', 'fixture'),
     };
     const response = await compareHandler(registry)(post(compareBody()));
     await expect(response.json()).resolves.toEqual({
@@ -147,32 +117,83 @@ describe('comparison route', () => {
   });
 });
 
-describe('stores route', () => {
-  it('returns normalized provider locations', async () => {
-    const gateway = new ProviderGateway(mockRegistry(), { now: () => now });
-    const handler = createStoresHandler(gateway, {
-      NODE_ENV: 'test',
-      PINKLESS_ALLOWED_ORIGINS: allowedOrigin,
-    });
-    const response = await handler(
-      new Request('https://pinkless.test/api/stores?retailer=kroger&postalCode=45202', {
+describe('comparisons list route', () => {
+  function get(query: string, registry = mockRegistry()) {
+    const handler = createComparisonsHandler(service(registry), environment, () => now);
+    return handler(
+      new Request(`https://pinkless.test/api/comparisons${query}`, {
         headers: { origin: allowedOrigin },
       }),
     );
+  }
+
+  it('lists every pair with a saving at the store', async () => {
+    const response = await get(`?locationId=${MOCK_KROGER_LOCATION_ID}`);
     expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toMatchObject({
+    const body = (await response.json()) as { comparisons: unknown[] };
+    expect(body).toMatchObject({
       status: 'ok',
-      locations: [{ retailer: 'kroger', locationId: 'kroger-1001' }],
+      store: { locationId: MOCK_KROGER_LOCATION_ID, priceContext: 'in-store' },
+      generatedAt: now.toISOString(),
+    });
+    expect(body.comparisons).toHaveLength(1);
+    expect(body.comparisons[0]).toMatchObject({
+      product: { id: SOLEIL.id },
+      alternativeProduct: { id: COMFORT.id },
+      savings: { amountCents: 80 },
     });
   });
 
-  it('rejects unsupported retailers', async () => {
-    const handler = createStoresHandler(new ProviderGateway(mockRegistry()), {
-      NODE_ENV: 'test',
-      PINKLESS_ALLOWED_ORIGINS: allowedOrigin,
+  it('returns an empty list at a store with no prices', async () => {
+    const response = await get('?locationId=kroger-9999');
+    await expect(response.json()).resolves.toMatchObject({ status: 'ok', comparisons: [] });
+  });
+
+  it('requires a store and a store price context', async () => {
+    expect((await get('')).status).toBe(400);
+    expect((await get(`?locationId=${MOCK_KROGER_LOCATION_ID}&priceContext=online`)).status).toBe(
+      400,
+    );
+  });
+
+  it('fails the whole list when Kroger is unavailable', async () => {
+    const response = await get(`?locationId=${MOCK_KROGER_LOCATION_ID}`, {
+      kroger: new UnavailableRetailerProvider('kroger', 'fixture'),
     });
-    const response = await handler(
-      new Request('https://pinkless.test/api/stores?retailer=target&postalCode=45202', {
+    expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toEqual({
+      status: 'suppressed',
+      reason: 'provider-unavailable',
+    });
+  });
+});
+
+describe('stores route', () => {
+  function handler() {
+    return createStoresHandler(
+      new ProviderGateway(mockRegistry(), { now: () => now }),
+      environment,
+    );
+  }
+
+  it('returns normalized Kroger locations, with or without a retailer parameter', async () => {
+    for (const query of ['retailer=kroger&postalCode=45202', 'postalCode=45202']) {
+      const response = await handler()(
+        new Request(`https://pinkless.test/api/stores?${query}`, {
+          headers: { origin: allowedOrigin },
+        }),
+      );
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toMatchObject({
+        status: 'ok',
+        locations: [{ retailer: 'kroger', locationId: MOCK_KROGER_LOCATION_ID }],
+      });
+    }
+  });
+
+  it('rejects unsupported retailers', async () => {
+    const response = await handler()(
+      new Request('https://pinkless.test/api/stores?retailer=walmart&postalCode=45202', {
         headers: { origin: allowedOrigin },
       }),
     );
