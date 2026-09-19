@@ -33,7 +33,9 @@ export function HomePage() {
     <>
       <Hero store={store} featured={bySavings[0]} loading={state.status === 'loading'} />
 
-      {store && items.length > 0 ? <StatStrip summary={summarizeFeed(items)} store={store} /> : null}
+      {store && items.length > 0 ? (
+        <StatStrip summary={summarizeFeed(items)} store={store} />
+      ) : null}
 
       {groups.length > 0 ? <CategoryTiles groups={groups} /> : null}
 

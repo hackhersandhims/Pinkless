@@ -55,7 +55,10 @@ export function useStoreLink(): (
   return useCallback(
     (pathname, options = {}) => ({
       pathname,
-      search: storeSearch(locationId ? { locationId, ...(name ? { name } : {}) } : undefined, options.query),
+      search: storeSearch(
+        locationId ? { locationId, ...(name ? { name } : {}) } : undefined,
+        options.query,
+      ),
       ...(options.hash ? { hash: options.hash } : {}),
     }),
     [locationId, name],

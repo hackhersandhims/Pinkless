@@ -65,13 +65,18 @@ describe('toView fails closed', () => {
 
   it('drops an outcome whose savings do not add up', () => {
     const outcome = fixtureOutcome();
-    expect(toView({ ...outcome, savings: { amountCents: 500, currency: 'USD' } }, response)).toBeUndefined();
+    expect(
+      toView({ ...outcome, savings: { amountCents: 500, currency: 'USD' } }, response),
+    ).toBeUndefined();
   });
 
   it('drops an outcome priced at a different store', () => {
     const outcome = fixtureOutcome();
     expect(
-      toView({ ...outcome, alternative: { ...outcome.alternative, locationId: '99999999' } }, response),
+      toView(
+        { ...outcome, alternative: { ...outcome.alternative, locationId: '99999999' } },
+        response,
+      ),
     ).toBeUndefined();
   });
 
@@ -102,7 +107,10 @@ describe('toView fails closed', () => {
   it('drops an outcome with a non-Kroger link', () => {
     const outcome = fixtureOutcome();
     expect(
-      toView({ ...outcome, current: { ...outcome.current, url: 'https://example.com/p/1' } }, response),
+      toView(
+        { ...outcome, current: { ...outcome.current, url: 'https://example.com/p/1' } },
+        response,
+      ),
     ).toBeUndefined();
   });
 

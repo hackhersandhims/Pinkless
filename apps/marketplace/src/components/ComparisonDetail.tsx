@@ -94,12 +94,13 @@ export function ComparisonDetail({ item }: ComparisonDetailProps) {
         </div>
         <div className={styles.summaryText}>
           <span className={`label ${styles.eyebrow}`}>{item.categoryLabel}</span>
+          {/* .display supplies family and weight; the h1 scales its size by ratio. */}
           <div className="display">
             <h1 className={styles.title}>{comparisonHeadline(item)}</h1>
           </div>
           <p className={`body ${styles.savingsNote}`}>
-            {item.other.name} costs {formatCents(item.other.priceCents)}.{' '}
-            {item.womens.name} costs {formatCents(item.womens.priceCents)}.
+            {item.other.name} costs {formatCents(item.other.priceCents)}. {item.womens.name} costs{' '}
+            {formatCents(item.womens.priceCents)}.
           </p>
           <div className={styles.savings}>
             <SavingsBadge cents={item.savingsCents} />
@@ -172,9 +173,9 @@ export function ComparisonDetail({ item }: ComparisonDetailProps) {
       </section>
 
       <p className={`caption ${styles.disclaimer}`}>
-        Prices are Kroger’s {item.priceContextLabel.toLowerCase()} prices at {storeLabel(item.store)}{' '}
-        on the date shown and may have changed. Pinkless shows reviewed comparisons; it does not say
-        why prices differ.
+        Prices are Kroger’s {item.priceContextLabel.toLowerCase()} prices at{' '}
+        {storeLabel(item.store)} on the date shown and may have changed. Pinkless shows reviewed
+        comparisons; it does not say why prices differ.
       </p>
     </article>
   );

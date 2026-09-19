@@ -242,4 +242,5 @@ export function listComparisons(
       nowMs,
     );
     return outcome.status === 'show' ? [outcome] : [];
+  });
 }

@@ -19,10 +19,7 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <Link
-                to={link('/', { hash: '#how-it-works' })}
-                className={`caption ${styles.link}`}
-              >
+              <Link to={link('/', { hash: '#how-it-works' })} className={`caption ${styles.link}`}>
                 How it works
               </Link>
             </li>

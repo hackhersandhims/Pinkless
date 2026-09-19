@@ -37,30 +37,6 @@ PINKLESS_ALLOWED_ORIGINS=http://localhost:5173,chrome-extension://YOUR_EXTENSION
 Find `YOUR_EXTENSION_ID` on `chrome://extensions` after loading the extension.
 Restart the API whenever this environment file changes.
 
-### Test Canopy REST locally
-
-To use live Amazon data instead of fixtures, change the copied `.env.local`
-file to:
-
-```dotenv
-PINKLESS_PROVIDER_MODE=live
-PINKLESS_ALLOWED_ORIGINS=http://localhost:5173,chrome-extension://YOUR_EXTENSION_ID
-CANOPY_API_KEY=
-KROGER_CLIENT_ID=
-KROGER_CLIENT_SECRET=
-```
-
-Paste the Canopy key after `CANOPY_API_KEY=` in `.env.local` only. Live mode
-uses `GET https://rest.canopyapi.co/api/amazon/product` with `domain=US`; the
-key remains in the API process and is never sent to the extension. Kroger,
-CVS, and Walmart remain fail-closed when their credentials or integrations are
-not configured.
-
-The Amazon page must match a real reviewed ASIN pair in
-`packages/catalog/products.json`. The bundled `B000000001` and `B000000002`
-records are deterministic demo identities, so replace them with reviewed real
-ASINs before expecting a live Canopy comparison.
-
 In a second terminal, run the Vercel Functions locally on port 3000:
 
 ```sh
@@ -85,13 +61,13 @@ Then:
 3. Select **Load unpacked**.
 4. Select `apps/extension/dist` — not `apps/extension`.
 5. Open Chrome's Extensions menu and pin **Pinkless**.
-6. Open Pinkless, enter a US ZIP code, and select nearby stores.
+6. Open Pinkless, enter a US ZIP code, and select a Kroger store.
 
-The mock provider includes stores for ZIP code `45202`. Pinkless runs only on
-Amazon, CVS, Kroger, and Walmart HTTPS pages, plus the path-locked controlled
-fallback routes at `http://localhost:4174/product/{cvs|kroger|walmart}`. A normal
-retailer product can remain quiet when it is not an exact reviewed catalog
-match; silence is expected for unknown, unavailable, or non-cheaper products.
+The mock provider includes a store for ZIP code `45202`. Pinkless runs only on
+`https://www.kroger.com` pages, plus the path-locked controlled fallback route
+at `http://localhost:4174/product/kroger`. It stays quiet on anything that is
+not a women's product with an active reviewed men's or neutral pair, and when
+the men's or neutral product isn't cheaper at the selected store.
 
 ## Rehearse the controlled fallback
 
@@ -101,11 +77,10 @@ In a third terminal, run:
 pnpm --filter @pinkless/demo dev
 ```
 
-Open `http://localhost:4174/product/cvs` in an incognito Chrome profile after
-enabling the unpacked extension for incognito. The page lists deterministic
-CVS, Kroger, and Walmart mock offers. Its **Price variant** control changes the
-current price and should cause the extension to update or remove its badge
-after one debounced recomputation.
+Open `http://localhost:4174/product/kroger` in an incognito Chrome profile
+after enabling the unpacked extension for incognito. The page is a kroger.com
+stand-in for the BIC Soleil women's razor. See `apps/demo/README.md` for the
+scenarios that should show or suppress the badge.
 
 ## Reload after making changes
 

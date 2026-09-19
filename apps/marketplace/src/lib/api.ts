@@ -42,7 +42,6 @@ export function isValidStoreId(value: string): boolean {
 export function isValidPostalCode(value: string): boolean {
   return POSTAL_CODE_PATTERN.test(value);
 }
-}
 
 /**
  * Every reviewed pair where the men's or neutral product costs less than the
@@ -81,7 +80,10 @@ function isStoreLocation(value: unknown): value is StoreLocation {
 }
 
 /** Kroger stores near a US ZIP code. Malformed entries are dropped. */
-export async function loadStores(postalCode: string, signal?: AbortSignal): Promise<StoreLocation[]> {
+export async function loadStores(
+  postalCode: string,
+  signal?: AbortSignal,
+): Promise<StoreLocation[]> {
   if (!isValidPostalCode(postalCode)) throw new Error('Invalid ZIP code.');
   const query = new URLSearchParams({ postalCode });
   const body = await getJson(`/api/stores?${query}`, signal);

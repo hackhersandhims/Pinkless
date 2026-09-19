@@ -11,7 +11,6 @@ function validProduct(overrides: Partial<Product> = {}): Product {
     brand: 'Sample Brand',
     variant: 'One handle',
     category: 'razors',
-    audience: 'women',
     size: { amount: 1, unit: 'count' },
     marketedTo: 'women',
     identities: [

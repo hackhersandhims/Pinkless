@@ -8,7 +8,7 @@ import { krogerAdapter } from './kroger';
 const STORE = { locationId: 'kroger-1001' };
 
 function adapter(host: string, extract: RetailerAdapter['extract']): RetailerAdapter {
-  return { retailer: 'cvs', canHandle: (url) => url.hostname === host, extract };
+  return { canHandle: (url) => url.hostname === host, extract };
 }
 
 describe('extractProductView', () => {

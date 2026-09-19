@@ -49,7 +49,8 @@ export function CategoryTiles({ groups }: CategoryTilesProps) {
             <span className={styles.text}>
               <span className={`heading ${styles.label}`}>All comparisons</span>
               <span className="caption">
-                {total} {total === 1 ? 'comparison' : 'comparisons'} at this store, biggest difference first
+                {total} {total === 1 ? 'comparison' : 'comparisons'} at this store, biggest
+                difference first
               </span>
             </span>
             <ArrowRightIcon className={styles.arrow} />

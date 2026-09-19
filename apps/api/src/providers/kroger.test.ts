@@ -138,9 +138,9 @@ describe('KrogerProvider', () => {
     await expect(providerForRegularPrice(0.01).lookupOffers(base)).resolves.toMatchObject([
       { price: { amountCents: 1, currency: 'USD' } },
     ]);
-    await expect(providerForRegularPrice(Number('0.30000000000000004')).lookupOffers(base)).resolves.toEqual(
-      [],
-    );
+    await expect(
+      providerForRegularPrice(Number('0.30000000000000004')).lookupOffers(base),
+    ).resolves.toEqual([]);
     await expect(providerForRegularPrice(9.999).lookupOffers(base)).resolves.toEqual([]);
   });
 

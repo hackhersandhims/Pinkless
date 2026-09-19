@@ -14,11 +14,7 @@ export type PageLocation = Pick<Location, 'href'>;
  * The store is the person's choice in the popup, not something read from the page: the API prices
  * both products at that store, and the page price is only a consistency check.
  */
-export type PageLocation = Pick<Location, 'href'>;
-
-/** Extracts only trusted product-page data; ambiguous pages return null. */
-export interface RetailerAdapter {
-  readonly retailer: ProductView['retailer'];
+export type RetailerAdapter = {
   canHandle(url: URL): boolean;
   extract(document: Document, location: PageLocation, store?: SelectedStore): ProductView | null;
 };

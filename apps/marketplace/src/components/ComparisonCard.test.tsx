@@ -29,7 +29,9 @@ describe('ComparisonCard', () => {
   });
 
   it('says "neutral version" for a product not marketed to a gender', () => {
-    render(withRouter(<ComparisonCard item={makeComparisonView({ otherMarketedTo: 'neutral' })} />));
+    render(
+      withRouter(<ComparisonCard item={makeComparisonView({ otherMarketedTo: 'neutral' })} />),
+    );
 
     expect(
       screen.getByRole('heading', { name: 'The neutral version costs $0.80 less' }),
