@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import logo from '../../../../packages/tokens/assets/pinkless-lockup.png';
+import logo from '../../../../packages/tokens/assets/pinkless-lockup-transparent.png';
 import { CategoryNav } from './CategoryNav';
 import { SearchBar } from './SearchBar';
 import { StoreControl } from './StoreControl';
@@ -22,10 +22,9 @@ export function SiteHeader() {
         </a>
         <Link to={link('/')} className={styles.brand}>
           {/*
-           * The only approved logo asset is a flattened lockup with a
-           * near-black ground and a tagline under the mark. The frame crops to
-           * the star and wordmark without recoloring or redrawing it. A
-           * transparent, header-specific lockup would remove the dark tile.
+           * The lockup with its near-black ground keyed out to transparency
+           * (same pixels otherwise). The frame crops to the star and wordmark,
+           * hiding the tagline.
            */}
           <span className={styles.logoFrame}>
             <img src={logo} alt="Pinkless" className={styles.logo} />
