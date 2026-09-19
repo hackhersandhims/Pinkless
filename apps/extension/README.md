@@ -5,16 +5,18 @@
 1. Run `pnpm build:extension` from the repository root.
 2. Open `chrome://extensions` in Chrome and enable **Developer mode**.
 3. Choose **Load unpacked** and select `apps/extension/dist`.
-4. Pin Pinkless, click its icon to open the Chrome Side Panel, enter a US ZIP
-   code, and choose a Kroger store. With no store selected the extension stays
-   quiet.
+4. Pin Pinkless, click its icon to open the Chrome Side Panel, and enter a US
+   ZIP code. On Kroger pages, Pinkless reads Kroger's visible Pickup/Delivery
+   store and matches its name and street address against the official nearby
+   locations for that ZIP. If it cannot identify exactly one store, it stays
+   quiet rather than guessing.
 
 The unpacked build runs only on `https://www.kroger.com/*` (the adapter acts
 only on `/p/<slug>/<productId>` product pages) plus the fixed team-owned local
 fallback route `http://localhost:4174/product/kroger`. It requests no browsing
-history and stores only the ZIP code and the chosen Kroger store on this
+history and stores only the ZIP code and local-demo fallback store on this
 device. A comparison request sends exactly `{ current }`: the page's product
-identity with the selected store's `locationId` and `priceContext: "in-store"`.
+identity with Kroger's resolved page-store `locationId` and `priceContext: "in-store"`.
 
 ## API setup
 
@@ -35,7 +37,7 @@ development, see [`LOCAL_DEVELOPMENT.md`](../../LOCAL_DEVELOPMENT.md).
 ## Expected behavior
 
 - On a reviewed women's product, one Shadow DOM badge may appear when the API
-  prices its reviewed men's or neutral equivalent lower at the selected store.
+  prices its reviewed men's or neutral equivalent lower at the Kroger-selected store.
   It names the equivalent and its price, the rationale, the first known
   difference, the store, and the date checked.
 - Unknown, incomplete, promotional, unavailable, expired, page-price mismatch,
