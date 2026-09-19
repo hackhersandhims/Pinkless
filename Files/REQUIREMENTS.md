@@ -139,6 +139,10 @@ location to the Pinkless API solely to obtain a comparison.
   equivalent.
 - Fail closed when a provider has no approved credentials, returns ambiguous
   identity, lacks a price, or is unavailable.
+- A private, token-protected reviewer endpoint may use AI only to draft candidate pairs from
+  supplied product metadata. Its output must be structurally filtered, marked as requiring human
+  review, and unable to write catalog data or affect a shopper-facing comparison. A person must
+  still write and approve every `ProductEquivalence` record.
 
 ### Provider configuration
 
@@ -153,6 +157,9 @@ location to the Pinkless API solely to obtain a comparison.
   They accept no credentials.
 - `.env.example` documents variable names only. `.env` and `.env.*` files are
   ignored so credentials cannot be committed accidentally.
+- `GEMINI_API_KEY` and `PINKLESS_REVIEW_API_TOKEN` are server-only credentials for the private
+  reviewer workflow. They must be configured in Vercel, never exposed to browser code, and never
+  use a `VITE_` prefix. `GEMINI_MODEL` may select the server-side Gemini model.
 - `PINKLESS_ALLOWED_ORIGINS` is an exact comma-separated allowlist containing
   the deployed Marketplace origin and final `chrome-extension://` origin.
 

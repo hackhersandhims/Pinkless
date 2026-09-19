@@ -15,9 +15,12 @@ const SERVER_ENV_KEYS = [
   'PINKLESS_DEBUG_REASONS',
   'KROGER_CLIENT_ID',
   'KROGER_CLIENT_SECRET',
+  'GEMINI_API_KEY',
+  'GEMINI_MODEL',
+  'PINKLESS_REVIEW_API_TOKEN',
 ] as const;
 
-const ROUTES = ['comparisons', 'compare', 'stores'] as const;
+const ROUTES = ['comparisons', 'compare', 'stores', 'review/candidates'] as const;
 
 type RouteModule = Partial<
   Record<'GET' | 'POST' | 'OPTIONS', (request: Request) => Response | Promise<Response>>
