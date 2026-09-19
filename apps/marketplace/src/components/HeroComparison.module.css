@@ -97,10 +97,14 @@
   font-weight: 600;
 }
 
-/* Savings sits under the cards on phones and across their seam from tablet up. */
+/*
+ * Savings bridges the gap between the two cards. On phones the front card
+ * reaches the bottom of the stage, so a bottom-anchored chip would cover its
+ * store and date line.
+ */
 .savings {
   position: absolute;
-  bottom: 6%;
+  top: 30%;
   left: 6%;
   display: flex;
   align-items: center;
@@ -112,14 +116,18 @@
   box-shadow: var(--shadow-lift);
 }
 
+/* From tablet up the cards sit side by side with only a corner overlap, so the
+   front card never covers the women's product name or price. */
 @media (min-width: 48rem) {
   .back {
     top: 8%;
+    width: 38%;
   }
 
   .front {
     top: auto;
     bottom: 8%;
+    width: 50%;
   }
 
   .savings {
