@@ -1,5 +1,7 @@
 import { handleExtensionMessage } from './messages.js';
 
+void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message?.type !== 'pinkless:compare') return false;
   void handleExtensionMessage(message, sender.tab?.url).then(sendResponse);

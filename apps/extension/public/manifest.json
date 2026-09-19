@@ -4,14 +4,16 @@
   "version": "0.1.0",
   "description": "Find reviewed, comparable alternatives that cost less.",
   "action": {
-    "default_popup": "popup.html",
     "default_title": "Pinkless"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
   },
   "background": {
     "service_worker": "background/index.js",
     "type": "module"
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "sidePanel"],
   "web_accessible_resources": [
     {
       "resources": ["assets/logo.png"],

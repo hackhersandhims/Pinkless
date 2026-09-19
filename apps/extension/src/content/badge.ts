@@ -23,7 +23,7 @@ const BADGE_CSS = `
   max-inline-size: calc(100vw - var(--space-6) - var(--space-6));
   padding: var(--space-4);
   border: thin solid var(--panel-border);
-  border-radius: var(--radius-lg);
+  border-radius: calc(var(--radius-lg) + var(--space-2));
   background: var(--panel-background);
   color: var(--panel-foreground);
   font-family: var(--font-sans);
@@ -31,9 +31,14 @@ const BADGE_CSS = `
 }
 
 .pinkless-badge[data-position="right"] {
-  inset-inline-end: var(--space-4);
-  inset-block-start: 50%;
-  transform: translateY(-50%);
+  inset-inline-end: 0;
+  inset-block: 0;
+  inline-size: calc(var(--space-6) * 14);
+  overflow-y: auto;
+  scroll-behavior: auto;
+  transform: none;
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -47,8 +52,12 @@ const BADGE_CSS = `
 }
 
 .pinkless-badge[data-collapsed="true"] {
+  inset-block-start: 50%;
+  inset-block-end: auto;
+  inline-size: auto;
   padding: var(--space-2);
-  border-radius: var(--radius-md);
+  box-shadow: none;
+  transform: translateY(-50%);
 }
 
 .pinkless-badge[data-collapsed="true"] > :not(.pinkless-badge__expand) {
@@ -99,6 +108,9 @@ const BADGE_CSS = `
 
 .pinkless-badge__expand {
   justify-self: center;
+  border-color: transparent;
+  background: transparent;
+  opacity: 0.8;
 }
 
 .pinkless-badge__primary,
@@ -262,7 +274,7 @@ export function renderBadge(
   const expand = document.createElement('button');
   expand.className = 'pinkless-badge__expand label';
   expand.type = 'button';
-  expand.textContent = '✦';
+  expand.textContent = '‹';
   expand.setAttribute('aria-label', 'Expand Pinkless price comparison');
   expand.addEventListener('click', () => setCollapsed(badge, false));
 
