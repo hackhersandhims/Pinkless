@@ -97,10 +97,10 @@ silently fails when a product, price, provider, or location is unsafe.
 
 ## Phase 5 — Fallback demo page
 
-- [ ] Create a static product page controlled by the team that exposes the same
+- [x] Create a static product page controlled by the team that exposes the same
   product information needed by the adapter.
-- [ ] Add that page as a separately supported demo host/path.
-- [ ] Seed it with mocked CVS, Kroger, and Walmart offers plus an interactive
+- [x] Add that page as a separately supported demo host/path.
+- [x] Seed it with mocked CVS, Kroger, and Walmart offers plus an interactive
   variant that changes its price.
 - [ ] Rehearse the full fallback flow in an incognito Chrome profile with the
   unpacked extension.

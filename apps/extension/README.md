@@ -8,8 +8,10 @@
 4. Pin Pinkless, open its popup, and enter a US ZIP code.
 
 The unpacked build runs only on explicitly declared CVS, Kroger, and Walmart
-HTTPS pages. It requests no browsing history and stores only the ZIP code and
-explicit retailer store IDs selected in the popup.
+HTTPS pages, plus the fixed team-owned local fallback routes at
+`http://localhost:4174/product/{cvs|kroger|walmart}`. It requests no browsing
+history and stores only the ZIP code and explicit retailer store IDs selected
+in the popup.
 
 ## Local API setup
 
@@ -37,3 +39,9 @@ configure the production origin allowlist before publishing.
   trigger one debounced recomputation.
 - `See alternative` opens the reviewed retailer URL in a new tab; `Not now`
   hides the badge for the current page only.
+
+## Controlled fallback rehearsal
+
+Start `pnpm --filter @pinkless/demo dev`, then use the procedure in
+[`apps/demo/README.md`](../demo/README.md). The demo host is intentionally
+path-locked; do not turn it into a general localhost content-script match.

@@ -64,6 +64,15 @@ pnpm build
 pnpm --filter @pinkless/marketplace dev
 ```
 
+### Run the controlled fallback demo
+
+```bash
+pnpm --filter @pinkless/demo dev
+```
+
+Then open `http://localhost:4174/product/cvs` (or `kroger` or `walmart`). See
+the [fallback demo guide](apps/demo/README.md) for the incognito rehearsal.
+
 ### Try the extension
 
 1. Run `pnpm build:extension`.
@@ -83,6 +92,7 @@ and browser-testing details.
 | `pnpm catalog:validate`  | Validate the product identity catalog     |
 | `pnpm build`             | Validate, typecheck, then build both apps |
 | `pnpm build:extension`   | Build only the Chrome extension           |
+| `pnpm build:demo`        | Build only the controlled fallback demo   |
 | `pnpm build:marketplace` | Build only the Marketplace                |
 
 ## Repository layout
@@ -91,6 +101,7 @@ and browser-testing details.
 api/                Thin Vercel Function entry points for comparison and stores
 apps/api/           Provider contracts and server-only retailer integrations
 apps/extension/     Chrome MV3 extension, retailer adapters, popup, and badge
+apps/demo/          Controlled static fallback product page for judging
 apps/marketplace/   Static React/Vite Marketplace for Vercel
 packages/catalog/   Canonical product identity data and validation
 packages/matcher/   Pure matching and savings rules

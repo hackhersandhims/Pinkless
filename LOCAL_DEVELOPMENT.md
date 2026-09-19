@@ -64,9 +64,24 @@ Then:
 6. Open Pinkless, enter a US ZIP code, and select nearby stores.
 
 The mock provider includes stores for ZIP code `45202`. Pinkless runs only on
-CVS, Kroger, and Walmart HTTPS pages. A normal retailer product can remain
-quiet when it is not an exact reviewed catalog match; silence is expected for
-unknown, unavailable, or non-cheaper products.
+CVS, Kroger, and Walmart HTTPS pages, plus the path-locked controlled fallback
+routes at `http://localhost:4174/product/{cvs|kroger|walmart}`. A normal
+retailer product can remain quiet when it is not an exact reviewed catalog
+match; silence is expected for unknown, unavailable, or non-cheaper products.
+
+## Rehearse the controlled fallback
+
+In a third terminal, run:
+
+```sh
+pnpm --filter @pinkless/demo dev
+```
+
+Open `http://localhost:4174/product/cvs` in an incognito Chrome profile after
+enabling the unpacked extension for incognito. The page lists deterministic
+CVS, Kroger, and Walmart mock offers. Its **Price variant** control changes the
+current price and should cause the extension to update or remove its badge
+after one debounced recomputation.
 
 ## Reload after making changes
 

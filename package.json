@@ -10,8 +10,9 @@
     "test": "vitest run --passWithNoTests",
     "catalog:validate": "node --experimental-strip-types packages/catalog/src/validate.ts",
     "build:extension": "pnpm --filter @pinkless/extension build",
+    "build:demo": "pnpm --filter @pinkless/demo build",
     "build:marketplace": "pnpm --filter @pinkless/marketplace build",
-    "build": "pnpm run catalog:validate && pnpm run typecheck && pnpm run build:extension && pnpm run build:marketplace"
+    "build": "pnpm run catalog:validate && pnpm run typecheck && pnpm run build:extension && pnpm run build:demo && pnpm run build:marketplace"
   },
   "devDependencies": {
     "@types/chrome": "^0.3.0",

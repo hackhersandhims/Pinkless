@@ -1,4 +1,4 @@
-import { PINKLESS_API_BASE_URL } from '../shared/config.js';
+import { demoRetailerForUrl, PINKLESS_API_BASE_URL } from '../shared/config.js';
 
 type CompareMessage = {
   type: 'pinkless:compare';
@@ -27,10 +27,10 @@ export async function handleExtensionMessage(
   } catch {
     return null;
   }
-  if (
-    sender.protocol !== 'https:' ||
-    !['www.cvs.com', 'www.kroger.com', 'www.walmart.com'].includes(sender.hostname)
-  ) {
+  const isRetailerPage =
+    sender.protocol === 'https:' &&
+    ['www.cvs.com', 'www.kroger.com', 'www.walmart.com'].includes(sender.hostname);
+  if (!isRetailerPage && !demoRetailerForUrl(sender)) {
     return null;
   }
 

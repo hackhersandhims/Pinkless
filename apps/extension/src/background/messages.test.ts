@@ -21,12 +21,33 @@ describe('extension background messaging', () => {
     );
   });
 
-  it('rejects messages from pages outside the three declared retailer hosts', async () => {
+  it('allows only the fixed controlled fallback route in addition to retailer pages', async () => {
+    const fetcher = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({ status: 'no-match' }), { status: 200 }));
+    await expect(
+      handleExtensionMessage(
+        { type: 'pinkless:compare', payload: {} },
+        'http://localhost:4174/product/cvs',
+        fetcher,
+      ),
+    ).resolves.toEqual({ status: 'no-match' });
+    expect(fetcher).toHaveBeenCalledOnce();
+  });
+
+  it('rejects pages outside the three retailer hosts and fixed fallback route', async () => {
     const fetcher = vi.fn();
     await expect(
       handleExtensionMessage(
         { type: 'pinkless:compare', payload: {} },
         'https://www.walmart.com.example.test/ip/123456',
+        fetcher,
+      ),
+    ).resolves.toBeNull();
+    await expect(
+      handleExtensionMessage(
+        { type: 'pinkless:compare', payload: {} },
+        'http://localhost:4174/unrelated-page',
         fetcher,
       ),
     ).resolves.toBeNull();
