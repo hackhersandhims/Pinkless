@@ -280,18 +280,18 @@ export function renderBadge(
 
   const headline = document.createElement('p');
   headline.className = 'pinkless-badge__headline heading';
-  headline.textContent = `Comparable alternative: save ${formatMoney(comparison.savings.amountCents)}`;
+  headline.textContent = `Men's alternative: save ${formatMoney(comparison.savings.amountCents)}`;
 
   const supporting = document.createElement('p');
   supporting.className = 'body';
-  supporting.textContent = `${comparison.rationale} Alternative verified ${formatObservedAt(comparison.alternative.observedAt)}.`;
+  supporting.textContent = `${comparison.alternativeProduct.name} at ${RETAILER_LABELS[comparison.current.retailer]}. ${comparison.rationale} Price verified ${formatObservedAt(comparison.alternative.observedAt)}.`;
 
   const details = document.createElement('details');
   details.className = 'caption';
   const summary = document.createElement('summary');
   summary.textContent = 'Why this was matched';
   const detailText = document.createElement('p');
-  detailText.textContent = `Matched by ${comparison.matchedBy.replaceAll('-', ' ')}. Both prices use ${comparison.current.priceContext.replaceAll('-', ' ')} fulfillment.`;
+  detailText.textContent = `Current product matched by ${comparison.matchedBy.replaceAll('-', ' ')}. Reviewed attributes: ${comparison.matchedAttributes.join(', ')}. Both prices use ${comparison.current.priceContext.replaceAll('-', ' ')} fulfillment at the same retailer.`;
   details.append(summary, detailText);
 
   const actions = document.createElement('div');
@@ -302,7 +302,7 @@ export function renderBadge(
   primary.href = comparison.alternative.url;
   primary.target = '_blank';
   primary.rel = 'noopener noreferrer';
-  primary.textContent = 'See alternative';
+  primary.textContent = "See men's alternative";
   primary.setAttribute(
     'aria-label',
     `See the verified alternative at ${RETAILER_LABELS[comparison.alternative.retailer]} in a new tab`,

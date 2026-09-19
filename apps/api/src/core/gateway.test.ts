@@ -32,6 +32,7 @@ function offer(overrides: Partial<Offer> = {}): Offer {
 
 function registry(kroger: RetailerProvider): ProviderRegistry {
   return {
+    amazon: new UnavailableRetailerProvider('amazon', 'fixture'),
     cvs: new UnavailableRetailerProvider('cvs', 'fixture'),
     kroger,
     walmart: new UnavailableRetailerProvider('walmart', 'fixture'),

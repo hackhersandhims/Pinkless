@@ -1,7 +1,8 @@
-export const RETAILERS = ['cvs', 'kroger', 'walmart'] as const;
+export const RETAILERS = ['amazon', 'cvs', 'kroger', 'walmart'] as const;
 export type Retailer = (typeof RETAILERS)[number];
 
 export const RETAILER_LABELS: Record<Retailer, string> = {
+  amazon: 'Amazon',
   cvs: 'CVS',
   kroger: 'Kroger',
   walmart: 'Walmart',

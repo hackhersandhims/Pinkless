@@ -1,7 +1,8 @@
 # Pinkless Marketplace
 
 The Vercel-deployed React site: category index, comparison cards, a
-comparison detail view, and outbound links to the alternative retailer. It
+comparison detail view, and outbound links to the alternative product at the
+same retailer. It
 reads the same read-only comparison API the Chrome extension uses
 (REQUIREMENTS §3, §6).
 
@@ -49,9 +50,8 @@ browsable feed. Until `GET /api/comparisons` exists, leave
 `VITE_PINKLESS_API_URL` unset; setting it now fetches a route that 404s.
 
 The catalog never stores a price — every price in a `ComparisonView` comes
-from an observed `Offer`/`ComparisonOffer`. "Alternative" always means the
-same packaged product (same UPC) at a second retailer, not a different
-product.
+from an observed `Offer`/`ComparisonOffer`. "Alternative" means an explicit,
+human-reviewed men product at the same retailer as the women product.
 
 ## Deploying on Vercel
 

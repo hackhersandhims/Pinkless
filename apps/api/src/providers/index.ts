@@ -1,3 +1,4 @@
+export { CanopyProvider } from './canopy.js';
 export { KrogerProvider } from './kroger.js';
 export { MockRetailerProvider, type MockProviderData } from './mock.js';
 export {

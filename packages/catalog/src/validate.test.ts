@@ -11,6 +11,7 @@ function validProduct(overrides: Partial<Product> = {}): Product {
     brand: 'Sample Brand',
     variant: 'One handle',
     category: 'razors',
+    audience: 'women',
     size: { amount: 1, unit: 'count' },
     identities: [
       {
@@ -25,6 +26,7 @@ function validProduct(overrides: Partial<Product> = {}): Product {
       rationale: 'Every identity refers to the same packaged one-handle razor.',
       matchedAttributes: ['UPC', 'one handle'],
     },
+    reviewedAlternatives: [],
     status: 'active',
     ...overrides,
   };
@@ -93,6 +95,37 @@ describe('validateCatalog', () => {
     const product = validProduct() as unknown as { equivalence: { policy: string } };
     product.equivalence.policy = 'similar-title';
     expect(messages([product])).toContain('must use the supported exact-packaged-product policy.');
+  });
+
+  it('accepts only reviewed women-to-men alternatives with a shared retailer', () => {
+    const source = validProduct({
+      reviewedAlternatives: [
+        {
+          productId: 'mens-razor',
+          rationale: "Same blade count and package size in the men's range.",
+          matchedAttributes: ['blade count', 'package size'],
+        },
+      ],
+    });
+    const target = validProduct({
+      id: 'mens-razor',
+      upc: '036000291452',
+      audience: 'men',
+      identities: [
+        {
+          ...validProduct().identities[0]!,
+          productId: '00036602301972',
+          canonicalUrl: 'https://www.kroger.com/p/mens-razor/00036602301972',
+          canonicalUrlPatterns: ['^https://www\\.kroger\\.com/p/mens-razor/00036602301972$'],
+        },
+      ],
+    });
+    expect(validateCatalog([source, target])).toEqual({ valid: true, issues: [] });
+
+    target.audience = 'unisex';
+    expect(messages([source, target])).toContain(
+      'reviewed alternatives must link a women product to a men product.',
+    );
   });
 
   it('requires a canonical identity on active products', () => {

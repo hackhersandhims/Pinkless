@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import type { ProductView as MatcherProductView } from '../../../../packages/matcher/src/index.js';
 import { adapterForUrl } from './index.js';
 import type { ProductView, RetailerAdapter } from './types.js';
+import { amazonAdapter } from './amazon.js';
 import { cvsAdapter } from './cvs.js';
 import { krogerAdapter } from './kroger.js';
 import { walmartAdapter } from './walmart.js';
@@ -31,6 +32,27 @@ type RetailerCase = {
 };
 
 const cases: RetailerCase[] = [
+  {
+    name: 'amazon',
+    adapter: amazonAdapter,
+    happyUrl: 'https://www.amazon.com/dp/B000000001',
+    unknownUrl: 'https://www.amazon.com/dp/B000000099',
+    variantUrl: 'https://www.amazon.com/dp/B000000002',
+    expected: {
+      retailer: 'amazon',
+      productId: 'B000000001',
+      upc: '012345678905',
+      currentPriceCents: 1299,
+      priceContext: 'online',
+    },
+    unknownProductId: 'B000000099',
+    variant: {
+      productId: 'B000000002',
+      upc: '036000291452',
+      selectedVariant: '4 count',
+      currentPriceCents: 899,
+    },
+  },
   {
     name: 'cvs',
     adapter: cvsAdapter,
@@ -177,6 +199,7 @@ describe('adapter registry', () => {
 
   it('rejects non-product, insecure, and lookalike URLs', () => {
     expect(adapterForUrl(new URL('https://www.cvs.com/shop/razors'))).toBeUndefined();
+    expect(adapterForUrl(new URL('https://www.amazon.com/s?k=razors'))).toBeUndefined();
     expect(adapterForUrl(new URL('http://www.kroger.com/p/item/00012345678905'))).toBeUndefined();
     expect(
       adapterForUrl(new URL('https://www.walmart.com.example.test/ip/item/123456789')),

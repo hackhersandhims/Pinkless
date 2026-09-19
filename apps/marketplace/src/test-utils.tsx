@@ -42,13 +42,12 @@ export function makeComparisonView(overrides: Partial<ComparisonView> = {}): Com
   const alternative =
     overrides.alternative ??
     makeOfferView({
-      retailer: 'walmart',
+      retailer: reference.retailer,
       priceCents: 999,
       priceContext: reference.priceContext,
     });
 
-  const savingsCents =
-    overrides.savingsCents ?? reference.priceCents - alternative.priceCents;
+  const savingsCents = overrides.savingsCents ?? reference.priceCents - alternative.priceCents;
 
   return {
     id: overrides.id ?? `fixture-comparison-${counter}`,
@@ -59,13 +58,14 @@ export function makeComparisonView(overrides: Partial<ComparisonView> = {}): Com
     variant: overrides.variant ?? '5-blade cartridge razor, 4 ct',
     size: overrides.size ?? { amount: 4, unit: 'count' },
     upc: overrides.upc ?? '012345678905',
+    alternativeName: overrides.alternativeName ?? "Men's Sample Razor",
+    alternativeVariant: overrides.alternativeVariant ?? '5-blade cartridge razor, 4 ct',
     reference,
     alternative,
     savingsCents,
     rationale:
-      overrides.rationale ??
-      'Same manufacturer UPC at both retailers: identical product.',
-    matchedAttributes: overrides.matchedAttributes ?? ['upc', 'brand', 'pack count'],
+      overrides.rationale ?? "Reviewed men's alternative with the same blade and package count.",
+    matchedAttributes: overrides.matchedAttributes ?? ['blade count', 'pack count'],
     knownDifferences: overrides.knownDifferences ?? [],
   };
 }

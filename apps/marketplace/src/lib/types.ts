@@ -2,14 +2,26 @@
  * The Marketplace's data and view contracts. Every component renders the view
  * shapes and nothing else.
  *
- * The catalog holds product identity and equivalence policy only; both prices
- * come from real provider offers, so savings is a computed integer and the
- * "alternative" is the SAME packaged product at a different retailer.
+ * Both products and their relationship are reviewed in the catalog. Prices
+ * come from one retailer, so savings is computed within a single store.
  */
 
-import type { Offer, PriceContext, Product, Retailer, Size } from '../../../../packages/catalog/src/schema.js';
+import type {
+  Offer,
+  PriceContext,
+  Product,
+  Retailer,
+  Size,
+} from '../../../../packages/catalog/src/schema.js';
 
-export type { Money, Offer, PriceContext, Product, Retailer, Size } from '../../../../packages/catalog/src/schema.js';
+export type {
+  Money,
+  Offer,
+  PriceContext,
+  Product,
+  Retailer,
+  Size,
+} from '../../../../packages/catalog/src/schema.js';
 
 /**
  * One side of a listed comparison: a provider offer reduced to what the
@@ -21,7 +33,7 @@ export type ComparisonOffer = Pick<
 > & { availability: 'in-stock' };
 
 /**
- * One product and a cheaper offer for it at another supported retailer. Each
+ * One women product and a cheaper reviewed men alternative at the same retailer. Each
  * entry is a `show` outcome from packages/matcher's `compareOffers()`, so the
  * Marketplace lists exactly what the extension would badge.
  */
@@ -34,7 +46,8 @@ export type ProductComparison = {
   variant: string;
   category: Product['category'];
   size: Size;
-  equivalence: Product['equivalence'];
+  alternativeProduct: Pick<Product, 'id' | 'name' | 'brand' | 'variant' | 'size' | 'audience'>;
+  review: Product['reviewedAlternatives'][number];
   reference: ComparisonOffer;
   alternative: ComparisonOffer;
   /** Integer minor units, always > 0. */
@@ -63,6 +76,7 @@ export const CATEGORY_LABELS: Record<CategorySlug, string> = {
 };
 
 export const RETAILER_LABELS: Record<Retailer, string> = {
+  amazon: 'Amazon',
   cvs: 'CVS',
   kroger: 'Kroger',
   walmart: 'Walmart',
@@ -88,9 +102,7 @@ export type OfferView = {
 };
 
 /**
- * One rendered comparison card. `reference` and `alternative` are the same
- * packaged product at two retailers, in the same price context, with
- * `savingsCents` strictly positive.
+ * One rendered same-retailer comparison, with `savingsCents` strictly positive.
  */
 export type ComparisonView = {
   id: string;
@@ -101,6 +113,8 @@ export type ComparisonView = {
   variant: string;
   size: Size;
   upc?: string;
+  alternativeName: string;
+  alternativeVariant: string;
   reference: OfferView;
   alternative: OfferView;
   /** Integer minor units, always > 0. */

@@ -98,7 +98,9 @@ describe('App routing', () => {
     await waitForFeed();
 
     const nav = screen.getByRole('navigation', { name: 'Browse' });
-    const links = within(nav).getAllByRole('link').map((link) => link.textContent);
+    const links = within(nav)
+      .getAllByRole('link')
+      .map((link) => link.textContent);
     expect(links).toEqual(['All comparisons', ...groups.map((group) => group.label)]);
   });
 
@@ -126,21 +128,24 @@ describe('App routing', () => {
     expect(compareLinks()).toHaveLength(razors!.items.length);
   });
 
-  it('renders a real comparison on /compare/:id with both retailers and the outbound link', async () => {
+  it('renders a real same-retailer comparison with the outbound link', async () => {
     const [item] = getActiveComparisons(await loadComparisons());
     expect(item).toBeDefined();
 
     renderAppAt(`/compare/${item!.id}`);
 
-    const cta = await screen.findByRole('link', { name: /see alternative/i });
+    const cta = await screen.findByRole('link', { name: /see men's alternative/i });
     expect(cta).toHaveAttribute('href', item!.alternative.url);
     expect(cta).toHaveAttribute('target', '_blank');
     expect(cta.getAttribute('rel') ?? '').toContain('noopener');
 
     // §8: the source retailer for each displayed offer must be identifiable.
     const main = screen.getByRole('main');
-    expect(within(main).getAllByText(item!.reference.retailerLabel).length).toBeGreaterThan(0);
-    expect(within(main).getAllByText(item!.alternative.retailerLabel).length).toBeGreaterThan(0);
+    expect(
+      within(main).getAllByText(new RegExp(item!.reference.retailerLabel)).length,
+    ).toBeGreaterThan(0);
+    expect(item!.alternative.retailer).toBe(item!.reference.retailer);
+    expect(within(main).getAllByText(item!.alternativeName).length).toBeGreaterThan(0);
   });
 
   it('renders an empty state rather than crashing for an unknown comparison id', async () => {
@@ -154,7 +159,9 @@ describe('App routing', () => {
   it('renders a not-found state for an unknown category slug', async () => {
     renderAppAt('/category/not-a-category');
 
-    expect(await screen.findByRole('heading', { level: 1, name: 'Page not found' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Page not found' }),
+    ).toBeInTheDocument();
   });
 });
 
@@ -179,9 +186,13 @@ describe('search', () => {
     renderAppAt('/search?q=razor');
     await waitForFeed();
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Results for “razor”' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Results for “razor”' }),
+    ).toBeInTheDocument();
     expect(compareLinks()).toHaveLength(expected.length);
-    expect(compareLinks().map((link) => link.getAttribute('href'))).toContain(`/compare/${razor!.id}`);
+    expect(compareLinks().map((link) => link.getAttribute('href'))).toContain(
+      `/compare/${razor!.id}`,
+    );
   });
 
   it('offers a way out when nothing matches', async () => {
@@ -189,7 +200,10 @@ describe('search', () => {
 
     expect(await screen.findByText(/No comparisons match/)).toBeInTheDocument();
     expect(compareLinks()).toHaveLength(0);
-    expect(screen.getByRole('link', { name: 'Show all comparisons' })).toHaveAttribute('href', '/search');
+    expect(screen.getByRole('link', { name: 'Show all comparisons' })).toHaveAttribute(
+      'href',
+      '/search',
+    );
   });
 
   it('searches from the header box and lands on the results', async () => {
@@ -197,7 +211,10 @@ describe('search', () => {
     renderAppAt('/');
     await waitForFeed();
 
-    await user.type(screen.getByLabelText(/search products, brands, or categories/i), 'deodorant{enter}');
+    await user.type(
+      screen.getByLabelText(/search products, brands, or categories/i),
+      'deodorant{enter}',
+    );
 
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Results for “deodorant”' }),

@@ -4,7 +4,7 @@ import { ComparisonCard } from './ComparisonCard';
 import { makeComparisonView, withRouter } from '../test-utils';
 
 describe('ComparisonCard', () => {
-  it('renders the product name, both retailer labels, and the observed date', () => {
+  it('renders both product names, the shared retailer, and the observed date', () => {
     const item = makeComparisonView({
       name: 'Sample Razor',
       reference: {
@@ -17,9 +17,9 @@ describe('ComparisonCard', () => {
         observedAt: '2026-09-18T12:00:00.000Z',
       },
       alternative: {
-        retailer: 'walmart',
-        retailerLabel: 'Walmart',
-        url: 'https://walmart.example/product',
+        retailer: 'cvs',
+        retailerLabel: 'CVS',
+        url: 'https://cvs.example/mens-product',
         priceCents: 999,
         priceContext: 'online',
         priceContextLabel: 'Online',
@@ -30,9 +30,9 @@ describe('ComparisonCard', () => {
 
     render(withRouter(<ComparisonCard item={item} />));
 
-    expect(screen.getByText('Sample Razor')).toBeInTheDocument();
-    expect(screen.getByText('CVS')).toBeInTheDocument();
-    expect(screen.getByText('Walmart')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: "Men's Sample Razor" })).toBeInTheDocument();
+    expect(screen.getByText(/Compared with Sample Razor/)).toBeInTheDocument();
+    expect(screen.getByText(/CVS/)).toBeInTheDocument();
     expect(screen.getByText(/Sep 18, 2026/)).toBeInTheDocument();
   });
 

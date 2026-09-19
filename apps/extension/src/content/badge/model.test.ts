@@ -6,28 +6,37 @@ import { safeOutboundUrl, toBadgeModel } from './model';
 describe('toBadgeModel: the happy path', () => {
   it('uses the REQUIREMENTS §6 headline with savings taken from the outcome', () => {
     const model = toBadgeModel(makeShowOutcome(), NOW);
-    expect(model?.headline).toBe('Comparable alternative: save $2.40');
+    expect(model?.headline).toBe("Men's alternative: save $2.40");
   });
 
   it('shows the reviewed rationale verbatim, the alternative price, and the check date', () => {
     const model = toBadgeModel(makeShowOutcome(), NOW);
     expect(model?.rationale).toBe(makeShowOutcome().rationale);
-    expect(model?.offerLine).toBe('$12.59 at Walmart · Checked Sep 18, 2026');
+    expect(model?.offerLine).toBe("Men's Sample Razor · $12.59 at Kroger · Checked Sep 18, 2026");
   });
 
   it('links to the alternative offer and names the price and retailer in the link label', () => {
     const model = toBadgeModel(makeShowOutcome(), NOW);
-    expect(model?.action.href).toBe('https://www.walmart.com/ip/sample-razor/123');
-    expect(model?.action.ariaLabel).toBe('See alternative: $12.59 at Walmart (opens in a new tab)');
+    expect(model?.action.href).toBe('https://www.kroger.com/p/mens-sample-razor/123');
+    expect(model?.action.ariaLabel).toBe(
+      "See men's alternative: Men's Sample Razor, $12.59 at Kroger (opens in a new tab)",
+    );
   });
 
   it('lists the facts behind the comparison, with the price context on both prices', () => {
     const model = toBadgeModel(makeShowOutcome(), NOW);
     expect(model?.details).toEqual([
-      { term: 'Product', description: 'Acme Sample Razor, 5-blade cartridge razor, 4 ct' },
+      {
+        term: "Women's product",
+        description: 'Acme Sample Razor, 5-blade cartridge razor, 4 ct',
+      },
+      {
+        term: "Men's alternative",
+        description: "Acme Men's Sample Razor, 5-blade cartridge razor, 4 ct",
+      },
       { term: 'This page', description: '$14.99 at Kroger, online price' },
-      { term: 'Alternative', description: '$12.59 at Walmart, online price' },
-      { term: 'Difference', description: '$2.40 less at Walmart' },
+      { term: 'Alternative', description: '$12.59 at Kroger, online price' },
+      { term: 'Difference', description: '$2.40 less at Kroger' },
       { term: 'Matched by', description: 'Exact UPC' },
     ]);
   });
@@ -37,11 +46,13 @@ describe('toBadgeModel: the happy path', () => {
       makeShowOutcome((o) => {
         o.current.priceContext = 'store-pickup';
         o.alternative.priceContext = 'store-pickup';
+        o.current.locationId = 'kroger-1001';
+        o.alternative.locationId = 'kroger-1001';
       }),
       NOW,
     );
-    expect(model?.details[1]?.description).toBe('$14.99 at Kroger, store pickup price');
-    expect(model?.details[2]?.description).toBe('$12.59 at Walmart, store pickup price');
+    expect(model?.details[2]?.description).toBe('$14.99 at Kroger, store pickup price');
+    expect(model?.details[3]?.description).toBe('$12.59 at Kroger, store pickup price');
   });
 
   it('omits the brand cleanly when the product has none', () => {
@@ -107,7 +118,7 @@ describe('toBadgeModel: silence (suppress-by-default)', () => {
         o.alternative.priceContext = 'in-store';
       },
     ],
-    ['alternative at the same retailer', (o) => void (o.alternative.retailer = 'kroger')],
+    ['alternative at a different retailer', (o) => void (o.alternative.retailer = 'walmart')],
     ['already-expired offer', (o) => void (o.alternative.expiresAt = '2026-09-18T17:59:59.000Z')],
     ['offer expiring exactly now', (o) => void (o.alternative.expiresAt = NOW.toISOString())],
     ['unparseable observed time', (o) => void (o.alternative.observedAt = 'yesterday')],

@@ -37,27 +37,28 @@ export class ComparisonService {
 
     const resolution = resolveProduct(this.products, current);
     if (resolution.status !== 'matched') return preliminary;
-    const catalogAlternatives = resolution.product.identities.filter(
-      (identity) => identity.retailer !== current.retailer,
-    );
-    const alternatives = catalogAlternatives.filter(
-      (identity) => current.priceContext === 'online' || locations[identity.retailer],
-    );
+    const catalogAlternatives = resolution.product.reviewedAlternatives.flatMap((relationship) => {
+      const product = this.products.find(
+        (candidate) => candidate.id === relationship.productId && candidate.status === 'active',
+      );
+      if (!product) return [];
+      const identity = product.identities.find(
+        (candidate) => candidate.retailer === current.retailer,
+      );
+      return identity ? [{ product, identity }] : [];
+    });
     if (catalogAlternatives.length === 0) {
       return { status: 'no-match', reason: 'no-alternative-identity' };
     }
-    if (alternatives.length === 0) return { status: 'suppressed', reason: 'missing-location' };
 
     const results = await Promise.all(
-      alternatives.map((identity) =>
-        this.gateway.lookupOffers(identity.retailer, {
+      catalogAlternatives.map(({ product, identity }) =>
+        this.gateway.lookupOffers(current.retailer, {
           productId: identity.productId,
-          ...(resolution.product.upc ? { upc: resolution.product.upc } : {}),
+          ...(product.upc ? { upc: product.upc } : {}),
           url: identity.canonicalUrl,
           priceContext: current.priceContext!,
-          ...(current.priceContext !== 'online'
-            ? { locationId: locations[identity.retailer]! }
-            : {}),
+          ...(current.priceContext !== 'online' ? { locationId: current.locationId! } : {}),
         }),
       ),
     );

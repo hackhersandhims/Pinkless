@@ -1,11 +1,6 @@
 /** Pure transforms from the API's `ProductComparison` shape to the view contract. */
 
-import {
-  CATEGORY_LABELS,
-  CATEGORY_ORDER,
-  PRICE_CONTEXT_LABELS,
-  RETAILER_LABELS,
-} from './types.js';
+import { CATEGORY_LABELS, CATEGORY_ORDER, PRICE_CONTEXT_LABELS, RETAILER_LABELS } from './types.js';
 
 const RETAILER_ORDER = Object.keys(RETAILER_LABELS) as Retailer[];
 import type {
@@ -41,12 +36,14 @@ export function toView(comparison: ProductComparison): ComparisonView {
     variant: comparison.variant,
     size: comparison.size,
     upc: comparison.upc,
+    alternativeName: comparison.alternativeProduct.name,
+    alternativeVariant: comparison.alternativeProduct.variant,
     reference: toOfferView(comparison.reference),
     alternative: toOfferView(comparison.alternative),
     savingsCents: comparison.savingsCents,
-    rationale: comparison.equivalence.rationale,
-    matchedAttributes: comparison.equivalence.matchedAttributes,
-    knownDifferences: comparison.equivalence.knownDifferences ?? [],
+    rationale: comparison.review.rationale,
+    matchedAttributes: comparison.review.matchedAttributes,
+    knownDifferences: comparison.review.knownDifferences ?? [],
   };
 }
 
@@ -59,13 +56,11 @@ const CATEGORY_RANK: Record<CategorySlug, number> = Object.fromEntries(
  * `CATEGORY_ORDER` then by product id.
  */
 export function getActiveComparisons(response: ComparisonsResponse): ComparisonView[] {
-  return response.comparisons
-    .map(toView)
-    .sort((a, b) => {
-      const rankDiff = CATEGORY_RANK[a.category] - CATEGORY_RANK[b.category];
-      if (rankDiff !== 0) return rankDiff;
-      return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
-    });
+  return response.comparisons.map(toView).sort((a, b) => {
+    const rankDiff = CATEGORY_RANK[a.category] - CATEGORY_RANK[b.category];
+    if (rankDiff !== 0) return rankDiff;
+    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+  });
 }
 
 /** Groups already-sorted comparison views by category, in `CATEGORY_ORDER`, omitting empty categories. */

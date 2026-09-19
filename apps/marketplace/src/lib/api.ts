@@ -13,12 +13,14 @@
 
 import productsJson from '../../../../packages/catalog/products.json';
 import { compareOffers } from '../../../../packages/matcher/src/compare.js';
-import type { ProductView, RetailerLocationSelection } from '../../../../packages/matcher/src/types.js';
+import type {
+  ProductView,
+  RetailerLocationSelection,
+} from '../../../../packages/matcher/src/types.js';
 import type {
   ComparisonOffer,
   ComparisonsResponse,
   Offer,
-  PriceContext,
   Product,
   ProductComparison,
 } from './types.js';
@@ -46,19 +48,6 @@ function offersForProduct(product: Product): Offer[] {
   });
 }
 
-/** The price context with the most offers; comparisons never cross contexts. */
-function largestContextGroup(offers: Offer[]): Offer[] {
-  const groups = new Map<PriceContext, Offer[]>();
-  for (const offer of offers) {
-    groups.set(offer.priceContext, [...(groups.get(offer.priceContext) ?? []), offer]);
-  }
-  let best: Offer[] = [];
-  for (const group of groups.values()) {
-    if (group.length > best.length) best = group;
-  }
-  return best;
-}
-
 function toComparisonOffer(offer: Offer): ComparisonOffer | undefined {
   if (offer.availability !== 'in-stock') return undefined;
   const { retailer, url, price, priceContext, locationId, observedAt, expiresAt } = offer;
@@ -81,35 +70,41 @@ function toComparisonOffer(offer: Offer): ComparisonOffer | undefined {
  * the default (REQUIREMENTS §5/§7).
  */
 function buildComparison(product: Product, now: Date): ProductComparison | undefined {
-  const offers = largestContextGroup(offersForProduct(product));
-  if (offers.length < 2) return undefined;
+  const alternativeOffers = product.reviewedAlternatives.flatMap((relationship) => {
+    const alternative = products.find((candidate) => candidate.id === relationship.productId);
+    return alternative ? offersForProduct(alternative) : [];
+  });
+  const outcomes = offersForProduct(product).flatMap((current) => {
+    const view: ProductView = {
+      retailer: current.retailer,
+      canonicalUrl: current.url,
+      productId: current.productId,
+      ...(product.upc ? { upc: product.upc } : {}),
+      title: product.name,
+      currentPriceCents: current.price.amountCents,
+      currency: current.price.currency,
+      priceContext: current.priceContext,
+      ...(current.locationId ? { locationId: current.locationId } : {}),
+      availability: current.availability,
+    };
+    const locations: RetailerLocationSelection = current.locationId
+      ? { [current.retailer]: current.locationId }
+      : {};
+    const outcome = compareOffers(products, view, alternativeOffers, now, locations);
+    return outcome.status === 'show' ? [{ current, outcome }] : [];
+  });
+  const selected = outcomes.sort(
+    (left, right) => right.outcome.savings.amountCents - left.outcome.savings.amountCents,
+  )[0];
+  if (!selected) return undefined;
 
-  const current = offers.reduce((highest, offer) =>
-    offer.price.amountCents > highest.price.amountCents ? offer : highest,
-  );
-  const view: ProductView = {
-    retailer: current.retailer,
-    canonicalUrl: current.url,
-    productId: current.productId,
-    ...(product.upc ? { upc: product.upc } : {}),
-    title: product.name,
-    currentPriceCents: current.price.amountCents,
-    currency: current.price.currency,
-    priceContext: current.priceContext,
-    ...(current.locationId ? { locationId: current.locationId } : {}),
-    availability: current.availability,
-  };
-  // One user location context: the store each retailer's offer was observed at.
-  const locations: RetailerLocationSelection = Object.fromEntries(
-    offers.flatMap((offer) => (offer.locationId ? [[offer.retailer, offer.locationId]] : [])),
-  );
-
-  const outcome = compareOffers(products, view, offers, now, locations);
-  if (outcome.status !== 'show') return undefined;
-
-  const reference = toComparisonOffer(current);
-  const alternative = toComparisonOffer(outcome.alternative);
+  const reference = toComparisonOffer(selected.current);
+  const alternative = toComparisonOffer(selected.outcome.alternative);
   if (!reference || !alternative) return undefined;
+  const review = product.reviewedAlternatives.find(
+    (candidate) => candidate.productId === selected.outcome.alternativeProduct.id,
+  );
+  if (!review) return undefined;
 
   return {
     productId: product.id,
@@ -119,17 +114,23 @@ function buildComparison(product: Product, now: Date): ProductComparison | undef
     variant: product.variant,
     category: product.category,
     size: product.size,
-    equivalence: product.equivalence,
+    alternativeProduct: selected.outcome.alternativeProduct,
+    review,
     reference,
     alternative,
-    savingsCents: outcome.savings.amountCents,
+    savingsCents: selected.outcome.savings.amountCents,
   };
 }
 
 function buildLocalComparisonsResponse(): ComparisonsResponse {
   const now = new Date(LOCAL_GENERATED_AT);
   const comparisons = products
-    .filter((product) => product.status === 'active')
+    .filter(
+      (product) =>
+        product.status === 'active' &&
+        product.audience === 'women' &&
+        product.reviewedAlternatives.length > 0,
+    )
     .map((product) => buildComparison(product, now))
     .filter((comparison): comparison is ProductComparison => comparison !== undefined);
 

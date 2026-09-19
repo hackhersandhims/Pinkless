@@ -10,6 +10,7 @@ type AdapterConfig = {
   productIdFromUrl: (url: URL) => string | undefined;
   blockedPriceSelectors: string[];
   allowedSeller?: string;
+  defaultPriceContext?: 'online';
 };
 
 type ExtractedOffer = {
@@ -145,6 +146,7 @@ function fulfillmentContext(value: string): PriceContext | undefined {
 function readFulfillment(
   document: Document,
   offer: JsonRecord,
+  defaultPriceContext?: 'online',
 ): Pick<ExtractedOffer, 'priceContext' | 'locationId'> | null {
   const selected = selectedElement(document, SELECTED_FULFILLMENT_SELECTORS);
   if (selected === null) return null;
@@ -172,7 +174,7 @@ function readFulfillment(
   const selectedContext = selectedValue ? fulfillmentContext(selectedValue) : undefined;
   const offerContext = uniqueOfferContexts[0];
   if (selectedContext && offerContext && selectedContext !== offerContext) return null;
-  const priceContext = selectedContext ?? offerContext;
+  const priceContext = selectedContext ?? offerContext ?? defaultPriceContext;
   if (!priceContext) return null;
 
   const locationId = selected
@@ -244,7 +246,7 @@ function readOffer(
     if (!seller || seller.toLowerCase() !== config.allowedSeller.toLowerCase()) return null;
   }
 
-  const fulfillment = readFulfillment(document, offer);
+  const fulfillment = readFulfillment(document, offer, config.defaultPriceContext);
   if (!fulfillment) return null;
   return {
     currentPriceCents: uniquePrices[0]!,

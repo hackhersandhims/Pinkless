@@ -30,6 +30,7 @@ export function formatChecked(iso: string): string {
 }
 
 export const RETAILER_LABELS: Record<Retailer, string> = {
+  amazon: 'Amazon',
   cvs: 'CVS',
   kroger: 'Kroger',
   walmart: 'Walmart',

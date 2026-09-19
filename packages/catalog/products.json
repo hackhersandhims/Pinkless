@@ -2,15 +2,22 @@
   {
     "id": "razor-5blade-cartridge-4ct",
     "upc": "012345678905",
-    "name": "Sample Razor",
+    "name": "Women's Sample Razor",
     "brand": "Sample Brand",
     "variant": "5-blade cartridge razor, 4 ct",
     "category": "razors",
+    "audience": "women",
     "size": {
       "amount": 4,
       "unit": "count"
     },
     "identities": [
+      {
+        "retailer": "amazon",
+        "productId": "B000000001",
+        "canonicalUrl": "https://www.amazon.com/dp/B000000001",
+        "canonicalUrlPatterns": ["^https://www\\.amazon\\.com/dp/B000000001$"]
+      },
       {
         "retailer": "cvs",
         "productId": "cvs-razor-1",
@@ -35,25 +42,45 @@
       "rationale": "Same manufacturer UPC 012345678905 at all three retailers: identical 5-blade cartridge razor in a 4-count pack.",
       "matchedAttributes": ["upc", "brand", "blade count", "pack count", "handle type"]
     },
+    "reviewedAlternatives": [
+      {
+        "productId": "razor-3blade-disposable-6ct",
+        "rationale": "Reviewed men's razor alternative with the same five-blade cartridge format and four-count package at the same retailer.",
+        "matchedAttributes": ["category", "blade count", "cartridge format", "pack count"]
+      }
+    ],
     "status": "active"
   },
   {
     "id": "razor-3blade-disposable-6ct",
     "upc": "036000291452",
-    "name": "Daily Comfort Disposable Razor",
+    "name": "Men's Daily Comfort Razor",
     "brand": "Northbank",
-    "variant": "3-blade disposable razor, 6 ct",
+    "variant": "5-blade cartridge razor, 4 ct",
     "category": "razors",
+    "audience": "men",
     "size": {
-      "amount": 6,
+      "amount": 4,
       "unit": "count"
     },
     "identities": [
+      {
+        "retailer": "amazon",
+        "productId": "B000000002",
+        "canonicalUrl": "https://www.amazon.com/dp/B000000002",
+        "canonicalUrlPatterns": ["^https://www\\.amazon\\.com/dp/B000000002$"]
+      },
       {
         "retailer": "cvs",
         "productId": "cvs-razor-2",
         "canonicalUrl": "https://www.cvs.com/shop/daily-comfort-disposable-razor-prodid-cvs-razor-2",
         "canonicalUrlPatterns": ["^https://www\\.cvs\\.com/shop/[a-z0-9-]+-prodid-cvs-razor-2$"]
+      },
+      {
+        "retailer": "kroger",
+        "productId": "00036000291452",
+        "canonicalUrl": "https://www.kroger.com/p/daily-comfort-razor/00036000291452",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/00036000291452$"]
       },
       {
         "retailer": "walmart",
@@ -64,21 +91,20 @@
     ],
     "equivalence": {
       "policy": "exact-packaged-product",
-      "rationale": "Same manufacturer UPC 036000291452: identical 3-blade disposable razor in a 6-count pack at both retailers.",
-      "matchedAttributes": ["upc", "brand", "blade count", "pack count"],
-      "knownDifferences": [
-        "Handle color varies by retailer allocation; the cartridge and blade count are identical."
-      ]
+      "rationale": "Same manufacturer UPC 036000291452: identical men's 5-blade cartridge razor in a 4-count pack at every listed retailer.",
+      "matchedAttributes": ["upc", "brand", "blade count", "pack count"]
     },
+    "reviewedAlternatives": [],
     "status": "active"
   },
   {
     "id": "deodorant-invisible-solid-2-6oz",
     "upc": "079409012341",
-    "name": "Invisible Solid Antiperspirant",
+    "name": "Women's Invisible Solid Antiperspirant",
     "brand": "Cedarline",
     "variant": "Fresh scent, 2.6 oz",
     "category": "deodorant",
+    "audience": "women",
     "size": {
       "amount": 2.6,
       "unit": "oz"
@@ -102,17 +128,25 @@
       "rationale": "Same manufacturer UPC 079409012341: identical 2.6 oz invisible solid antiperspirant in the same scent.",
       "matchedAttributes": ["upc", "brand", "scent", "net weight", "formulation"]
     },
+    "reviewedAlternatives": [
+      {
+        "productId": "deodorant-clear-gel-3oz",
+        "rationale": "Reviewed men's antiperspirant alternative with the same form, scent profile, and 2.6 oz package at the same retailer.",
+        "matchedAttributes": ["category", "formulation", "scent", "net weight"]
+      }
+    ],
     "status": "active"
   },
   {
     "id": "deodorant-clear-gel-3oz",
     "upc": "037000123453",
-    "name": "Clear Gel Antiperspirant",
+    "name": "Men's Invisible Solid Antiperspirant",
     "brand": "Cedarline",
-    "variant": "Unscented, 3 oz",
+    "variant": "Fresh scent, 2.6 oz",
     "category": "deodorant",
+    "audience": "men",
     "size": {
-      "amount": 3,
+      "amount": 2.6,
       "unit": "oz"
     },
     "identities": [
@@ -137,18 +171,20 @@
     ],
     "equivalence": {
       "policy": "exact-packaged-product",
-      "rationale": "Same manufacturer UPC 037000123453: identical 3 oz unscented clear gel antiperspirant at all three retailers.",
+      "rationale": "Same manufacturer UPC 037000123453: identical men's 2.6 oz invisible solid antiperspirant at all three retailers.",
       "matchedAttributes": ["upc", "brand", "scent", "net weight", "formulation"]
     },
+    "reviewedAlternatives": [],
     "status": "active"
   },
   {
     "id": "body-wash-moisturizing-18oz",
     "upc": "011111000124",
-    "name": "Moisturizing Body Wash",
+    "name": "Women's Moisturizing Body Wash",
     "brand": "Havenmoor",
     "variant": "Shea butter, 18 fl oz",
     "category": "body-wash",
+    "audience": "women",
     "size": {
       "amount": 18,
       "unit": "oz"
@@ -172,17 +208,25 @@
       "rationale": "Same manufacturer UPC 011111000124: identical 18 fl oz shea butter body wash at both retailers.",
       "matchedAttributes": ["upc", "brand", "scent", "net volume"]
     },
+    "reviewedAlternatives": [
+      {
+        "productId": "body-wash-sensitive-16oz",
+        "rationale": "Reviewed men's body-wash alternative with the same mild formulation and 18 fl oz package at the same retailer.",
+        "matchedAttributes": ["category", "formulation", "net volume"]
+      }
+    ],
     "status": "active"
   },
   {
     "id": "body-wash-sensitive-16oz",
     "upc": "003700041236",
-    "name": "Sensitive Skin Body Wash",
+    "name": "Men's Sensitive Skin Body Wash",
     "brand": "Havenmoor",
-    "variant": "Fragrance free, 16 fl oz",
+    "variant": "Fragrance free, 18 fl oz",
     "category": "body-wash",
+    "audience": "men",
     "size": {
-      "amount": 16,
+      "amount": 18,
       "unit": "oz"
     },
     "identities": [
@@ -201,9 +245,10 @@
     ],
     "equivalence": {
       "policy": "exact-packaged-product",
-      "rationale": "Same manufacturer UPC 003700041236: identical 16 fl oz fragrance-free body wash at both retailers.",
+      "rationale": "Same manufacturer UPC 003700041236: identical men's 18 fl oz fragrance-free body wash at both retailers.",
       "matchedAttributes": ["upc", "brand", "net volume", "formulation"]
     },
+    "reviewedAlternatives": [],
     "status": "active"
   },
   {
@@ -213,6 +258,7 @@
     "brand": "Northbank",
     "variant": "5-blade cartridge razor, 3 ct",
     "category": "razors",
+    "audience": "women",
     "size": {
       "amount": 3,
       "unit": "count"
@@ -230,6 +276,7 @@
       "rationale": "Paused pending a second reviewed retailer identity; a single-retailer record cannot produce a comparison.",
       "matchedAttributes": ["upc", "brand", "blade count", "pack count"]
     },
+    "reviewedAlternatives": [],
     "status": "paused"
   },
   {
@@ -239,6 +286,7 @@
     "brand": "Cedarline",
     "variant": "Original scent, 2 oz",
     "category": "deodorant",
+    "audience": "men",
     "size": {
       "amount": 2,
       "unit": "oz"
@@ -256,6 +304,7 @@
       "rationale": "Retired after the manufacturer discontinued this size; retained for record history only.",
       "matchedAttributes": ["upc", "brand", "scent", "net weight"]
     },
+    "reviewedAlternatives": [],
     "status": "retired"
   }
 ]

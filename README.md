@@ -5,11 +5,12 @@
 **Reviewed product comparisons, right where you shop.**
 
 Pinkless is a Chrome extension and static Marketplace for reviewed product
-comparisons. It highlights a product only when an approved provider reports the
-same exact packaged item, verified in stock, for less at another retailer.
+comparisons. It highlights a women-marketed product only when an approved
+provider reports a reviewed men-marketed alternative, verified in stock for
+less at the same retailer.
 
 ![Chrome Extension](https://img.shields.io/badge/Chrome-Manifest%20V3-ff99d8?logo=googlechrome&logoColor=white)
-![Retailers](https://img.shields.io/badge/Retailers-CVS%20%7C%20Kroger%20%7C%20Walmart-ff99d8)
+![Retailers](https://img.shields.io/badge/Retailers-Amazon%20%7C%20CVS%20%7C%20Kroger%20%7C%20Walmart-ff99d8)
 ![Hosting](https://img.shields.io/badge/Marketplace-Vercel-ff99d8?logo=vercel&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-React%20%2B%20Vite-ff99d8?logo=typescript&logoColor=white)
 
@@ -22,12 +23,12 @@ same exact packaged item, verified in stock, for less at another retailer.
 
 ## Scope
 
-|                         | MVP                                                                     |
-| ----------------------- | ----------------------------------------------------------------------- |
-| **Retailer network**    | CVS, Kroger, and Walmart                                                |
-| **Marketplace hosting** | Vercel                                                                  |
-| **Data and matching**   | Exact UPC/retailer identity via approved APIs or licensed provider data |
-| **Not included**        | Scraping, accounts, tracking, checkout, or fuzzy product matching       |
+|                         | MVP                                                                  |
+| ----------------------- | -------------------------------------------------------------------- |
+| **Retailer network**    | Amazon, CVS, Kroger, and Walmart                                     |
+| **Marketplace hosting** | Vercel                                                               |
+| **Data and matching**   | Exact identity plus reviewed same-retailer women-to-men alternatives |
+| **Not included**        | Scraping, accounts, tracking, checkout, or fuzzy product matching    |
 
 ## Getting started
 
@@ -43,6 +44,8 @@ copy `.env.example` to `.env.local` and use `PINKLESS_PROVIDER_MODE=mock`.
 Live Kroger calls require server-side `KROGER_CLIENT_ID` and
 `KROGER_CLIENT_SECRET` values from the Kroger developer portal. Configure them
 in Vercel project settings and never expose them through a `VITE_` variable.
+Amazon offers use the server-side `CANOPY_API_KEY`; each catalog entry still
+needs a reviewed Amazon ASIN and canonical URL before an offer can be shown.
 CVS and Walmart intentionally remain unavailable until approved or licensed
 product-and-price integrations are implemented.
 
@@ -114,7 +117,7 @@ fixtures/           Sanitized retailer, catalog, and provider fixtures
   choices from the selected provider.
 - `POST /api/compare` accepts `{ current, locations }`, where `current` is a
   normalized product view and `locations` contains the explicitly selected
-  store ID for each retailer in a store-specific comparison.
+  store ID for the current retailer in a store-specific comparison.
 - Both routes enforce an exact origin allowlist. Production suppression and
   no-match responses omit diagnostic reason codes.
 

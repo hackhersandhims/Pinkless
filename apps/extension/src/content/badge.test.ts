@@ -14,13 +14,14 @@ describe('comparison badge', () => {
     expect(document.querySelectorAll(`#${BADGE_ROOT_ID}`)).toHaveLength(1);
 
     const shadowRoot = document.getElementById(BADGE_ROOT_ID)?.shadowRoot;
-    expect(shadowRoot?.textContent).toContain('Comparable alternative: save $4.00');
+    expect(shadowRoot?.textContent).toContain("Men's alternative: save $4.00");
+    expect(shadowRoot?.textContent).toContain("Men's Sample Razor at CVS");
     expect(shadowRoot?.textContent).toContain('Why this was matched');
     expect(shadowRoot?.querySelector('img')?.alt).toBe('Pinkless');
     const link = shadowRoot?.querySelector<HTMLAnchorElement>('a');
     expect(link?.target).toBe('_blank');
     expect(link?.rel).toContain('noopener');
-    expect(link?.href).toBe('https://www.walmart.com/ip/sample-razor/walmart-razor-1');
+    expect(link?.href).toBe('https://www.cvs.com/shop/mens-razor-prodid-cvs-mens-razor-1');
 
     shadowRoot?.querySelector<HTMLButtonElement>('.pinkless-badge__dismiss')?.click();
     expect(dismiss).toHaveBeenCalledOnce();

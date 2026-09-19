@@ -1,0 +1,26 @@
+{
+  "products": [
+    {
+      "retailer": "amazon",
+      "productId": "B000000001",
+      "upc": "012345678905",
+      "name": "Sample Razor",
+      "brand": "Sample Brand",
+      "size": "1 count"
+    }
+  ],
+  "locations": [],
+  "offers": [
+    {
+      "retailer": "amazon",
+      "productId": "B000000001",
+      "url": "https://www.amazon.com/dp/B000000001",
+      "price": { "amountCents": 899, "currency": "USD" },
+      "priceContext": "online",
+      "condition": "new",
+      "availability": "in-stock",
+      "observedAt": "2026-09-18T16:00:00.000Z",
+      "expiresAt": "2026-09-18T17:00:00.000Z"
+    }
+  ]
+}

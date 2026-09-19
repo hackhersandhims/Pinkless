@@ -11,13 +11,7 @@ export type ComparisonCardProps = {
   item: ComparisonView;
 };
 
-/**
- * The one product card, used in rails and grids. The whole card is a single
- * link to /compare/:id (no nested controls); "View comparison" is its visual
- * affordance, not a second link. The big price is the lower offer; the higher
- * offer is context ("Compared with"), never a "was" price, because the two are
- * different retailers rather than a markdown.
- */
+/** Same-retailer women-to-men comparison card. The whole card is one link. */
 export function ComparisonCard({ item }: ComparisonCardProps) {
   const { reference, alternative } = item;
   const percent = percentLower(item.savingsCents, reference.priceCents);
@@ -26,17 +20,14 @@ export function ComparisonCard({ item }: ComparisonCardProps) {
     <Link
       to={`/compare/${item.id}`}
       className={styles.card}
-      aria-label={`${item.name}: ${formatCents(alternative.priceCents)} at ${alternative.retailerLabel}. ${formatSavings(item.savingsCents)} versus ${reference.retailerLabel}`}
+      aria-label={`${item.alternativeName}: ${formatCents(alternative.priceCents)} at ${reference.retailerLabel}. ${formatSavings(item.savingsCents)} versus ${item.name}`}
     >
       <ProductMedia category={item.category} />
 
       <div className={styles.body}>
         <span className={`label ${styles.category}`}>{item.categoryLabel}</span>
-        <h3 className={`body ${styles.name}`}>{item.name}</h3>
-        <span className="caption">
-          {item.brand ? `${item.brand} · ` : ''}
-          {item.variant}
-        </span>
+        <h3 className={`body ${styles.name}`}>{item.alternativeName}</h3>
+        <span className="caption">{item.alternativeVariant}</span>
 
         <div className={styles.pricing}>
           <p className={`display ${styles.price}`}>{formatCents(alternative.priceCents)}</p>
@@ -45,8 +36,7 @@ export function ComparisonCard({ item }: ComparisonCardProps) {
           </span>
         </div>
         <span className="caption">
-          Compared with {formatCents(reference.priceCents)} at{' '}
-          <span className={styles.retailer}>{reference.retailerLabel}</span>
+          Compared with {item.name} at {formatCents(reference.priceCents)}
         </span>
 
         <div className={styles.savings}>

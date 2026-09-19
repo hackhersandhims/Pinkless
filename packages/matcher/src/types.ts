@@ -45,7 +45,8 @@ export type NoMatchReason =
 export type ComparisonOutcome =
   | {
       status: 'show';
-      product: Pick<Product, 'id' | 'name' | 'brand' | 'variant' | 'size'>;
+      product: Pick<Product, 'id' | 'name' | 'brand' | 'variant' | 'size' | 'audience'>;
+      alternativeProduct: Pick<Product, 'id' | 'name' | 'brand' | 'variant' | 'size' | 'audience'>;
       current: {
         retailer: Retailer;
         price: Money;
@@ -55,6 +56,8 @@ export type ComparisonOutcome =
       alternative: Offer;
       savings: Money;
       rationale: string;
+      matchedAttributes: string[];
+      knownDifferences?: string[];
       matchedBy: IdentityMatchMethod;
     }
   | { status: 'no-match'; reason: NoMatchReason }

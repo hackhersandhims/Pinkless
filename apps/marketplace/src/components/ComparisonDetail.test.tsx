@@ -4,12 +4,12 @@ import { ComparisonDetail } from './ComparisonDetail';
 import { makeComparisonView, withRouter } from '../test-utils';
 
 describe('ComparisonDetail', () => {
-  it('links "See alternative" to item.alternative.url, opening in a new tab safely', () => {
+  it("links the men's alternative to its same-retailer URL in a new tab", () => {
     const item = makeComparisonView({
       alternative: {
-        retailer: 'walmart',
-        retailerLabel: 'Walmart',
-        url: 'https://walmart.example/product/abc',
+        retailer: 'cvs',
+        retailerLabel: 'CVS',
+        url: 'https://cvs.example/product/abc',
         priceCents: 999,
         priceContext: 'online',
         priceContextLabel: 'Online',
@@ -19,7 +19,7 @@ describe('ComparisonDetail', () => {
 
     render(withRouter(<ComparisonDetail item={item} />));
 
-    const link = screen.getByRole('link', { name: /see alternative/i });
+    const link = screen.getByRole('link', { name: /see men's alternative/i });
     expect(link).toHaveAttribute('href', item.alternative.url);
     expect(link).toHaveAttribute('target', '_blank');
     expect(link.getAttribute('rel')).toEqual(expect.stringContaining('noopener'));

@@ -18,6 +18,7 @@
     {
       "resources": ["assets/logo.png"],
       "matches": [
+        "https://www.amazon.com/*",
         "https://www.cvs.com/*",
         "https://www.kroger.com/*",
         "https://www.walmart.com/*",
@@ -28,7 +29,15 @@
   "host_permissions": ["http://localhost:3000/*"],
   "content_scripts": [
     {
-      "matches": ["https://www.cvs.com/*", "https://www.kroger.com/*", "https://www.walmart.com/*"],
+      "matches": [
+        "https://www.amazon.com/*",
+        "https://www.cvs.com/*",
+        "https://www.kroger.com/*",
+        "https://www.walmart.com/*",
+        "http://localhost:4174/product/cvs*",
+        "http://localhost:4174/product/kroger*",
+        "http://localhost:4174/product/walmart*"
+      ],
       "js": ["content/index.js"],
       "run_at": "document_idle"
     }

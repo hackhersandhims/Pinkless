@@ -10,6 +10,7 @@ import type {
 } from '../../../../packages/matcher/src/types.js';
 
 const retailerDomains: Record<Retailer, string> = {
+  amazon: 'amazon.com',
   cvs: 'cvs.com',
   kroger: 'kroger.com',
   walmart: 'walmart.com',

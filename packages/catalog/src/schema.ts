@@ -1,6 +1,6 @@
 /** Shared domain types used by the catalog, providers, API, and matcher. */
 
-export const RETAILERS = ['cvs', 'kroger', 'walmart'] as const;
+export const RETAILERS = ['amazon', 'cvs', 'kroger', 'walmart'] as const;
 export type Retailer = (typeof RETAILERS)[number];
 
 export const PRICE_CONTEXTS = ['online', 'store-pickup', 'in-store'] as const;
@@ -26,6 +26,15 @@ export type RetailerIdentity = {
 };
 
 export type EquivalencePolicy = 'exact-packaged-product';
+export type ProductAudience = 'women' | 'men' | 'unisex';
+
+/** A human-reviewed, same-retailer substitute for the source product. */
+export type ReviewedAlternative = {
+  productId: string;
+  rationale: string;
+  matchedAttributes: string[];
+  knownDifferences?: string[];
+};
 
 export type Product = {
   id: string;
@@ -34,6 +43,7 @@ export type Product = {
   brand?: string;
   variant: string;
   category: 'razors' | 'deodorant' | 'body-wash';
+  audience: ProductAudience;
   size: Size;
   identities: RetailerIdentity[];
   equivalence: {
@@ -43,6 +53,8 @@ export type Product = {
     matchedAttributes: string[];
     knownDifferences?: string[];
   };
+  /** Explicit reviewed links only. The matcher never infers alternatives. */
+  reviewedAlternatives: ReviewedAlternative[];
   status: 'active' | 'paused' | 'retired';
 };
 

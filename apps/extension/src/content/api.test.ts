@@ -34,6 +34,22 @@ describe('parseComparisonResponse', () => {
     expect(parseComparisonResponse(inconsistent)).toBeNull();
   });
 
+  it('rejects a different-retailer alternative and a different store location', () => {
+    const crossRetailer = showComparison({
+      alternative: {
+        ...showComparison().alternative,
+        retailer: 'walmart',
+        url: 'https://www.walmart.com/ip/mens-razor/walmart-mens-razor-1',
+        locationId: 'walmart-1001',
+      },
+    });
+    const differentStore = showComparison({
+      alternative: { ...showComparison().alternative, locationId: 'cvs-2002' },
+    });
+    expect(parseComparisonResponse(crossRetailer)).toBeNull();
+    expect(parseComparisonResponse(differentStore)).toBeNull();
+  });
+
   it('rejects expired alternatives', () => {
     const expired = showComparison({
       alternative: {

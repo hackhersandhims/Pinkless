@@ -1,4 +1,9 @@
-import type { Offer, Product, RetailerIdentity } from '../../catalog/src/schema.js';
+import type {
+  Offer,
+  Product,
+  RetailerIdentity,
+  ReviewedAlternative,
+} from '../../catalog/src/schema.js';
 import { resolveProduct } from './resolve.js';
 import type { ComparisonOutcome, ProductView, RetailerLocationSelection } from './types.js';
 
@@ -13,13 +18,11 @@ function offerMatchesIdentity(offer: Offer, identity: RetailerIdentity): boolean
 
 function eligibleOffer(
   offer: Offer,
-  product: Product,
+  identity: RetailerIdentity,
   current: ProductView,
   nowMs: number,
-  locations: RetailerLocationSelection,
 ): boolean {
-  const identity = product.identities.find((candidate) => candidate.retailer === offer.retailer);
-  if (!identity || offer.retailer === current.retailer || !offerMatchesIdentity(offer, identity)) {
+  if (offer.retailer !== current.retailer || !offerMatchesIdentity(offer, identity)) {
     return false;
   }
   if (
@@ -39,11 +42,17 @@ function eligibleOffer(
   }
   if (expiresAt <= nowMs) return false;
   if (current.priceContext !== 'online') {
-    const expectedLocation = locations[offer.retailer] ?? current.locationId;
-    if (!expectedLocation || offer.locationId !== expectedLocation) return false;
+    if (!current.locationId || offer.locationId !== current.locationId) return false;
   }
   return true;
 }
+
+type AlternativeCandidate = {
+  product: Product;
+  relationship: ReviewedAlternative;
+  identity: RetailerIdentity;
+  offer: Offer;
+};
 
 export function compareOffers(
   products: Product[],
@@ -87,35 +96,68 @@ export function compareOffers(
     return { status: 'suppressed', reason: 'missing-location' };
   }
 
-  const eligible = offers
-    .filter((offer) => eligibleOffer(offer, resolution.product, current, now.valueOf(), locations))
+  const candidateProducts = resolution.product.reviewedAlternatives.flatMap((relationship) => {
+    const product = products.find(
+      (candidate) => candidate.id === relationship.productId && candidate.status === 'active',
+    );
+    if (
+      !product ||
+      product.audience !== 'men' ||
+      product.category !== resolution.product.category
+    ) {
+      return [];
+    }
+    const identity = product.identities.find(
+      (candidate) => candidate.retailer === current.retailer,
+    );
+    return identity ? [{ product, relationship, identity }] : [];
+  });
+  const eligible: AlternativeCandidate[] = candidateProducts
+    .flatMap((candidate) =>
+      offers
+        .filter((offer) => eligibleOffer(offer, candidate.identity, current, now.valueOf()))
+        .map((offer) => ({ ...candidate, offer })),
+    )
     .sort(
       (left, right) =>
-        left.price.amountCents - right.price.amountCents ||
-        left.retailer.localeCompare(right.retailer),
+        left.offer.price.amountCents - right.offer.price.amountCents ||
+        left.product.id.localeCompare(right.product.id),
     );
   if (eligible.length === 0) {
     return { status: 'no-match', reason: 'no-eligible-offer' };
   }
-  const alternative = eligible[0]!;
-  const savings = currentPriceCents - alternative.price.amountCents;
+  const selected = eligible[0]!;
+  const savings = currentPriceCents - selected.offer.price.amountCents;
   if (savings <= 0) {
     return { status: 'no-match', reason: 'no-positive-savings' };
   }
 
-  const { id, name, brand, variant, size } = resolution.product;
+  const { id, name, brand, variant, size, audience } = resolution.product;
+  const alternativeProduct = selected.product;
   return {
     status: 'show',
-    product: { id, name, ...(brand ? { brand } : {}), variant, size },
+    product: { id, name, ...(brand ? { brand } : {}), variant, size, audience },
+    alternativeProduct: {
+      id: alternativeProduct.id,
+      name: alternativeProduct.name,
+      ...(alternativeProduct.brand ? { brand: alternativeProduct.brand } : {}),
+      variant: alternativeProduct.variant,
+      size: alternativeProduct.size,
+      audience: alternativeProduct.audience,
+    },
     current: {
       retailer: current.retailer,
       price: { amountCents: currentPriceCents, currency: 'USD' },
       priceContext: current.priceContext,
       ...(current.locationId ? { locationId: current.locationId } : {}),
     },
-    alternative,
+    alternative: selected.offer,
     savings: { amountCents: savings, currency: 'USD' },
-    rationale: resolution.product.equivalence.rationale,
+    rationale: selected.relationship.rationale,
+    matchedAttributes: selected.relationship.matchedAttributes,
+    ...(selected.relationship.knownDifferences
+      ? { knownDifferences: selected.relationship.knownDifferences }
+      : {}),
     matchedBy: resolution.matchedBy,
   };
 }

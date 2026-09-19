@@ -4,7 +4,7 @@ import type { BadgeModel } from './model.js';
 export const COPY = {
   brand: 'Pinkless',
   region: 'Pinkless price comparison',
-  primary: 'See alternative',
+  primary: "See men's alternative",
   why: 'Why this was matched',
   dismiss: 'Not now',
   dismissLabel: 'Not now, hide the Pinkless comparison on this page',
