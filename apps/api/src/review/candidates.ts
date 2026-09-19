@@ -14,7 +14,10 @@ export type ReviewProductInput = {
   size: Size;
   marketedTo: MarketedTo;
   productId?: string;
+  upc?: string;
   canonicalUrl?: string;
+  /** Kroger's display-size text, retained so the human reviewer can verify `size`. */
+  sourceSize?: string;
 };
 
 export type ReviewCandidate = {
@@ -56,6 +59,21 @@ function validKrogerUrl(value: unknown): value is string {
   }
 }
 
+function validProductId(value: unknown): value is string {
+  return typeof value === 'string' && /^\d{13}$/.test(value);
+}
+
+function validGtin(value: unknown): value is string {
+  if (typeof value !== 'string' || !/^(?:\d{8}|\d{12}|\d{13}|\d{14})$/.test(value)) return false;
+  const digits = [...value].map(Number);
+  const checkDigit = digits.pop();
+  let sum = 0;
+  for (let index = digits.length - 1, position = 0; index >= 0; index -= 1, position += 1) {
+    sum += digits[index]! * (position % 2 === 0 ? 3 : 1);
+  }
+  return (10 - (sum % 10)) % 10 === checkDigit;
+}
+
 function parseProduct(value: unknown): ReviewProductInput | null {
   if (!isRecord(value)) return null;
   const size = value.size;
@@ -70,8 +88,17 @@ function parseProduct(value: unknown): ReviewProductInput | null {
     typeof size.amount !== 'number' ||
     size.amount <= 0 ||
     !['oz', 'ml', 'count'].includes(String(size.unit)) ||
-    (value.productId !== undefined && !nonEmptyString(value.productId, 128)) ||
-    (value.canonicalUrl !== undefined && !validKrogerUrl(value.canonicalUrl))
+    (value.productId !== undefined && !validProductId(value.productId)) ||
+    (value.upc !== undefined && !validGtin(value.upc)) ||
+    (value.canonicalUrl !== undefined && !validKrogerUrl(value.canonicalUrl)) ||
+    (value.sourceSize !== undefined && !nonEmptyString(value.sourceSize, 100))
+  ) {
+    return null;
+  }
+  if (
+    value.productId !== undefined &&
+    value.canonicalUrl !== undefined &&
+    !new URL(value.canonicalUrl).pathname.endsWith(`/${value.productId}`)
   ) {
     return null;
   }
