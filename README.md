@@ -5,9 +5,7 @@
 
 **See the markup. Skip the markup.**
 
-A Chrome extension and companion Marketplace that spot a women's product and show a
-human-reviewed men's or neutral equivalent that costs less at the same store, with both prices
-pulled from the retailer's official data.
+A Chrome extension and companion Marketplace that spot a women's product and show a men's or neutral equivalent using Gemini that costs less at the same store, with both prices pulled from the retailer's official data.
 
 [![marketplace CI](https://github.com/hackhersandhims/Pinkless/actions/workflows/marketplace.yml/badge.svg)](https://github.com/hackhersandhims/Pinkless/actions/workflows/marketplace.yml)
 ![Chrome Extension](https://img.shields.io/badge/Chrome-Manifest%20V3-ff99d8?logo=googlechrome&logoColor=white)
