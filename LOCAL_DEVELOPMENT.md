@@ -37,6 +37,30 @@ PINKLESS_ALLOWED_ORIGINS=http://localhost:5173,chrome-extension://YOUR_EXTENSION
 Find `YOUR_EXTENSION_ID` on `chrome://extensions` after loading the extension.
 Restart the API whenever this environment file changes.
 
+### Test Canopy REST locally
+
+To use live Amazon data instead of fixtures, change the copied `.env.local`
+file to:
+
+```dotenv
+PINKLESS_PROVIDER_MODE=live
+PINKLESS_ALLOWED_ORIGINS=http://localhost:5173,chrome-extension://YOUR_EXTENSION_ID
+CANOPY_API_KEY=
+KROGER_CLIENT_ID=
+KROGER_CLIENT_SECRET=
+```
+
+Paste the Canopy key after `CANOPY_API_KEY=` in `.env.local` only. Live mode
+uses `GET https://rest.canopyapi.co/api/amazon/product` with `domain=US`; the
+key remains in the API process and is never sent to the extension. Kroger,
+CVS, and Walmart remain fail-closed when their credentials or integrations are
+not configured.
+
+The Amazon page must match a real reviewed ASIN pair in
+`packages/catalog/products.json`. The bundled `B000000001` and `B000000002`
+records are deterministic demo identities, so replace them with reviewed real
+ASINs before expecting a live Canopy comparison.
+
 In a second terminal, run the Vercel Functions locally on port 3000:
 
 ```sh
@@ -64,8 +88,8 @@ Then:
 6. Open Pinkless, enter a US ZIP code, and select nearby stores.
 
 The mock provider includes stores for ZIP code `45202`. Pinkless runs only on
-CVS, Kroger, and Walmart HTTPS pages, plus the path-locked controlled fallback
-routes at `http://localhost:4174/product/{cvs|kroger|walmart}`. A normal
+Amazon, CVS, Kroger, and Walmart HTTPS pages, plus the path-locked controlled
+fallback routes at `http://localhost:4174/product/{cvs|kroger|walmart}`. A normal
 retailer product can remain quiet when it is not an exact reviewed catalog
 match; silence is expected for unknown, unavailable, or non-cheaper products.
 

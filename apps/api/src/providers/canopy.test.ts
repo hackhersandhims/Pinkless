@@ -26,7 +26,8 @@ describe('CanopyProvider', () => {
       fetch: async (input, init) => {
         const url = input instanceof Request ? input.url : String(input);
         requests.push(url);
-        expect(new Headers(init?.headers).get('authorization')).toBe('Bearer fixture-key');
+        expect(init?.method).toBe('GET');
+        expect(new Headers(init?.headers).get('API-KEY')).toBe('fixture-key');
         return jsonResponse(product);
       },
     });
@@ -50,7 +51,9 @@ describe('CanopyProvider', () => {
         expiresAt: '2026-09-18T16:05:00.000Z',
       },
     ]);
-    expect(requests[0]).toBe('https://rest.canopyapi.co/v1/amazon/product?asin=B08N5WRWNW');
+    expect(requests[0]).toBe(
+      'https://rest.canopyapi.co/api/amazon/product?asin=B08N5WRWNW&domain=US',
+    );
   });
 
   it('fails closed for a malformed price, unavailable product, or non-reviewed URL', async () => {

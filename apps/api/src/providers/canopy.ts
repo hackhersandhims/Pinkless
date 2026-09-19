@@ -18,7 +18,7 @@ type CanopyProviderOptions = {
   requestTimeoutMs?: number;
 };
 
-const DEFAULT_API_BASE_URL = 'https://rest.canopyapi.co/v1/amazon/product';
+const DEFAULT_API_BASE_URL = 'https://rest.canopyapi.co/api/amazon/product';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -121,10 +121,12 @@ export class CanopyProvider implements RetailerProvider {
   private async rawProduct(asin: string): Promise<CanopyProduct | null> {
     const url = new URL(this.apiBaseUrl);
     url.searchParams.set('asin', asin);
+    url.searchParams.set('domain', 'US');
     let response: Response;
     try {
       response = await this.fetchImpl(url, {
-        headers: { authorization: `Bearer ${this.apiKey}`, accept: 'application/json' },
+        method: 'GET',
+        headers: { 'API-KEY': this.apiKey, accept: 'application/json' },
         signal: AbortSignal.timeout(this.requestTimeoutMs),
       });
     } catch {
