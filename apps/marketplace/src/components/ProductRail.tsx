@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import type { To } from 'react-router-dom';
 import type { ComparisonView } from '../lib/types';
 import { ComparisonCard } from './ComparisonCard';
 import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
@@ -13,7 +14,7 @@ export type ProductRailProps = {
   title: string;
   description?: string;
   items: ComparisonView[];
-  seeAll?: { to: string; label: string };
+  seeAll?: { to: To; label: string };
 };
 
 /**

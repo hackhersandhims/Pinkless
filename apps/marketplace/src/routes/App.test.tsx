@@ -1,14 +1,23 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from '../App.js';
-import { loadComparisons } from '../lib/api.js';
-import { getActiveComparisons, groupByCategory } from '../lib/catalog.js';
+import {
+  FIXTURE_EVEN_STORE_ID,
+  FIXTURE_STORE_ID,
+  FIXTURE_STORE_NAME,
+} from '../lib/fixtures/fixture-feed.js';
+import { mockApi } from '../test-utils.js';
+
+const PAIR_ID = 'bic-soleil-smooth-vs-comfort-3-advance';
+const STORE_QUERY = new URLSearchParams({
+  store: FIXTURE_STORE_ID,
+  storeName: FIXTURE_STORE_NAME,
+}).toString();
 
 /**
  * App owns its own BrowserRouter internally, so tests drive navigation via
- * window.history rather than wrapping in a MemoryRouter (which would be
- * shadowed by App's inner router).
+ * window.history rather than wrapping in a MemoryRouter.
  */
 function renderAppAt(path: string) {
   window.history.pushState({}, '', path);
@@ -17,66 +26,130 @@ function renderAppAt(path: string) {
 
 function compareLinks() {
   return screen
-    .getAllByRole('link')
+    .queryAllByRole('link')
     .filter((link) => (link.getAttribute('href') ?? '').startsWith('/compare/'));
 }
 
 async function waitForFeed() {
-  await waitFor(() => {
-    expect(
-      screen
-        .queryAllByRole('link')
-        .some((link) => (link.getAttribute('href') ?? '').startsWith('/compare/')),
-    ).toBe(true);
-  });
+  await waitFor(() => expect(compareLinks().length).toBeGreaterThan(0));
 }
 
-describe('App routing', () => {
-  it('lists every active comparison once in the "Biggest savings" rail, largest saving first (REQUIREMENTS §8)', async () => {
-    const expected = getActiveComparisons(await loadComparisons())
-      .slice()
-      .sort((x, y) => y.savingsCents - x.savingsCents || (x.id < y.id ? -1 : 1));
-    expect(expected.length).toBeGreaterThan(0);
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
+describe('store selection', () => {
+  it('leads with a store picker when no store is chosen, and loads no prices', async () => {
+    const fetchMock = mockApi();
     renderAppAt('/');
-    await waitForFeed();
 
-    const rail = screen.getByRole('region', { name: 'Biggest savings' });
-    const hrefs = within(rail)
-      .getAllByRole('link')
-      .map((link) => link.getAttribute('href'))
-      .filter((href) => (href ?? '').startsWith('/compare/'));
-
-    // Exactly once per comparison, in savings order, none missing or extra.
-    expect(hrefs).toEqual(expected.map((item) => `/compare/${item.id}`));
+    expect(
+      screen.getByRole('heading', { name: 'Start with your Kroger store' }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('ZIP code')).toBeInTheDocument();
+    expect(compareLinks()).toHaveLength(0);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('features the largest saving in the hero, linking to its comparison', async () => {
-    const [largest] = getActiveComparisons(await loadComparisons())
-      .slice()
-      .sort((x, y) => y.savingsCents - x.savingsCents || (x.id < y.id ? -1 : 1));
-
+  it('finds stores by ZIP, puts the chosen store in the URL, and shows its comparisons', async () => {
+    const user = userEvent.setup();
+    const fetchMock = mockApi();
     renderAppAt('/');
+
+    await user.type(screen.getByLabelText('ZIP code'), '45202');
+    await user.click(screen.getByRole('button', { name: /find stores/i }));
+
+    const list = await screen.findByRole('list', { name: 'Kroger stores near 45202' });
+    expect(screen.getByText('2 stores near 45202. Choose one.')).toBeInTheDocument();
+    await user.click(within(list).getByRole('button', { name: /Kroger On the Rhine/ }));
+
+    const params = new URLSearchParams(window.location.search);
+    expect(params.get('store')).toBe(FIXTURE_STORE_ID);
+    expect(params.get('storeName')).toBe(FIXTURE_STORE_NAME);
+
+    await waitForFeed();
+    expect(
+      fetchMock.mock.calls.some((call) =>
+        String(call[0]).includes(`/api/comparisons?locationId=${FIXTURE_STORE_ID}`),
+      ),
+    ).toBe(true);
+    expect(screen.getByText(FIXTURE_STORE_NAME, { selector: 'dd' })).toBeInTheDocument();
+  });
+
+  it('validates the ZIP code before looking anything up', async () => {
+    const user = userEvent.setup();
+    const fetchMock = mockApi();
+    renderAppAt('/');
+
+    await user.type(screen.getByLabelText('ZIP code'), '452');
+    await user.click(screen.getByRole('button', { name: /find stores/i }));
+
+    expect(screen.getByText('Enter a five-digit US ZIP code.')).toBeInTheDocument();
+    expect(screen.getByLabelText('ZIP code')).toHaveAttribute('aria-invalid', 'true');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('shows the chosen store in the header with a keyboard-operable "Change store" control', async () => {
+    const user = userEvent.setup();
+    mockApi();
+    renderAppAt(`/?${STORE_QUERY}`);
+    await waitForFeed();
+
+    const banner = screen.getByRole('banner');
+    expect(within(banner).getByText(FIXTURE_STORE_NAME)).toBeInTheDocument();
+    const toggle = within(banner).getByRole('button', { name: 'Change store' });
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+    toggle.focus();
+    await user.keyboard('{Enter}');
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(within(banner).getByLabelText('ZIP code')).toHaveFocus();
+
+    await user.keyboard('{Escape}');
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(toggle).toHaveFocus();
+  });
+});
+
+describe('with a store chosen', () => {
+  it('shows the comparison card with both names, prices, store, and date', async () => {
+    mockApi();
+    renderAppAt(`/?${STORE_QUERY}`);
+    await waitForFeed();
+
+    const rail = screen.getByRole('region', { name: 'Biggest differences' });
+    const [card] = within(rail).getAllByRole('link', { name: /costs \$0\.80 less/ });
+    expect(card).toHaveAttribute('href', `/compare/${PAIR_ID}?${STORE_QUERY}`);
+    expect(within(card!).getByText('BIC Soleil Smooth Scented Disposable 3-Blade Razors')).toBeInTheDocument();
+    expect(within(card!).getByText('BIC Comfort 3 Advance Disposable Razors')).toBeInTheDocument();
+    expect(within(card!).getByText('$6.79')).toBeInTheDocument();
+    expect(within(card!).getByText('$5.99')).toBeInTheDocument();
+    expect(within(card!).getByText(/In store · Checked Sep 19, 2026/)).toBeInTheDocument();
+  });
+
+  it('features the pair in the hero with a men’s-cheaper summary', async () => {
+    mockApi();
+    renderAppAt(`/?${STORE_QUERY}`);
+
     const featured = await screen.findByRole('link', { name: /^Featured comparison:/ });
-
-    expect(featured).toHaveAttribute('href', `/compare/${largest!.id}`);
+    expect(featured).toHaveAttribute('href', `/compare/${PAIR_ID}?${STORE_QUERY}`);
+    expect(featured.getAttribute('aria-label')).toContain('The men’s version costs $0.80 less');
   });
 
-  it('offers a tile per category with comparisons, plus one for everything', async () => {
-    const groups = groupByCategory(getActiveComparisons(await loadComparisons()));
-
-    renderAppAt('/');
+  it('derives the stat strip from the feed', async () => {
+    mockApi();
+    renderAppAt(`/?${STORE_QUERY}`);
     await waitForFeed();
 
-    const section = screen.getByRole('region', { name: 'Shop by category' });
-    const hrefs = within(section)
-      .getAllByRole('link')
-      .map((link) => link.getAttribute('href'));
-    expect(hrefs).toEqual([...groups.map((group) => `/category/${group.slug}`), '/search']);
+    const strip = screen.getByRole('region', { name: 'This store at a glance' });
+    expect(within(strip).getByText('1')).toBeInTheDocument();
+    expect(within(strip).getByText('$0.80')).toBeInTheDocument();
+    expect(within(strip).getByText(FIXTURE_STORE_NAME)).toBeInTheDocument();
   });
 
-  it('has one h1 and the banner, nav, main, and footer landmarks on the home page', async () => {
-    renderAppAt('/');
+  it('has one h1 and the banner, nav, main, footer, and search landmarks', async () => {
+    mockApi();
+    renderAppAt(`/?${STORE_QUERY}`);
     await waitForFeed();
 
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
@@ -85,157 +158,115 @@ describe('App routing', () => {
     expect(screen.getByRole('main')).toBeInTheDocument();
     expect(screen.getByRole('contentinfo')).toBeInTheDocument();
     expect(screen.getByRole('search')).toBeInTheDocument();
-    expect(screen.getByLabelText(/search products, brands, or categories/i)).toHaveAttribute(
-      'type',
-      'search',
-    );
   });
 
-  it('derives the category nav from the categories that have comparisons', async () => {
-    const groups = groupByCategory(getActiveComparisons(await loadComparisons()));
-
-    renderAppAt('/');
+  it('keeps the store on category nav links', async () => {
+    mockApi();
+    renderAppAt(`/?${STORE_QUERY}`);
     await waitForFeed();
 
     const nav = screen.getByRole('navigation', { name: 'Browse' });
-    const links = within(nav).getAllByRole('link').map((link) => link.textContent);
-    expect(links).toEqual(['All comparisons', ...groups.map((group) => group.label)]);
+    const hrefs = within(nav)
+      .getAllByRole('link')
+      .map((link) => link.getAttribute('href'));
+    expect(hrefs).toEqual([`/search?${STORE_QUERY}`, `/category/razors?${STORE_QUERY}`]);
   });
 
-  it('derives the stat strip from the feed', async () => {
-    const items = getActiveComparisons(await loadComparisons());
-    const largest = Math.max(...items.map((item) => item.savingsCents));
+  it('renders the comparison page with both Kroger links, rationale, and differences', async () => {
+    mockApi();
+    renderAppAt(`/compare/${PAIR_ID}?${STORE_QUERY}`);
 
-    renderAppAt('/');
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'The men’s version costs $0.80 less' }),
+    ).toBeInTheDocument();
+    const men = screen.getByRole('link', { name: /see the men’s version on kroger/i });
+    expect(men.getAttribute('href')).toMatch(/0007033071397$/);
+    expect(men).toHaveAttribute('target', '_blank');
+    const women = screen.getByRole('link', { name: /see the women’s version on kroger/i });
+    expect(women.getAttribute('href')).toMatch(/0007033071417$/);
+    expect(screen.getByText(/listed as scented/)).toBeInTheDocument();
+    expect(screen.getAllByText(`In store price at ${FIXTURE_STORE_NAME}`)).toHaveLength(2);
+  });
+
+  it('filters with search and keeps the store in the URL', async () => {
+    const user = userEvent.setup();
+    mockApi();
+    renderAppAt(`/?${STORE_QUERY}`);
     await waitForFeed();
 
-    const strip = screen.getByRole('region', { name: 'Marketplace at a glance' });
-    expect(within(strip).getByText(String(items.length))).toBeInTheDocument();
-    expect(within(strip).getByText(`$${(largest / 100).toFixed(2)}`)).toBeInTheDocument();
-  });
+    await user.type(screen.getByLabelText(/search products or categories/i), 'comfort{enter}');
 
-  it('renders only that category on /category/:slug', async () => {
-    const groups = groupByCategory(getActiveComparisons(await loadComparisons()));
-    const razors = groups.find((group) => group.slug === 'razors');
-    expect(razors).toBeDefined();
-
-    renderAppAt('/category/razors');
-    await waitForFeed();
-
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Razors');
-    expect(compareLinks()).toHaveLength(razors!.items.length);
-  });
-
-  it('renders a real comparison on /compare/:id with both retailers and the outbound link', async () => {
-    const [item] = getActiveComparisons(await loadComparisons());
-    expect(item).toBeDefined();
-
-    renderAppAt(`/compare/${item!.id}`);
-
-    const cta = await screen.findByRole('link', { name: /see alternative/i });
-    expect(cta).toHaveAttribute('href', item!.alternative.url);
-    expect(cta).toHaveAttribute('target', '_blank');
-    expect(cta.getAttribute('rel') ?? '').toContain('noopener');
-
-    // §8: the source retailer for each displayed offer must be identifiable.
-    const main = screen.getByRole('main');
-    expect(within(main).getAllByText(item!.reference.retailerLabel).length).toBeGreaterThan(0);
-    expect(within(main).getAllByText(item!.alternative.retailerLabel).length).toBeGreaterThan(0);
-  });
-
-  it('renders an empty state rather than crashing for an unknown comparison id', async () => {
-    renderAppAt('/compare/does-not-exist');
-
-    expect(await screen.findByText('Comparison not available')).toBeInTheDocument();
-    // No card links, and no crash.
-    expect(compareLinks()).toHaveLength(0);
-  });
-
-  it('renders a not-found state for an unknown category slug', async () => {
-    renderAppAt('/category/not-a-category');
-
-    expect(await screen.findByRole('heading', { level: 1, name: 'Page not found' })).toBeInTheDocument();
-  });
-});
-
-describe('search', () => {
-  it('lists every comparison once at /search with no query', async () => {
-    const expected = getActiveComparisons(await loadComparisons());
-
-    renderAppAt('/search');
-    await waitForFeed();
-
-    expect(screen.getByRole('heading', { level: 1, name: 'All comparisons' })).toBeInTheDocument();
-    expect(compareLinks()).toHaveLength(expected.length);
-  });
-
-  it('filters to matching comparisons for /search?q=', async () => {
-    const items = getActiveComparisons(await loadComparisons());
-    const razor = items.find((item) => item.category === 'razors');
-    expect(razor).toBeDefined();
-    // Independent of the search helper: "razor" only occurs in razor products' own text.
-    const expected = items.filter((item) => item.category === 'razors');
-
-    renderAppAt('/search?q=razor');
-    await waitForFeed();
-
-    expect(screen.getByRole('heading', { level: 1, name: 'Results for “razor”' })).toBeInTheDocument();
-    expect(compareLinks()).toHaveLength(expected.length);
-    expect(compareLinks().map((link) => link.getAttribute('href'))).toContain(`/compare/${razor!.id}`);
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Results for “comfort”' }),
+    ).toBeInTheDocument();
+    const params = new URLSearchParams(window.location.search);
+    expect(params.get('q')).toBe('comfort');
+    expect(params.get('store')).toBe(FIXTURE_STORE_ID);
+    expect(compareLinks()).toHaveLength(1);
   });
 
   it('offers a way out when nothing matches', async () => {
-    renderAppAt('/search?q=zzzznotaproduct');
+    mockApi();
+    renderAppAt(`/search?${STORE_QUERY}&q=zzzznotaproduct`);
 
     expect(await screen.findByText(/No comparisons match/)).toBeInTheDocument();
     expect(compareLinks()).toHaveLength(0);
-    expect(screen.getByRole('link', { name: 'Show all comparisons' })).toHaveAttribute('href', '/search');
+    expect(screen.getByRole('link', { name: 'Show all comparisons' })).toHaveAttribute(
+      'href',
+      `/search?${STORE_QUERY}`,
+    );
   });
 
-  it('searches from the header box and lands on the results', async () => {
-    const user = userEvent.setup();
-    renderAppAt('/');
-    await waitForFeed();
+  it('stays quiet at a store where no pair is cheaper', async () => {
+    mockApi();
+    renderAppAt(`/?store=${FIXTURE_EVEN_STORE_ID}`);
 
-    await user.type(screen.getByLabelText(/search products, brands, or categories/i), 'deodorant{enter}');
+    expect(await screen.findByText('No comparisons at this store right now')).toBeInTheDocument();
+    expect(compareLinks()).toHaveLength(0);
+    expect(screen.getAllByText(/Kroger store fixture-even-store/).length).toBeGreaterThan(0);
+  });
+
+  it('shows an empty state for an unknown comparison id', async () => {
+    mockApi();
+    renderAppAt(`/compare/does-not-exist?${STORE_QUERY}`);
+
+    expect(await screen.findByText('Comparison not available')).toBeInTheDocument();
+    expect(compareLinks()).toHaveLength(0);
+  });
+
+  it('asks for a store on a comparison link without one', async () => {
+    mockApi();
+    renderAppAt(`/compare/${PAIR_ID}`);
 
     expect(
-      await screen.findByRole('heading', { level: 1, name: 'Results for “deodorant”' }),
+      screen.getByRole('heading', { name: 'Choose a Kroger store to see comparisons' }),
     ).toBeInTheDocument();
-    expect(window.location.pathname + window.location.search).toBe('/search?q=deodorant');
+  });
+
+  it('renders a not-found state for an unknown category slug', async () => {
+    mockApi();
+    renderAppAt(`/category/not-a-category?${STORE_QUERY}`);
+
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Page not found' }),
+    ).toBeInTheDocument();
   });
 });
 
-describe('sort and filter', () => {
-  it('reorders the grid when the sort changes', async () => {
+describe('feed load failure', () => {
+  it('shows plain-language copy, no raw error, no fixture prices, and recovers on retry', async () => {
     const user = userEvent.setup();
-    renderAppAt('/search');
+    mockApi({ failComparisons: 1 });
+    renderAppAt(`/?${STORE_QUERY}`);
+
+    expect(await screen.findByText("We couldn't load comparisons")).toBeInTheDocument();
+    expect(screen.queryByText(/503/)).not.toBeInTheDocument();
+    expect(screen.queryByText('$5.99')).not.toBeInTheDocument();
+    expect(compareLinks()).toHaveLength(0);
+
+    await user.click(screen.getByRole('button', { name: 'Try again' }));
+
     await waitForFeed();
-
-    const byName = getActiveComparisons(await loadComparisons())
-      .slice()
-      .sort((a, b) => a.name.localeCompare(b.name) || (a.id < b.id ? -1 : 1))
-      .map((item) => `/compare/${item.id}`);
-
-    await user.selectOptions(screen.getByLabelText('Sort by'), 'name');
-
-    expect(compareLinks().map((link) => link.getAttribute('href'))).toEqual(byName);
-  });
-
-  it('narrows to comparisons cheaper at the chosen retailer', async () => {
-    const user = userEvent.setup();
-    const items = getActiveComparisons(await loadComparisons());
-    const retailers = [...new Set(items.map((item) => item.alternative.retailer))];
-    // The control only exists when there is a real choice to make.
-    expect(retailers.length).toBeGreaterThan(1);
-    const chosen = retailers[0]!;
-    const expected = items.filter((item) => item.alternative.retailer === chosen);
-
-    renderAppAt('/search');
-    await waitForFeed();
-
-    await user.selectOptions(screen.getByLabelText('Cheaper at'), chosen);
-
-    expect(compareLinks()).toHaveLength(expected.length);
+    expect(screen.queryByText("We couldn't load comparisons")).not.toBeInTheDocument();
   });
 });

@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom';
 import { EmptyState, PageContainer, PageHeading } from '../components/index.js';
 import { useDocumentTitle } from '../lib/useDocumentTitle.js';
 import buttons from '../components/Button.module.css';
+import { useStoreLink } from './useStore.js';
 
 export function NotFoundPage() {
   useDocumentTitle('Page not found');
+  const link = useStoreLink();
 
   return (
     <PageContainer>
@@ -13,7 +15,7 @@ export function NotFoundPage() {
         title="We couldn't find that page"
         body="The page you asked for does not exist on the Pinkless Marketplace."
       >
-        <Link to="/" className={`body ${buttons.button} ${buttons.dark}`}>
+        <Link to={link('/')} className={`body ${buttons.button} ${buttons.dark}`}>
           Back to the Marketplace
         </Link>
       </EmptyState>

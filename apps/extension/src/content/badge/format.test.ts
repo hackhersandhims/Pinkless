@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatCents, formatChecked } from './format';
+import { asSentence, formatCents, formatCheckedDay } from './format';
 
 describe('formatCents', () => {
   it.each([
@@ -28,9 +28,16 @@ describe('formatCents', () => {
   );
 });
 
-describe('formatChecked', () => {
+describe('formatCheckedDay', () => {
   it('formats in UTC so the day does not depend on the viewer time zone', () => {
-    expect(formatChecked('2026-09-18T23:59:00.000Z')).toBe('Checked Sep 18, 2026');
-    expect(formatChecked('2026-09-19T00:00:00.000Z')).toBe('Checked Sep 19, 2026');
+    expect(formatCheckedDay('2026-09-18T23:59:00.000Z')).toBe('Sep 18');
+    expect(formatCheckedDay('2026-09-19T00:00:00.000Z')).toBe('Sep 19');
+  });
+});
+
+describe('asSentence', () => {
+  it('adds a period only when the text does not already end a sentence', () => {
+    expect(asSentence('Handle shape and color differ')).toBe('Handle shape and color differ.');
+    expect(asSentence(' Handle shape and color differ. ')).toBe('Handle shape and color differ.');
   });
 });

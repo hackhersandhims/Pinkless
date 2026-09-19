@@ -67,3 +67,21 @@
   gap: var(--space-3);
   margin-top: var(--space-2);
 }
+
+/* The store picker on the same pink stage the featured comparison uses. */
+.pickerStage {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 36rem;
+  padding: var(--space-6);
+  border-radius: calc(var(--radius-lg) * 2);
+  background: var(--surface-pink);
+}
+
+@media (min-width: 48rem) {
+  .pickerStage {
+    min-height: 28rem;
+    padding: calc(var(--space-6) * 2);
+  }
+}

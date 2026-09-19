@@ -2,54 +2,56 @@
  * The Marketplace's data and view contracts. Every component renders the view
  * shapes and nothing else.
  *
- * The catalog holds product identity and equivalence policy only; both prices
- * come from real provider offers, so savings is a computed integer and the
- * "alternative" is the SAME packaged product at a different retailer.
+ * A comparison is a product marketed to women and a reviewed men's or neutral
+ * equivalent, both priced by Kroger's official API at the same store in the
+ * same price context. The API only lists a pair when the other version costs
+ * less, so savings is always a positive integer number of cents.
  */
 
-import type { Offer, PriceContext, Product, Retailer, Size } from '../../../../packages/catalog/src/schema.js';
+import type { MarketedTo, PriceContext, Size } from '../../../../packages/catalog/src/schema.js';
+import type { ShowOutcome, StoreContext } from '../../../../packages/matcher/src/types.js';
 
-export type { Money, Offer, PriceContext, Product, Retailer, Size } from '../../../../packages/catalog/src/schema.js';
-
-/**
- * One side of a listed comparison: a provider offer reduced to what the
- * Marketplace displays.
- */
-export type ComparisonOffer = Pick<
+export type {
+  MarketedTo,
+  Money,
   Offer,
-  'retailer' | 'url' | 'price' | 'priceContext' | 'locationId' | 'observedAt' | 'expiresAt'
-> & { availability: 'in-stock' };
+  PriceContext,
+  Product,
+  Size,
+} from '../../../../packages/catalog/src/schema.js';
+export type {
+  ProductSummary,
+  ShowOutcome,
+  StoreContext,
+} from '../../../../packages/matcher/src/types.js';
 
-/**
- * One product and a cheaper offer for it at another supported retailer. Each
- * entry is a `show` outcome from packages/matcher's `compareOffers()`, so the
- * Marketplace lists exactly what the extension would badge.
- */
-export type ProductComparison = {
-  /** `Product.id` from packages/catalog. */
-  productId: string;
-  upc?: string;
-  name: string;
-  brand?: string;
-  variant: string;
-  category: Product['category'];
-  size: Size;
-  equivalence: Product['equivalence'];
-  reference: ComparisonOffer;
-  alternative: ComparisonOffer;
-  /** Integer minor units, always > 0. */
-  savingsCents: number;
-};
-
-/**
- * The Marketplace's list feed. The Phase 2 API has no list endpoint yet
- * (`POST /api/compare` answers one product view at a time), so this shape is
- * the proposed body for a future `GET /api/comparisons`.
- */
+/** `GET /api/comparisons?locationId=…&priceContext=in-store`, success body. */
 export type ComparisonsResponse = {
-  comparisons: ProductComparison[];
+  status: 'ok';
+  store: StoreContext;
+  comparisons: ShowOutcome[];
   /** ISO date-time the feed was assembled. */
   generatedAt: string;
+};
+
+/** One Kroger store from `GET /api/stores?postalCode=…`. */
+export type StoreLocation = {
+  retailer: 'kroger';
+  locationId: string;
+  name: string;
+  address: {
+    line1: string;
+    city: string;
+    state: string;
+    postalCode: string;
+  };
+};
+
+/** The store chosen by the shopper. Lives only in the URL query. */
+export type SelectedStore = {
+  locationId: string;
+  /** Display name carried in the URL; absent when only the ID is known. */
+  name?: string;
 };
 
 /** Fixed display order. Categories with no active comparisons are omitted. */
@@ -62,10 +64,17 @@ export const CATEGORY_LABELS: Record<CategorySlug, string> = {
   'body-wash': 'Body wash',
 };
 
-export const RETAILER_LABELS: Record<Retailer, string> = {
-  cvs: 'CVS',
-  kroger: 'Kroger',
-  walmart: 'Walmart',
+/** Factual marketing labels, as stated on the listing. Never a claim about pricing. */
+export const MARKETED_TO_LABELS: Record<MarketedTo, string> = {
+  women: 'Marketed to women',
+  men: 'Marketed to men',
+  neutral: 'Not gender-marketed',
+};
+
+/** How the cheaper product is named in a headline ("the men’s version"). */
+export const VERSION_LABELS: Record<Exclude<MarketedTo, 'women'>, string> = {
+  men: 'men’s version',
+  neutral: 'neutral version',
 };
 
 /** How a price was fulfilled. Offers are only ever compared within one context. */
@@ -75,36 +84,47 @@ export const PRICE_CONTEXT_LABELS: Record<PriceContext, string> = {
   'in-store': 'In store',
 };
 
-/** One retailer's side of a comparison, flattened for display. */
-export type OfferView = {
-  retailer: Retailer;
-  retailerLabel: string;
-  url: string;
-  priceCents: number;
-  priceContext: PriceContext;
-  priceContextLabel: string;
-  /** ISO date-time the price was observed. */
-  observedAt: string;
-};
-
-/**
- * One rendered comparison card. `reference` and `alternative` are the same
- * packaged product at two retailers, in the same price context, with
- * `savingsCents` strictly positive.
- */
-export type ComparisonView = {
+/** One product in a comparison, flattened for display. */
+export type ProductSide = {
+  /** `Product.id` from packages/catalog. */
   id: string;
-  category: CategorySlug;
-  categoryLabel: string;
+  /** Kroger's 13-digit product ID (`Offer.productId`). */
+  krogerProductId: string;
   name: string;
   brand?: string;
   variant: string;
   size: Size;
-  upc?: string;
-  reference: OfferView;
-  alternative: OfferView;
+  marketedTo: MarketedTo;
+  marketedToLabel: string;
+  /** The product's Kroger listing. */
+  url: string;
+  priceCents: number;
+  /** ISO date-time Kroger's price was observed. */
+  observedAt: string;
+};
+
+/**
+ * One rendered comparison. `womens` always costs more than `other`, both at
+ * `store` in `priceContext`, and `savingsCents` is exactly their difference.
+ */
+export type ComparisonView = {
+  /** The equivalence record ID; also the /compare/:id slug. */
+  id: string;
+  category: CategorySlug;
+  categoryLabel: string;
+  womens: ProductSide;
+  other: ProductSide & { marketedTo: 'men' | 'neutral' };
+  /** "men’s version" or "neutral version". */
+  versionLabel: string;
+  store: SelectedStore;
+  priceContext: PriceContext;
+  priceContextLabel: string;
+  /** The older of the two price observations, shown as "Checked …". */
+  observedAt: string;
   /** Integer minor units, always > 0. */
   savingsCents: number;
+  /** Whole-number percent the other version is below the women's price, when ≥ 1. */
+  percentLower?: number;
   rationale: string;
   matchedAttributes: string[];
   knownDifferences: string[];

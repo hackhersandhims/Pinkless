@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { readStore, storeSearch } from '../routes/useStore';
 import { ArrowRightIcon, SearchIcon } from './icons';
 import styles from './SearchBar.module.css';
 
 /**
- * Site search. Submitting goes to /search?q=…, which filters the comparisons
- * already loaded; there is no separate search backend. The input mirrors the
+ * Site search. Submitting goes to /search?q=… (keeping the chosen store),
+ * which filters the comparisons already loaded; there is no search backend. The input mirrors the
  * current `q` so the box always reflects what the results show.
  */
 export function SearchBar() {
@@ -22,13 +23,16 @@ export function SearchBar() {
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const query = value.trim();
-    navigate(query ? `/search?q=${encodeURIComponent(query)}` : '/search');
+    navigate({
+      pathname: '/search',
+      search: storeSearch(readStore(params), query ? { q: query } : {}),
+    });
   }
 
   return (
     <form role="search" className={styles.form} onSubmit={onSubmit}>
       <label htmlFor="site-search" className="visually-hidden">
-        Search products, brands, or categories
+        Search products or categories
       </label>
       <SearchIcon className={styles.lead} />
       <input
@@ -36,7 +40,7 @@ export function SearchBar() {
         name="q"
         type="search"
         className={`body ${styles.input}`}
-        placeholder="Search products, brands, or categories"
+        placeholder="Search products or categories"
         autoComplete="off"
         enterKeyHint="search"
         value={value}

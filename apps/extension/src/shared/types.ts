@@ -5,9 +5,25 @@ export type {
   Offer,
   PriceContext,
   Retailer,
+  StorePriceContext,
 } from '../../../../packages/catalog/src/schema.js';
 export type {
   ComparisonOutcome,
   IdentityMatchMethod,
+  ProductSummary,
   ProductView,
+  ShowOutcome,
 } from '../../../../packages/matcher/src/types.js';
+
+/** A Kroger store as returned by `GET /api/stores`. */
+export type StoreLocation = {
+  retailer: 'kroger';
+  locationId: string;
+  name: string;
+  address: {
+    line1: string;
+    city: string;
+    state: string;
+    postalCode: string;
+  };
+};

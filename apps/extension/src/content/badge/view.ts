@@ -46,8 +46,8 @@ export function createBadgeElement(
 
   const brand = element(doc, 'p', 'brand label', COPY.brand);
   const headline = element(doc, 'h2', 'heading', model.headline);
-  const rationale = element(doc, 'p', 'body', model.rationale);
-  const offerLine = element(doc, 'p', 'caption', model.offerLine);
+  const productLine = element(doc, 'p', 'body', model.productLine);
+  const supporting = element(doc, 'p', 'caption', model.supporting);
 
   const primary = element(doc, 'a', 'action action-primary body', COPY.primary);
   primary.href = model.action.href;
@@ -68,9 +68,12 @@ export function createBadgeElement(
   details.id = DETAILS_ID;
   details.hidden = true;
   const list = element(doc, 'dl');
-  for (const { term, description } of model.details) {
+  for (const { term, descriptions } of model.details) {
     const row = element(doc, 'div');
-    row.append(element(doc, 'dt', 'label', term), element(doc, 'dd', 'caption', description));
+    row.append(
+      element(doc, 'dt', 'label', term),
+      ...descriptions.map((description) => element(doc, 'dd', 'caption', description)),
+    );
     list.append(row);
   }
   details.append(list);
@@ -93,6 +96,6 @@ export function createBadgeElement(
 
   const actions = element(doc, 'div', 'actions');
   actions.append(primary, why, dismiss);
-  card.append(brand, headline, rationale, offerLine, actions, details);
+  card.append(brand, headline, productLine, supporting, actions, details);
   return card;
 }

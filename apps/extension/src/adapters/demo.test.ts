@@ -1,64 +1,80 @@
 import { Window } from 'happy-dom';
 import { describe, expect, it } from 'vitest';
+import {
+  DEMO_PRODUCT,
+  DEMO_ROUTE,
+  productPageMarkup,
+  structuredData,
+  type DemoScenario,
+} from '../../../demo/src/page.js';
+import { krogerDemoAdapter } from './demo.js';
 import { adapterForUrl } from './index.js';
-import { cvsDemoAdapter, krogerDemoAdapter, walmartDemoAdapter } from './demo.js';
 
-const demoProduct = `
-  <article
-    data-pinkless-demo-product
-    data-retailer="cvs"
-    data-canonical-url="https://www.cvs.com/shop/sample-razor-prodid-cvs-razor-1"
-    data-product-id="cvs-razor-1"
-    data-upc="012345678905"
-    data-title="Sample Razor"
-    data-selected-variant="5-blade cartridge razor, 4 ct"
-    data-current-price-cents="1299"
-    data-currency="USD"
-    data-price-context="store-pickup"
-    data-location-id="cvs-1001"
-    data-availability="in-stock"
-  ></article>`;
+const DEMO_URL = `http://localhost:4174${DEMO_ROUTE}`;
+const STORE = { locationId: 'kroger-1001' };
 
-function documentFor(url: string, markup = demoProduct): Document {
+function demoDocument(scenario: DemoScenario = 'regular', url = DEMO_URL): Document {
   const window = new Window({ url });
-  window.document.write(`<!doctype html><html><body>${markup}</body></html>`);
+  window.document.write(
+    `<!doctype html><html><body><div id="app">${productPageMarkup(scenario)}</div></body></html>`,
+  );
   window.document.close();
   return window.document as unknown as Document;
 }
 
-describe('controlled fallback demo adapters', () => {
-  it('extracts a complete, matcher-compatible product view from the CVS demo route', () => {
-    const url = 'http://localhost:4174/product/cvs';
-    const document = documentFor(url);
-    expect(cvsDemoAdapter.extract(document, { href: url })).toMatchObject({
-      retailer: 'cvs',
-      canonicalUrl: 'https://www.cvs.com/shop/sample-razor-prodid-cvs-razor-1',
-      productId: 'cvs-razor-1',
-      upc: '012345678905',
-      currentPriceCents: 1299,
-      priceContext: 'store-pickup',
-      locationId: 'cvs-1001',
+describe('controlled fallback demo page ↔ demo adapter contract', () => {
+  it('extracts the BIC Soleil women’s product exactly as the live Kroger adapter would', () => {
+    expect(krogerDemoAdapter.extract(demoDocument(), { href: DEMO_URL }, STORE)).toEqual({
+      retailer: 'kroger',
+      canonicalUrl:
+        'https://www.kroger.com/p/bic-soleil-smooth-scented-disposable-3-blade-razors/0007033071417',
+      productId: '0007033071417',
+      title: 'BIC Soleil Smooth Scented Disposable 3-Blade Razors, 4 ct',
+      currentPriceCents: 679,
+      currency: 'USD',
+      availability: 'in-stock',
+      priceContext: 'in-store',
+      locationId: 'kroger-1001',
     });
   });
 
-  it('registers a distinct adapter for each fixed demo product route', () => {
-    expect(adapterForUrl(new URL('http://localhost:4174/product/cvs'))).toBe(cvsDemoAdapter);
-    expect(adapterForUrl(new URL('http://localhost:4174/product/kroger'))).toBe(krogerDemoAdapter);
-    expect(adapterForUrl(new URL('http://localhost:4174/product/walmart'))).toBe(
-      walmartDemoAdapter,
-    );
+  it('publishes the catalog identity for the reviewed product', () => {
+    expect(DEMO_PRODUCT.productId).toBe('0007033071417');
+    expect(DEMO_PRODUCT.regularPriceCents).toBe(679);
+    expect(JSON.parse(structuredData('regular')).offers.price).toBe('6.79');
   });
 
-  it('fails closed if demo metadata is malformed or the route is not explicitly supported', () => {
-    const malformed = demoProduct.replace(
-      'data-current-price-cents="1299"',
-      'data-current-price-cents="0"',
-    );
+  it('carries the scenario price and availability through to the product view', () => {
     expect(
-      cvsDemoAdapter.extract(documentFor('http://localhost:4174/product/cvs', malformed), {
-        href: 'http://localhost:4174/product/cvs',
-      }),
-    ).toBeNull();
+      krogerDemoAdapter.extract(demoDocument('different-price'), { href: DEMO_URL }, STORE),
+    ).toMatchObject({ currentPriceCents: 549, availability: 'in-stock' });
+    expect(
+      krogerDemoAdapter.extract(demoDocument('out-of-stock'), { href: DEMO_URL }, STORE),
+    ).toMatchObject({ availability: 'out-of-stock' });
+  });
+
+  it('stays silent until a store is selected', () => {
+    expect(krogerDemoAdapter.extract(demoDocument(), { href: DEMO_URL })).toBeNull();
+  });
+
+  it('registers the demo adapter only for the fixed local route', () => {
+    expect(adapterForUrl(new URL(DEMO_URL))).toBe(krogerDemoAdapter);
     expect(adapterForUrl(new URL('http://localhost:4174/anything-else'))).toBeUndefined();
+    expect(adapterForUrl(new URL('http://localhost:4175/product/kroger'))).toBeUndefined();
+    expect(
+      krogerDemoAdapter.extract(
+        demoDocument('regular', 'http://localhost:4174/other'),
+        { href: 'http://localhost:4174/other' },
+        STORE,
+      ),
+    ).toBeNull();
+  });
+
+  it('fails closed if the canonical link is not a Kroger product URL', () => {
+    const document = demoDocument();
+    document
+      .querySelector('link[rel="canonical"]')!
+      .setAttribute('href', 'https://www.example.com/p/x/0007033071417');
+    expect(krogerDemoAdapter.extract(document, { href: DEMO_URL }, STORE)).toBeNull();
   });
 });

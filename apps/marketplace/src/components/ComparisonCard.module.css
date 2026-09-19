@@ -40,10 +40,17 @@
   box-shadow: var(--shadow-lift);
 }
 
+/* The two products side by side, women's first, in the same order as the rows below. */
+.media {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
 .body {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--space-2) / 2);
+  gap: var(--space-2);
   padding-inline: var(--space-2);
 }
 
@@ -52,26 +59,8 @@
   letter-spacing: 0.08em;
 }
 
-.name {
+.headline {
   margin: 0;
-  font-weight: 600;
-}
-
-.pricing {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-top: var(--space-3);
-}
-
-.price {
-  margin: 0;
-  letter-spacing: -0.01em;
-}
-
-.retailer {
-  font-weight: 600;
 }
 
 .savings {
@@ -79,7 +68,64 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
+}
+
+.sides {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
   margin-top: var(--space-2);
+}
+
+.side {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'marketed price'
+    'name price';
+  align-items: center;
+  column-gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--tint-ink);
+}
+
+/* The cheaper version takes the plum surface, so the difference reads before any text. */
+.sideEmphasis {
+  background: var(--surface-900);
+  color: var(--on-dark);
+}
+
+.sideEmphasis .marketed {
+  color: var(--on-dark-muted);
+}
+
+.marketed {
+  grid-area: marketed;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sideName {
+  grid-area: name;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.sidePrice {
+  grid-area: price;
+  font-weight: 700;
+}
+
+.difference {
+  margin: 0;
+}
+
+.differenceLabel {
+  font-weight: 600;
 }
 
 /* Pins the footer to the card bottom so rows line up across a rail. */

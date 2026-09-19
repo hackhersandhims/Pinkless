@@ -23,6 +23,8 @@ export type ControllerDeps = {
 export type Controller = {
   start(): void;
   stop(): void;
+  /** Re-evaluate (debounced) after something outside the page changed, e.g. the selected store. */
+  refresh(): void;
 };
 
 const DEFAULT_DEBOUNCE_MS = 300;
@@ -228,5 +230,6 @@ export function createController(deps: ControllerDeps): Controller {
       run();
     },
     stop,
+    refresh: schedule,
   };
 }

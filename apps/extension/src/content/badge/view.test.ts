@@ -24,7 +24,7 @@ afterEach(() => {
 describe('badge content', () => {
   it('uses the exact REQUIREMENTS §6 strings', () => {
     const { card } = render();
-    expect(card.querySelector('h2')?.textContent).toBe('Comparable alternative: save $2.40');
+    expect(card.querySelector('h2')?.textContent).toBe('Comparable alternative: save $0.80');
     expect(byText(card, 'a', 'See alternative')).toBeTruthy();
     expect(byText(card, 'button', 'Why this was matched')).toBeTruthy();
     expect(byText(card, 'button', 'Not now')).toBeTruthy();
@@ -32,8 +32,18 @@ describe('badge content', () => {
 
   it('states the savings in words, not only through color', () => {
     const { card } = render();
-    expect(card.textContent).toContain('save $2.40');
-    expect(card.textContent).toContain('$2.40 less at Walmart');
+    expect(card.textContent).toContain('save $0.80');
+  });
+
+  it('names the equivalent with its price, then the rationale, difference, store, and date', () => {
+    const { card } = render();
+    const paragraphs = [...card.querySelectorAll('p')].map((node) => node.textContent);
+    expect(paragraphs).toContain("Men's version: BIC Comfort 3 Advance Disposable Razors — $5.99");
+    expect(paragraphs).toContain(
+      'Both are BIC 3-blade disposable razors sold in a 4-count pack. ' +
+        'Differs: Soleil Smooth is listed as scented; Comfort 3 Advance is not. ' +
+        'Prices at your selected Kroger store, checked Sep 19.',
+    );
   });
 
   it('is a labelled landmark with a real heading', () => {
@@ -58,7 +68,7 @@ describe('untrusted text', () => {
     const model = toBadgeModel(
       makeShowOutcome((o) => {
         o.rationale = payload;
-        o.product.name = payload;
+        o.alternativeProduct.name = payload;
       }),
       NOW,
     )!;
@@ -75,7 +85,9 @@ describe('primary action', () => {
   it('is a link that opens the alternative in a new tab without giving the page a handle', () => {
     const { card } = render();
     const link = byText<HTMLAnchorElement>(card, 'a', 'See alternative');
-    expect(link.href).toBe('https://www.walmart.com/ip/sample-razor/123');
+    expect(link.href).toBe(
+      'https://www.kroger.com/p/bic-comfort-3-advance-disposable-razors/0007033071397',
+    );
     expect(link.target).toBe('_blank');
     expect(link.rel).toBe('noopener noreferrer');
   });
@@ -84,8 +96,9 @@ describe('primary action', () => {
     const { card } = render();
     const label = byText(card, 'a', 'See alternative').getAttribute('aria-label');
     expect(label?.startsWith('See alternative')).toBe(true);
-    expect(label).toContain('$12.59');
-    expect(label).toContain('Walmart');
+    expect(label).toContain('BIC Comfort 3 Advance Disposable Razors');
+    expect(label).toContain('$5.99');
+    expect(label).toContain('Kroger store');
     expect(label).toContain('new tab');
   });
 });
@@ -102,7 +115,9 @@ describe('"Why this was matched" disclosure', () => {
     toggle.click();
     expect(toggle.getAttribute('aria-expanded')).toBe('true');
     expect(details.hidden).toBe(false);
-    expect(details.textContent).toContain('Exact UPC');
+    expect(details.textContent).toContain('brand, blade count, disposable, pack count');
+    expect(details.textContent).toContain('Soleil Smooth is listed as scented');
+    expect(details.textContent).toContain('Handle shape and color differ.');
 
     toggle.click();
     expect(toggle.getAttribute('aria-expanded')).toBe('false');

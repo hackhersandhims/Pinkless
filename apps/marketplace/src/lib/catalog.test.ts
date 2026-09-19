@@ -1,170 +1,184 @@
 import { describe, expect, it } from 'vitest';
-import { loadComparisons } from './api';
-import { CATEGORY_ORDER } from './types';
 import {
-  alternativeRetailers,
   getActiveComparisons,
-  getComparison,
   groupByCategory,
+  krogerImageUrl,
   searchComparisons,
   sortComparisons,
+  storeLabel,
   summarizeFeed,
+  toView,
 } from './catalog';
-import { makeComparisonView, makeOfferView } from '../test-utils';
+import { comparisonHeadline } from './copy';
+import {
+  buildFixtureFeed,
+  FIXTURE_EVEN_STORE_ID,
+  FIXTURE_STORE_ID,
+  FIXTURE_STORE_NAME,
+} from './fixtures/fixture-feed';
+import type { ShowOutcome } from './types';
+import { makeComparisonView } from '../test-utils';
 
-async function activeViews() {
-  const response = await loadComparisons();
-  return getActiveComparisons(response);
+function fixtureOutcome(): ShowOutcome {
+  const [outcome] = buildFixtureFeed().comparisons;
+  if (!outcome) throw new Error('fixture feed is empty');
+  return outcome;
 }
 
-describe('getActiveComparisons', () => {
-  it('includes every active comparison exactly once and excludes nothing active', async () => {
-    const items = await activeViews();
-    const ids = items.map((c) => c.id);
-    expect(new Set(ids).size).toBe(ids.length);
-    expect(items.length).toBeGreaterThan(0);
+describe('fixture feed (listComparisons over the reviewed catalog)', () => {
+  it('lists the BIC pair at the fixture store, women’s product more expensive', () => {
+    const items = getActiveComparisons(buildFixtureFeed(), FIXTURE_STORE_NAME);
+    expect(items).toHaveLength(1);
+    const [item] = items;
+    expect(item!.womens.name).toBe('BIC Soleil Smooth Scented Disposable 3-Blade Razors');
+    expect(item!.womens.marketedTo).toBe('women');
+    expect(item!.other.name).toBe('BIC Comfort 3 Advance Disposable Razors');
+    expect(item!.other.marketedTo).toBe('men');
+    expect(item!.womens.priceCents).toBe(679);
+    expect(item!.other.priceCents).toBe(599);
+    expect(item!.savingsCents).toBe(80);
+    expect(item!.store).toEqual({ locationId: FIXTURE_STORE_ID, name: FIXTURE_STORE_NAME });
+    expect(item!.priceContextLabel).toBe('In store');
+    expect(item!.womens.url).toMatch(/^https:\/\/www\.kroger\.com\/p\/.+\/0007033071417$/);
+    expect(item!.other.url).toMatch(/^https:\/\/www\.kroger\.com\/p\/.+\/0007033071397$/);
+    expect(item!.knownDifferences.length).toBeGreaterThan(0);
   });
-});
 
-describe('groupByCategory', () => {
-  it('places every active comparison in exactly one group', async () => {
-    const items = await activeViews();
-    const groups = groupByCategory(items);
-
-    const groupedIds = groups.flatMap((g) => g.items.map((item) => item.id));
-    expect(groupedIds.sort()).toEqual(items.map((c) => c.id).sort());
-    expect(new Set(groupedIds).size).toBe(groupedIds.length);
+  it('lists nothing where the two prices are equal', () => {
+    expect(getActiveComparisons(buildFixtureFeed(FIXTURE_EVEN_STORE_ID))).toEqual([]);
   });
 
-  it('returns groups in fixed category order, omitting empty categories', async () => {
-    const items = await activeViews();
-    const groups = groupByCategory(items);
-
-    const presentSlugs = groups.map((g) => g.slug);
-    const expectedOrder = CATEGORY_ORDER.filter((slug) => presentSlugs.includes(slug));
-    expect(presentSlugs).toEqual(expectedOrder);
-
-    for (const group of groups) {
-      expect(group.items.length).toBeGreaterThan(0);
+  it('savings is an integer equal to women’s minus other price', () => {
+    for (const item of getActiveComparisons(buildFixtureFeed())) {
+      expect(Number.isInteger(item.savingsCents)).toBe(true);
+      expect(item.savingsCents).toBe(item.womens.priceCents - item.other.priceCents);
     }
   });
 });
 
-describe('getComparison', () => {
-  it('returns undefined for an unknown id', async () => {
-    const items = await activeViews();
-    expect(getComparison(items, 'does-not-exist')).toBeUndefined();
+describe('toView fails closed', () => {
+  const response = buildFixtureFeed();
+
+  it('accepts the untampered outcome', () => {
+    expect(toView(fixtureOutcome(), response)).toBeDefined();
   });
 
-  it('returns the matching comparison for a known id', async () => {
-    const items = await activeViews();
-    const [first] = items;
-    expect(first).toBeDefined();
-    expect(getComparison(items, first!.id)?.id).toBe(first!.id);
+  it('drops an outcome whose savings do not add up', () => {
+    const outcome = fixtureOutcome();
+    expect(toView({ ...outcome, savings: { amountCents: 500, currency: 'USD' } }, response)).toBeUndefined();
+  });
+
+  it('drops an outcome priced at a different store', () => {
+    const outcome = fixtureOutcome();
+    expect(
+      toView({ ...outcome, alternative: { ...outcome.alternative, locationId: '99999999' } }, response),
+    ).toBeUndefined();
+  });
+
+  it('drops an outcome mixing price contexts', () => {
+    const outcome = fixtureOutcome();
+    expect(
+      toView(
+        { ...outcome, alternative: { ...outcome.alternative, priceContext: 'store-pickup' } },
+        response,
+      ),
+    ).toBeUndefined();
+  });
+
+  it('drops an outcome in the wrong direction (men’s product more expensive)', () => {
+    const outcome = fixtureOutcome();
+    expect(
+      toView(
+        {
+          ...outcome,
+          product: outcome.alternativeProduct,
+          alternativeProduct: outcome.product,
+        },
+        response,
+      ),
+    ).toBeUndefined();
+  });
+
+  it('drops an outcome with a non-Kroger link', () => {
+    const outcome = fixtureOutcome();
+    expect(
+      toView({ ...outcome, current: { ...outcome.current, url: 'https://example.com/p/1' } }, response),
+    ).toBeUndefined();
+  });
+
+  it('drops an outcome with a fractional price', () => {
+    const outcome = fixtureOutcome();
+    expect(
+      toView(
+        {
+          ...outcome,
+          current: { ...outcome.current, price: { amountCents: 679.5, currency: 'USD' } },
+          savings: { amountCents: 80.5, currency: 'USD' },
+        },
+        response,
+      ),
+    ).toBeUndefined();
   });
 });
 
-function fixtures() {
-  const razor = makeComparisonView({
-    id: 'a-razor',
-    name: 'Sample Razor',
-    brand: 'Sample Brand',
-    category: 'razors',
-    reference: makeOfferView({ retailer: 'cvs', priceCents: 1349 }),
-    alternative: makeOfferView({ retailer: 'walmart', priceCents: 999 }),
+describe('copy', () => {
+  it('names the men’s version in the headline', () => {
+    const item = makeComparisonView({ otherMarketedTo: 'men' });
+    expect(comparisonHeadline(item)).toBe('The men’s version costs $0.80 less');
   });
-  const wash = makeComparisonView({
-    id: 'b-wash',
-    name: 'Moisturizing Body Wash',
-    brand: 'Cedarline',
-    variant: 'Moisturizing, 18 oz',
-    category: 'body-wash',
-    reference: makeOfferView({ retailer: 'walmart', priceCents: 700 }),
-    alternative: makeOfferView({ retailer: 'kroger', priceCents: 650 }),
+
+  it('names the neutral version when the other product is not gender-marketed', () => {
+    const item = makeComparisonView({ otherMarketedTo: 'neutral' });
+    expect(comparisonHeadline(item)).toBe('The neutral version costs $0.80 less');
+    expect(item.other.marketedToLabel).toBe('Not gender-marketed');
   });
-  const deodorant = makeComparisonView({
-    id: 'c-deodorant',
-    name: 'Clear Gel Antiperspirant',
-    variant: 'Clear gel, 3 oz',
+
+  it('labels a store by name, or by id when no name is known', () => {
+    expect(storeLabel({ locationId: '01400513', name: 'Kroger On the Rhine' })).toBe(
+      'Kroger On the Rhine',
+    );
+    expect(storeLabel({ locationId: '01400513' })).toBe('Kroger store 01400513');
+  });
+});
+
+describe('list helpers', () => {
+  const small = makeComparisonView({ id: 'b-small' });
+  const large = makeComparisonView({
+    id: 'a-large',
+    womens: { ...small.womens, name: 'Zeta Women’s Deodorant', priceCents: 900 },
+    other: { ...small.other, name: 'Alpha Men’s Deodorant', priceCents: 500 },
+    savingsCents: 400,
     category: 'deodorant',
-    reference: makeOfferView({ retailer: 'cvs', priceCents: 900 }),
-    alternative: makeOfferView({ retailer: 'kroger', priceCents: 400 }),
-  });
-  return { razor, wash, deodorant, all: [razor, wash, deodorant] };
-}
-
-describe('sortComparisons', () => {
-  it('sorts by biggest savings first and does not mutate its input', () => {
-    const { razor, wash, deodorant, all } = fixtures();
-    expect(sortComparisons(all, 'savings').map((i) => i.id)).toEqual([
-      deodorant.id,
-      razor.id,
-      wash.id,
-    ]);
-    expect(all.map((i) => i.id)).toEqual([razor.id, wash.id, deodorant.id]);
+    categoryLabel: 'Deodorant',
   });
 
-  it('sorts by lowest alternative price', () => {
-    const { razor, wash, deodorant, all } = fixtures();
-    expect(sortComparisons(all, 'price').map((i) => i.id)).toEqual([
-      deodorant.id,
-      wash.id,
-      razor.id,
+  it('sorts by largest difference first', () => {
+    expect(sortComparisons([small, large], 'savings').map((item) => item.id)).toEqual([
+      'a-large',
+      'b-small',
     ]);
   });
 
-  it('sorts by name and breaks ties by id', () => {
-    const { all } = fixtures();
-    expect(sortComparisons(all, 'name').map((i) => i.name)).toEqual([
-      'Clear Gel Antiperspirant',
-      'Moisturizing Body Wash',
-      'Sample Razor',
+  it('searches both product names and the category', () => {
+    expect(searchComparisons([small, large], 'alpha').map((item) => item.id)).toEqual(['a-large']);
+    expect(searchComparisons([small, large], 'zeta').map((item) => item.id)).toEqual(['a-large']);
+    expect(searchComparisons([small, large], 'razors').map((item) => item.id)).toEqual(['b-small']);
+    expect(searchComparisons([small, large], '')).toHaveLength(2);
+  });
+
+  it('groups in category order and summarizes the feed', () => {
+    expect(groupByCategory([large, small]).map((group) => group.slug)).toEqual([
+      'razors',
+      'deodorant',
     ]);
-    const twin = makeComparisonView({ id: 'z', name: 'Same', savingsCents: 100 });
-    const twin2 = makeComparisonView({ id: 'y', name: 'Same', savingsCents: 100 });
-    expect(sortComparisons([twin, twin2], 'savings').map((i) => i.id)).toEqual(['y', 'z']);
-  });
-});
-
-describe('searchComparisons', () => {
-  it('returns everything for a blank query', () => {
-    const { all } = fixtures();
-    expect(searchComparisons(all, '   ')).toEqual(all);
+    expect(summarizeFeed([small, large])).toEqual({ count: 2, maxSavingsCents: 400 });
+    expect(summarizeFeed([])).toEqual({ count: 0, maxSavingsCents: undefined });
   });
 
-  it('matches name, brand, category label, and retailer, case-insensitively', () => {
-    const { razor, wash, all } = fixtures();
-    expect(searchComparisons(all, 'RAZOR')).toEqual([razor]);
-    expect(searchComparisons(all, 'cedarline')).toEqual([wash]);
-    expect(searchComparisons(all, 'body wash')).toEqual([wash]);
-    expect(searchComparisons(all, 'kroger').map((i) => i.id)).toEqual([wash.id, 'c-deodorant']);
-  });
-
-  it('requires every term to match', () => {
-    const { all } = fixtures();
-    expect(searchComparisons(all, 'razor kroger')).toEqual([]);
-  });
-});
-
-describe('alternativeRetailers', () => {
-  it('lists the cheaper-side retailers in fixed order, once each', () => {
-    const { all } = fixtures();
-    expect(alternativeRetailers(all)).toEqual(['kroger', 'walmart']);
-    expect(alternativeRetailers([])).toEqual([]);
-  });
-});
-
-describe('summarizeFeed', () => {
-  it('derives the count, largest saving, and retailers on either side', () => {
-    const { all } = fixtures();
-    expect(summarizeFeed(all)).toEqual({
-      count: 3,
-      maxSavingsCents: 500,
-      retailers: ['cvs', 'kroger', 'walmart'],
-    });
-  });
-
-  it('has no largest saving for an empty feed', () => {
-    expect(summarizeFeed([])).toEqual({ count: 0, maxSavingsCents: undefined, retailers: [] });
+  it('builds Kroger image URLs only for 13-digit product ids', () => {
+    expect(krogerImageUrl('0007033071417')).toBe(
+      'https://www.kroger.com/product/images/medium/front/0007033071417',
+    );
+    expect(krogerImageUrl('../../x')).toBeUndefined();
   });
 });

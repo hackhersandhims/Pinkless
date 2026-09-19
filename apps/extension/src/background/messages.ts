@@ -1,47 +1,57 @@
-import { demoRetailerForUrl, PINKLESS_API_BASE_URL } from '../shared/config.js';
+import { isControlledDemoUrl, PINKLESS_API_BASE_URL, RETAILER_HOSTS } from '../shared/config.js';
 
 type CompareMessage = {
   type: 'pinkless:compare';
-  payload: unknown;
+  payload: { current: Record<string, unknown> };
 };
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
 
 function isCompareMessage(value: unknown): value is CompareMessage {
   return (
-    typeof value === 'object' &&
-    value !== null &&
-    (value as { type?: unknown }).type === 'pinkless:compare' &&
-    typeof (value as { payload?: unknown }).payload === 'object' &&
-    (value as { payload?: unknown }).payload !== null
+    isRecord(value) &&
+    value.type === 'pinkless:compare' &&
+    isRecord(value.payload) &&
+    isRecord(value.payload.current)
   );
 }
 
+function isAllowedSender(senderUrl: string | undefined): boolean {
+  if (!senderUrl) return false;
+  try {
+    const sender = new URL(senderUrl);
+    const isKrogerPage =
+      sender.protocol === 'https:' &&
+      (RETAILER_HOSTS as readonly string[]).includes(sender.hostname);
+    return isKrogerPage || isControlledDemoUrl(sender);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Forwards one comparison request from a Kroger (or fixed fallback) page to the Pinkless API.
+ * The body is rebuilt as exactly `{ current }`, so nothing else a page script might add to the
+ * message reaches the network. Any failure is `null` (silence).
+ */
 export async function handleExtensionMessage(
   message: unknown,
   senderUrl: string | undefined,
   fetcher: typeof fetch = fetch,
 ): Promise<unknown> {
-  if (!isCompareMessage(message) || !senderUrl) return null;
-  let sender: URL;
-  try {
-    sender = new URL(senderUrl);
-  } catch {
-    return null;
-  }
-  const isRetailerPage =
-    sender.protocol === 'https:' &&
-    ['www.cvs.com', 'www.kroger.com', 'www.walmart.com'].includes(sender.hostname);
-  if (!isRetailerPage && !demoRetailerForUrl(sender)) {
-    return null;
-  }
+  if (!isCompareMessage(message) || !isAllowedSender(senderUrl)) return null;
 
   try {
     const response = await fetcher(`${PINKLESS_API_BASE_URL}/api/compare`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(message.payload),
+      body: JSON.stringify({ current: message.payload.current }),
       credentials: 'omit',
       referrerPolicy: 'no-referrer',
     });
+    // 200 carries every outcome, including no-match/suppressed; other statuses are failures.
     if (!response.ok) return null;
     return (await response.json()) as unknown;
   } catch {
