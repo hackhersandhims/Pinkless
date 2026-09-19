@@ -3,12 +3,12 @@
 ## 1. Product decision
 
 Pinkless is a Chrome extension and companion Marketplace that compare a
-product at the point of shopping with a **reviewed equivalent product sold at
-the same Kroger store**. Kroger is the only supported retailer. Pinkless must
-only flag an offer when the shopper's current product and a different product
-are linked by a reviewed equivalence record, both are priced by Kroger's
-official API at the same store in the same price context, and the equivalent
-costs less.
+**product marketed to women** with a **reviewed men's or neutral equivalent
+sold at the same Kroger store**. Kroger is the only supported retailer.
+Pinkless must only flag an offer when the women's product and the men's or
+neutral product are linked by a reviewed equivalence record, both are priced
+by Kroger's official API at the same store in the same price context, and the
+men's or neutral product costs less. The comparison never runs the other way.
 
 > **Scope revision (Sep 2026).** This supersedes the CVS/Kroger/Walmart
 > exact-UPC design. CVS and Walmart had no approved data access, and a single
@@ -18,8 +18,9 @@ costs less.
 The first release is a hackathon demo, not an automated system for judging
 whether a price is discriminatory. Its user-facing promise is:
 
-> At your selected Kroger store, a comparable product we reviewed cost less
-> when last checked. Here is what matches and what differs.
+> At your selected Kroger store, a comparable men's or neutral version of
+> this product cost less when last checked. Here is what matches and what
+> differs.
 
 Silence is the default. A weak keyword match, an unreviewed pairing, an
 unknown price, an unavailable alternative, or non-positive savings must not
@@ -31,9 +32,9 @@ produce a badge.
 
 - One supported retailer: Kroger, through its official Products and
   Locations APIs.
-- Same-store comparisons between two different packaged products that a
-  reviewer has linked in a `ProductEquivalence` record, starting with razors
-  and expanding only when review quality is proven.
+- Same-store comparisons from a women's product to a men's or neutral product
+  that a reviewer has linked in a `ProductEquivalence` record, starting with
+  razors and expanding only when review quality is proven.
 - Chrome Manifest V3 extension, loadable unpacked.
 - Product title, UPC/GTIN when present, current price, selected variant,
   canonical URL/product ID, and availability extraction from the current page.
@@ -161,9 +162,11 @@ location to the Pinkless API solely to obtain a comparison.
   locations.
 - `POST /api/compare` accepts a normalized `current` product view, a Kroger
   `locationId`, and a price context (`in-store` or `store-pickup`).
-- `GET /api/comparisons?locationId=` (new, for the Marketplace) returns every
-  active equivalence pair that currently produces a positive saving at that
-  store, computed by the same matcher function as `POST /api/compare`.
+- `GET /api/comparisons?locationId=&priceContext=in-store` (for the
+  Marketplace) returns every active pair where the men's or neutral product
+  currently costs less at that store, using the same matcher rules as
+  `POST /api/compare`. If Kroger can't price any product in the list, the whole
+  list is suppressed rather than silently shortened.
 - Browser origins must match the configured allowlist. Development may include
   safe reason codes; production `no-match` and `suppressed` responses do not.
 
@@ -231,12 +234,15 @@ type Product = {
   variant: string;
   category: "razors" | "deodorant" | "body-wash";
   size: Size;
+  // Who the listing or package markets it to. A factual label, not a claim.
+  marketedTo: "women" | "men" | "neutral";
   identities: RetailerIdentity[];
   status: "active" | "paused" | "retired";
 };
 
-// A reviewed, symmetric link between two different products. Either product
-// can be the "current" one; the badge only appears when the other is cheaper.
+// A reviewed link between exactly one women's product and one men's or
+// neutral product. The badge shows on the women's product only, and only
+// when the other one costs less at the same store.
 type ProductEquivalence = {
   id: string;
   productIds: [string, string];
@@ -273,6 +279,8 @@ Catalog validation must reject:
 - an equivalence that references a missing product, pairs a product with
   itself, or repeats an existing pair in either order;
 - an active equivalence whose products are not both active;
+- an equivalence that does not pair exactly one `women` product with one
+  `men` or `neutral` product;
 - an equivalence across categories, or between different size units or
   amounts;
 - an equivalence with an empty rationale, empty `knownDifferences`, or no
@@ -302,8 +310,9 @@ The matcher must:
    pattern, in that order.
 2. Ensure the page reports an in-stock product and the selected variant is
    compatible with the canonical product.
-3. Find the active `ProductEquivalence` records that include it. None →
-   `no-match`.
+3. If the product is marketed to women, find the active `ProductEquivalence`
+   records linking it to an active men's or neutral product. Any other
+   product, or no such record → `no-match`.
 4. Obtain provider offers for the current product and each equivalent, for the
    same Kroger `locationId` and the same price context. Use only Kroger's
    regular price, never a promo price.
@@ -323,13 +332,14 @@ equivalent on its own.
 ### Badge content
 
 - Headline: `Comparable alternative: save $X.XX`
-- Product line: the equivalent product's name, variant, and price at the
-  selected store.
+- Product line: `Men's version:` (or `Neutral version:`), then the
+  equivalent product's name and price at the selected store.
 - Supporting text: short reviewed rationale plus the first known difference,
   for example: `Both are 3-blade disposable razors, 4 ct. Differs: handle
   color. Prices at Kroger On the Rhine, checked Sep 18.`
-- Copy states attributes and prices only. It never says why prices differ and
-  never labels a product by the gender it is marketed to.
+- Copy states attributes, prices, and who each product is marketed to (as the
+  listing or package says). It never says why prices differ and never claims
+  a retailer or manufacturer discriminates.
 - Primary action: `See alternative`
 - Secondary disclosure: `Why this was matched`
 - Optional dismiss control: `Not now`
@@ -411,9 +421,17 @@ executable extension logic.
 2. **Page price vs API price.** The rule above suppresses when they disagree.
    If kroger.com routinely shows the promo price on the page, compare against
    the page's regular (strike-through) price instead, or drop the check.
-3. **Marketplace without a store.** Proposed: show the reviewed pairs and
-   their rationale with no prices until a store is picked. Alternative: a
-   configured demo store ID for judging.
+3. **Marketplace without a store.** The Marketplace asks for a Kroger store
+   first; nothing is priced until one is picked. A configured demo store ID
+   for judging is still open.
 4. **Rate limits.** Each Marketplace store view prices up to 2 × (number of
    pairs) products. Cache offers per `productId + locationId + priceContext`
    and confirm Kroger's daily call limit for the registered app.
+5. **Amazon via Canopy.** Canopy's Amazon data is scraped, which §2 rules
+   out, and Amazon online prices can't be compared with Kroger store prices.
+   Not used. Revisit only as Amazon-vs-Amazon pairs, and only if the team
+   explicitly accepts scraped data.
+6. **One-directional framing.** Only showing pairs where the women's product
+   costs more is a deliberate product choice. The Marketplace should not
+   imply that it describes all products; consider publishing how many
+   reviewed pairs were checked versus shown.

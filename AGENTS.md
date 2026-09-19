@@ -8,12 +8,19 @@ all of it is `Files/REQUIREMENTS.md`; when this file and REQUIREMENTS.md
 disagree, REQUIREMENTS.md wins — re-read it if something here looks stale,
 since it changes as the team builds.
 
-Architecture in one line: `apps/extension` extracts product identity on CVS/
-Kroger/Walmart pages and sends only that identity + selected store to
-`apps/api` (Vercel serverless), which holds retailer credentials, calls one
-provider adapter per retailer, and returns normalized `Offer`s; `packages/matcher`
-does eligibility/savings logic; `packages/catalog` holds reviewed product
-identity/equivalence records; `apps/marketplace` calls the same read-only API.
+Product in one line: on a Kroger product page for an item marketed to women,
+Pinkless shows a reviewed men's or neutral equivalent that costs less **at the
+same Kroger store**, with both prices from Kroger's official API. Kroger is the
+only retailer (the CVS/Walmart cross-retailer design is superseded).
+
+Architecture in one line: `apps/extension` extracts product identity on
+kroger.com pages and sends only that identity + selected Kroger store to
+`apps/api` (Vercel serverless), which holds the Kroger credentials, prices the
+current product and its reviewed equivalents through the Kroger provider, and
+returns a comparison; `packages/matcher` does eligibility/savings logic;
+`packages/catalog` holds products (`products.json`) and reviewed
+women's→men's/neutral pairs (`equivalences.json`); `apps/marketplace` calls the
+same read-only API (`GET /api/comparisons`).
 
 ---
 
@@ -49,7 +56,7 @@ identity/equivalence records; `apps/marketplace` calls the same read-only API.
 
 ## 2. Extension MV3 (`apps/extension/**`)
 
-- Content script runs **only** on declared CVS, Kroger, and Walmart domains —
+- Content script runs **only** on declared Kroger domains —
   explicit `matches` entries in `manifest.json`, never a broad wildcard.
 - One page adapter per retailer, producing a normalized `ProductView`:
   ```ts
@@ -95,11 +102,15 @@ identity/equivalence records; `apps/marketplace` calls the same read-only API.
 - Fail closed: no approved credentials, ambiguous identity, no price, or
   unavailable → suppress that retailer's offer, never a partial or invented
   price.
-- `PINKLESS_PROVIDER_MODE=mock` enables deterministic local CVS/Kroger/
-  Walmart fixtures (`fixtures/providers/`); any other value uses the
-  fail-closed live registry. CVS and Walmart currently accept no environment
-  credentials — their provider shells reject every lookup until an
-  approved/licensed integration exists; don't wire in an ad hoc key.
+- `PINKLESS_PROVIDER_MODE=mock` enables deterministic local Kroger fixtures
+  (`apps/api/src/providers/mock-data.ts`); any other value uses the
+  fail-closed live registry. Kroger is the only provider; it uses
+  `KROGER_CLIENT_ID`/`KROGER_CLIENT_SECRET` with the `product.compact` scope
+  only (never Cart/Profile). Don't wire in other retailer keys (including
+  scraped-data services such as Canopy) without a REQUIREMENTS.md change.
+- The API prices **both** sides of a comparison itself, at the same store and
+  price context. The page price is only a consistency check; a mismatch
+  suppresses.
 - `.env.example` documents variable **names** only, never real values. `.env`
   and `.env.*` are gitignored — never commit them.
 
@@ -111,64 +122,37 @@ constraint.
 - Money is always integer minor units: `amountCents`. **Never** use a
   floating-point value for a price, anywhere, including intermediate
   arithmetic. Flag any PR that introduces float pricing.
-- Exact shared types (`Product`/`Offer`/`RetailerIdentity` — not the older
-  `Comparison`/`TargetListing`/`AlternativeListing` shapes; don't resurrect
-  those):
-  ```ts
-  type Money = { amountCents: number; currency: "USD" };
-  type Size = { amount: number; unit: "oz" | "ml" | "count" };
-  type RetailerIdentity = {
-    retailer: string;
-    productId: string;
-    canonicalUrlPatterns: string[];
-  };
-  type Product = {
-    id: string;
-    upc?: string;
-    name: string;
-    brand?: string;
-    variant: string;
-    category: "razors" | "deodorant" | "body-wash";
-    size: Size;
-    identities: RetailerIdentity[];
-    equivalence: {
-      rationale: string;
-      matchedAttributes: string[];
-      knownDifferences?: string[];
-    };
-    status: "active" | "paused" | "retired";
-  };
-  type Offer = {
-    retailer: string;
-    productId: string;
-    url: string;
-    price: Money;
-    priceContext: "online" | "store-pickup" | "in-store";
-    condition: "new";
-    availability: "in-stock" | "out-of-stock" | "unknown";
-    locationId?: string;
-    observedAt: string; // ISO date-time
-    expiresAt: string; // ISO date-time
-  };
-  ```
-  Don't add fields, loosen types, or make required fields optional without
-  updating `Files/REQUIREMENTS.md` in the same PR.
-- Catalog validation must reject: duplicate product IDs or UPCs; an `active`
-  record without a canonical identity; empty equivalence rationale; invalid
-  sizes, money, URLs, or identity patterns; a duplicate retailer identity per
-  product; identities that would connect incompatible packaged quantities.
-- Matching resolves an active product by, **in this order**: exact UPC,
-  retailer product ID, then canonical URL pattern. Title/category matching
-  may help a human diagnose a mismatch, but must never independently trigger
-  a badge. Currency must be USD, availability `in-stock`, price positive, and
-  the selected variant compatible with the canonical product. Request
-  candidate offers only from approved retailer providers. Compare the
-  current offer only against in-stock, positive, unexpired offers in the
-  **same price context**. Zero or negative savings → `no-match`.
-- No automatic per-unit price normalization, no comparing membership-only
-  prices, no treating a same-brand product as an automatic exact match.
-  Quantity-different products are suppressed unless an explicit reviewed
-  equivalence policy (`knownDifferences`) permits it.
+- Exact shared types live in `packages/catalog/src/schema.ts` and
+  `Files/REQUIREMENTS.md` §4: `Product` (with `marketedTo: "women" | "men" |
+  "neutral"`, no `equivalence` field), `ProductEquivalence` (exactly one
+  women's product + one men's/neutral product, `rationale`,
+  `matchedAttributes`, non-empty `knownDifferences`, `reviewedBy`,
+  `reviewedAt`, `status`), `Offer`, `RetailerIdentity` (`retailer: "kroger"`).
+  Don't resurrect the older `Comparison`/`TargetListing`/`AlternativeListing`
+  shapes or the per-product `equivalence` block. Don't add fields, loosen
+  types, or make required fields optional without updating
+  `Files/REQUIREMENTS.md` in the same PR.
+- Catalog validation (`pnpm run catalog:validate`) must reject: duplicate
+  product IDs, UPCs, or retailer identities; an `active` product without a
+  Kroger identity; invalid sizes, URLs, or identity patterns; an equivalence
+  that references a missing product, pairs a product with itself, repeats a
+  pair, isn't exactly one women's + one men's/neutral product, crosses
+  categories or sizes, links an inactive product while active, or lacks a
+  rationale, known differences, reviewer, or review date.
+- Matching resolves an active product by, **in this order**: exact UPC, Kroger
+  product ID, then canonical URL pattern. Title/category matching may help a
+  human diagnose a mismatch, but must never independently trigger a badge.
+  Only a women's product with an active reviewed pair is compared. Both offers
+  must be USD, in stock, positive, unexpired, Kroger's **regular** price (never
+  promo), at the **same store and price context**. Savings = women's price −
+  men's/neutral price; zero or negative → `no-match`.
+- No per-unit price normalization, no loyalty/membership prices, no pairing
+  across sizes or categories, and being the same brand never makes two
+  products equivalent. Every pair is written and reviewed by a person — never
+  inferred automatically.
+- Copy may state who a product is marketed to (as its listing says), prices,
+  store, and date. It must never say why prices differ or claim
+  discrimination.
 - Matching stays deterministic and reviewed. Never introduce fuzzy string
   matching, embeddings, or an AI/LLM call to decide comparability or whether
   a badge should render.
@@ -186,7 +170,10 @@ non-positive savings must never produce a badge.
 | Different size, refill, bundle, condition, or pack count | Suppress unless a reviewed catalog record explicitly covers it. |
 | Current product or alternative offer is out of stock | Suppress. |
 | One offer is online and the other is store-specific | Suppress rather than imply an equivalent local-store price. |
-| CVS or Walmart credentials/data access are unavailable | Suppress that retailer; return no partial or invented price. |
+| Kroger credentials or API unavailable | Suppress; return no partial or invented price. |
+| Offers from different Kroger stores, or no store selected | Suppress. |
+| Page price disagrees with the provider price | Suppress. |
+| Product is not marketed to women, or has no active reviewed pair | Stay quiet. |
 | Third-party marketplace seller | Exclude from the initial catalog. |
 | Page is an ad, search result, category page, or quick-view modal | Suppress. |
 | Retailer changes DOM / extracted data is incomplete | Suppress, log a development-only diagnostic, rely on fallback demo page. |
@@ -203,21 +190,21 @@ make the demo look more populated.
 
 - A known supported product shows one correct badge in under three seconds
   **on a warm cache**.
-- Savings equal `current offer price - eligible alternative offer price`
-  exactly (integer cents, no rounding drift).
+- Savings equal `women's product regular price - men's/neutral product
+  regular price` at the same store, exactly (integer cents, no rounding
+  drift).
 - Clicking the badge opens the expected alternative URL in a new tab.
 - Unknown product, non-product page, out-of-stock item, and non-positive
   savings all stay quiet.
 - Changing a supported product's variant updates or removes the badge —
   never leaves a stale one.
-- The Marketplace identifies the source retailer, price context, and
-  observed time for every displayed offer.
+- The Marketplace identifies the store, price context, and observed time for
+  every displayed offer.
 - `pnpm run catalog:validate` runs cleanly.
-- Fixture-based tests cover every retailer adapter (page adapters in
-  `apps/extension` and provider adapters in `apps/api/src/providers`) and the
-  matcher's key suppression rules.
+- Fixture-based tests cover the Kroger page adapter, the Kroger provider,
+  and the matcher's key suppression rules.
 - The unpacked extension and Vercel Marketplace use only the Pinkless API and
-  approved retailer connections — no page scraping, anywhere.
+  Kroger's official API — no page scraping, anywhere.
 - Standing reminder: `fixtures/retailers/` and `fixtures/providers/`, plus
   the fallback demo page, exist for when a retailer's DOM changes
   mid-judging. Re-run fixtures whenever an adapter or matcher changes; treat

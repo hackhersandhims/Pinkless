@@ -1,31 +1,34 @@
 ---
 name: catalog-and-matcher
-description: Use when writing or reviewing packages/catalog, packages/matcher, or apps/api/src/providers — product identity, offer matching, and provider adapters are the product's trust boundary.
+description: Use when writing or reviewing packages/catalog, packages/matcher, or apps/api/src/providers — product identity, reviewed women's→men's/neutral pairs, offer matching, and the Kroger provider are the product's trust boundary.
 ---
 
 # Catalog and matcher
 
 Applies to `packages/catalog/**`, `packages/matcher/**`, and
-`apps/api/src/providers/**`. Product identity is the trust boundary
-(REQUIREMENTS §4) — a product record documents a canonical packaged item and
-approved equivalence policy; it does not freeze a retailer price. Treat every
-rule here as a hard constraint.
+`apps/api/src/providers/**`. Product identity and reviewed equivalence are the
+trust boundary (REQUIREMENTS §4). A product record documents one canonical
+packaged item; a `ProductEquivalence` record documents why a women's product
+and a men's or neutral product are comparable. Neither freezes a price. Treat
+every rule here as a hard constraint.
 
 ## Money is always integer cents
 
 - All monetary amounts are integer minor units (`amountCents`) in USD.
 - **Never** use a floating-point value for money, anywhere, including
-  intermediate arithmetic. Flag any PR that introduces float pricing.
+  intermediate arithmetic. Kroger returns dollars (`7.99`); `toCents` in the
+  Kroger provider is the only conversion and rejects non-whole-cent values.
 
-## Exact shared types (REQUIREMENTS §4/§5)
+## Shared types (source of truth: `packages/catalog/src/schema.ts`)
 
 ```ts
 type Money = { amountCents: number; currency: "USD" };
 type Size = { amount: number; unit: "oz" | "ml" | "count" };
 
 type RetailerIdentity = {
-  retailer: string;
-  productId: string;
+  retailer: "kroger";
+  productId: string; // Kroger's 13-digit productId
+  canonicalUrl: string;
   canonicalUrlPatterns: string[];
 };
 
@@ -37,17 +40,24 @@ type Product = {
   variant: string;
   category: "razors" | "deodorant" | "body-wash";
   size: Size;
+  marketedTo: "women" | "men" | "neutral";
   identities: RetailerIdentity[];
-  equivalence: {
-    rationale: string;
-    matchedAttributes: string[];
-    knownDifferences?: string[];
-  };
+  status: "active" | "paused" | "retired";
+};
+
+type ProductEquivalence = {
+  id: string;
+  productIds: [string, string]; // exactly one women's + one men's/neutral
+  rationale: string;
+  matchedAttributes: string[];
+  knownDifferences: string[]; // non-empty
+  reviewedBy: string;
+  reviewedAt: string; // YYYY-MM-DD
   status: "active" | "paused" | "retired";
 };
 
 type Offer = {
-  retailer: string;
+  retailer: "kroger";
   productId: string;
   url: string;
   price: Money;
@@ -58,83 +68,70 @@ type Offer = {
   observedAt: string; // ISO date-time
   expiresAt: string; // ISO date-time
 };
-
-type ProductView = {
-  retailer: string;
-  canonicalUrl: string;
-  productId?: string;
-  upc?: string;
-  title: string;
-  selectedVariant?: string;
-  currentPriceCents?: number;
-  currency?: string;
-  availability: "in-stock" | "out-of-stock" | "unknown";
-};
 ```
 
-`Product`/`Offer`/`RetailerIdentity` replaced the older `Comparison`/
-`TargetListing`/`AlternativeListing` shapes — don't resurrect those. Don't add
-fields, loosen types, or make required fields optional without updating
-`Files/REQUIREMENTS.md` in the same PR.
+Don't resurrect the older `Comparison`/`TargetListing`/`AlternativeListing`
+shapes or the per-product `equivalence` block. Don't add fields, loosen types,
+or make required fields optional without updating `Files/REQUIREMENTS.md` in
+the same PR.
 
 ## Catalog validation — every rejection rule
 
-`packages/catalog` validation must reject a record for any of these:
+`pnpm run catalog:validate` checks `products.json` and `equivalences.json`:
 
-- [ ] Duplicate product IDs or UPCs.
-- [ ] An `active` record without a canonical identity (a `RetailerIdentity`).
-- [ ] Empty `equivalence.rationale`.
-- [ ] Invalid sizes, money, URLs, or identity patterns.
-- [ ] A duplicate retailer identity on the same product.
-- [ ] Identities that would connect incompatible packaged quantities.
+- [ ] Duplicate product IDs, UPCs, retailer identities, or URL patterns.
+- [ ] An `active` product without a Kroger identity; a missing `marketedTo`.
+- [ ] Invalid sizes, URLs, or identity patterns.
+- [ ] An equivalence that references a missing product, pairs a product with
+      itself, or repeats a pair in either order.
+- [ ] An equivalence that isn't exactly one `women` + one `men`/`neutral`
+      product, crosses categories, or crosses size unit/amount.
+- [ ] An active equivalence with an inactive product.
+- [ ] Empty rationale or `knownDifferences`, or no reviewer / review date.
 
-## Matching rules (REQUIREMENTS §5)
+## Matching rules (REQUIREMENTS §5, `packages/matcher/src/compare.ts`)
 
-1. Resolve an active product by, **in this order**: exact UPC, retailer
-   product ID, then canonical URL pattern. Title/category matching may help a
-   human diagnose a mismatch during review, but must never independently
-   produce a badge.
-2. The page must report USD, `in-stock` availability, and a positive price
-   before the matcher proceeds.
-3. The selected page variant must be compatible with the canonical product.
-4. Request candidate offers **only** from approved retailer providers — the
-   matcher/extension never invents or scrapes an offer itself.
-5. Compare the current offer only against **in-stock, positive, unexpired**
-   offers in the **same price context** (`online` / `store-pickup` /
-   `in-store`). Never compare an online price to a store-specific price as if
-   they were equivalent.
-6. Zero or negative savings → `no-match`, not a badge with $0.00 savings.
-7. Return a display model only once every check above passes.
+1. Resolve an active product by, **in this order**: exact UPC, Kroger product
+   ID, then canonical URL pattern. Title matching never produces a badge.
+2. The page must report USD, `in-stock`, a positive price, a store price
+   context (`in-store`/`store-pickup`), and a store `locationId`.
+3. Only a **women's** product with an active reviewed pair to an active
+   men's/neutral product is compared. Everything else is `no-match`.
+4. The API prices both products from the provider at the **same store and
+   price context**, using Kroger's **regular** price (never promo).
+5. The page price is a consistency check only; if it differs from the
+   provider's price for the current product → suppressed
+   (`page-price-mismatch`).
+6. Offers must be in stock, positive, USD, unexpired, and match the reviewed
+   identity URL pattern.
+7. Savings = women's price − men's/neutral price. Zero or negative →
+   `no-match`.
 
 ## No auto-normalization
 
-- The matcher does not normalize price per unit automatically, does not
-  compare membership-only prices, and does not treat a same-brand product as
-  an automatic exact match.
-- Quantity-different products are suppressed unless an explicit reviewed
-  equivalence policy (in `knownDifferences`) permits the comparison.
+- No per-unit price normalization, no loyalty/membership prices, no pairing
+  across sizes or categories.
+- Being the same brand never makes two products equivalent. Every pair is
+  written and reviewed by a person.
 
 ## Provider adapters (`apps/api/src/providers/**`)
 
-- One adapter per retailer (Kroger, CVS, Walmart), each returning the shared
-  `Offer` shape — don't let a provider leak its own response shape upward.
-- Retailer credentials (`KROGER_CLIENT_ID`/`KROGER_CLIENT_SECRET`, etc.) are
-  server-only Vercel environment variables. Never expose them to the
-  extension or Marketplace, and never use a client-visible `VITE_` prefix for
-  them.
-- CVS and Walmart currently accept **no** environment credentials — their
-  provider shells must reject every lookup until an approved/licensed
-  integration exists. Don't wire in an ad hoc key to "make it work."
-- Fail closed: no approved credentials, ambiguous identity, no price, or
-  unavailable → suppress that retailer's offer, never a partial or invented
-  price.
-- `PINKLESS_PROVIDER_MODE=mock` selects deterministic local fixtures (under
-  `fixtures/providers/`); any other value uses the fail-closed live registry.
-  Don't special-case mock behavior inside a provider adapter itself — it
-  belongs in the registry/mode switch.
+- Kroger is the only provider, returning the shared `Offer` shape. Don't leak
+  Kroger's response shape upward.
+- `KROGER_CLIENT_ID`/`KROGER_CLIENT_SECRET` are server-only Vercel
+  environment variables with the `product.compact` scope only. Never expose
+  them to the extension or Marketplace; never use a `VITE_` prefix.
+- Don't add another retailer or data source (including scraped-data services
+  such as Canopy) without a REQUIREMENTS.md change.
+- Fail closed: no credentials, ambiguous identity, no price, or unavailable →
+  suppress, never a partial or invented price.
+- `PINKLESS_PROVIDER_MODE=mock` selects deterministic fixtures
+  (`apps/api/src/providers/mock-data.ts`); any other value uses the
+  fail-closed live registry. Mock behavior belongs in the registry, not in the
+  Kroger adapter.
 
 ## Determinism
 
 Matching stays deterministic and reviewed. Never introduce fuzzy string
-matching, embeddings, or an AI/LLM call as a basis for deciding whether two
-products are comparable or whether a badge should render.
+matching, embeddings, or an AI/LLM call to decide whether two products are
+comparable or whether a badge should render.

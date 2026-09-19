@@ -14,8 +14,9 @@ suggestion.
 - [ ] A known supported product shows one correct badge in under three
       seconds **on a warm cache** — measure with the API cache warm, not
       only cold.
-- [ ] Its savings equal `current offer price - eligible alternative offer
-      price` exactly (integer cents, no rounding drift).
+- [ ] Its savings equal `women's product regular price - men's/neutral
+      product regular price` at the same Kroger store, exactly (integer
+      cents, no rounding drift).
 - [ ] Clicking the badge opens the expected alternative URL (new tab, no
       host-page navigation).
 - [ ] An unknown product stays quiet — no badge.
@@ -25,16 +26,16 @@ suggestion.
 - [ ] A product with no positive savings stays quiet.
 - [ ] Changing a supported product's variant updates or removes the badge
       correctly — never leaves a stale one.
-- [ ] The Marketplace identifies the source retailer, price context
-      (`online`/`store-pickup`/`in-store`), and observed time for every
-      displayed offer.
+- [ ] The Marketplace identifies the Kroger store, price context
+      (`in-store`/`store-pickup`), and observed time for every displayed
+      offer.
 - [ ] Product-identity catalog validation runs cleanly before a build
       (`pnpm run catalog:validate`).
-- [ ] Fixture-based tests cover every retailer adapter (page adapters in
-      `apps/extension` and provider adapters in `apps/api/src/providers`)
-      and the matcher's key suppression rules (see `suppress-by-default`).
+- [ ] Fixture-based tests cover the Kroger page adapter (`apps/extension`),
+      the Kroger provider (`apps/api/src/providers`), and the matcher's key
+      suppression rules (see `suppress-by-default`).
 - [ ] The unpacked extension and Vercel-deployed Marketplace use **only**
-      the Pinkless API and approved retailer connections — no page scraping,
+      the Pinkless API and Kroger's official API — no page scraping,
       anywhere.
 
 ## Standing reminder: keep the fallback path alive

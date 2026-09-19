@@ -1,6 +1,36 @@
 # Pinkless — Build Tasks
 
-## Scope revision
+## Scope revision (Sep 2026): Kroger-only, women's vs men's/neutral
+
+CVS and Walmart never got approved data access, so Pinkless now compares a
+product marketed to women with a reviewed men's or neutral equivalent at the
+**same Kroger store**, both priced by Kroger's official API. The CVS/Walmart
+phases below are kept as history; items that no longer apply are marked
+_dropped_. See `Files/REQUIREMENTS.md`.
+
+## Phase 8 — Same-store women's vs men's/neutral comparisons
+
+- [x] Rewrite REQUIREMENTS for the Kroger-only, one-direction model.
+- [x] Add `Product.marketedTo` and `ProductEquivalence` records
+  (`packages/catalog/equivalences.json`) with validation.
+- [x] Matcher: compare a women's product only with its reviewed men's/neutral
+  equivalents, same store and price context, regular prices only.
+- [x] API prices both products; page price is a consistency check.
+- [x] `GET /api/comparisons` list feed for the Marketplace.
+- [x] Seed one real pair from live Kroger data (BIC Soleil vs Comfort 3
+  Advance, 4-count).
+- [x] Register the Kroger app (Products + Locations scopes only) and store
+  credentials in `.env` and Vercel.
+- [ ] Review the BIC pair in person and replace the draft `reviewedBy`.
+- [ ] Add 3–5 more reviewed pairs (razors first), each checked live at the
+  demo store.
+- [ ] Confirm Kroger's 13-digit UPC format against a physical package.
+- [ ] Check whether kroger.com shows promo or regular prices on the page, and
+  adjust the page-price check if needed.
+- [ ] Decide on a default demo store for judging.
+- [ ] Confirm Kroger's daily API call limit for the registered app.
+
+## Earlier scope revision
 
 The completed Target-only setup was the original prototype decision. Pinkless
 now compares exact packaged products across **CVS, Kroger, and Walmart**.
@@ -134,9 +164,9 @@ savings as the extension.
   allowed origins, server-only credentials, and the first preview deployment.
 - [ ] Replace the extension's local API/Marketplace URLs and local API host
   permission with the final Vercel origins.
-- [ ] Register Pinkless with Kroger and store credentials only in Vercel environment variables.
-- [ ] Obtain approved CVS product-and-price data access and activate its provider.
-- [ ] Obtain approved Walmart product-and-price data access and activate its provider.
+- [x] Register Pinkless with Kroger and store credentials only in Vercel environment variables.
+- [ ] _Dropped:_ obtain approved CVS product-and-price data access.
+- [ ] _Dropped:_ obtain approved Walmart product-and-price data access.
 - [ ] Compare Marketplace and extension output for every active product result.
 - [ ] Test badge rendering on narrow and wide desktop windows.
 - [ ] Verify one badge only after refresh, variant change, and client-side
