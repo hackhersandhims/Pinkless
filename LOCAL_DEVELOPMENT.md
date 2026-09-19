@@ -21,8 +21,9 @@ Start the Vite development server:
 pnpm --filter @pinkless/marketplace dev
 ```
 
-Open <http://localhost:5173>. The Marketplace uses local fixture data until its
-production API feed is available, so no credentials are required.
+Open <http://localhost:5173>. Vite serves the local API functions from the same
+origin. In mock mode no credentials are required; live mode uses the server-only
+Kroger credentials from `.env.local`.
 
 ## Run the local API
 
@@ -44,7 +45,25 @@ pnpm dlx vercel dev --listen 3000
 ```
 
 The first run may ask you to sign in to Vercel and configure a local project.
-The extension currently expects the API at `http://localhost:3000`.
+The production extension build calls the deployed Marketplace API; use the
+controlled fallback page to rehearse the unpacked extension locally.
+
+## Expand the reviewed catalog
+
+The private reviewer endpoint can import official Kroger product metadata and
+ask Gemini to draft candidate pairs. For products outside the mock fixture,
+configure `KROGER_CLIENT_ID`, `KROGER_CLIENT_SECRET`, `GEMINI_API_KEY`, and
+`PINKLESS_REVIEW_API_TOKEN`, then use live provider mode:
+
+```dotenv
+PINKLESS_PROVIDER_MODE=live
+```
+
+Start the Marketplace dev server and follow the `krogerProducts` example in
+[`apps/api/README.md`](apps/api/README.md). Gemini output never writes the
+catalog. After a person verifies a candidate and adds it to `products.json`
+and `equivalences.json`, both the Marketplace and extension use it through the
+same comparison service.
 
 ## Build and load the Chrome extension
 

@@ -139,10 +139,12 @@ location to the Pinkless API solely to obtain a comparison.
   equivalent.
 - Fail closed when a provider has no approved credentials, returns ambiguous
   identity, lacks a price, or is unavailable.
-- A private, token-protected reviewer endpoint may use AI only to draft candidate pairs from
-  supplied product metadata. Its output must be structurally filtered, marked as requiring human
-  review, and unable to write catalog data or affect a shopper-facing comparison. A person must
-  still write and approve every `ProductEquivalence` record.
+- A private, token-protected reviewer endpoint may resolve reviewer-supplied exact Kroger product
+  IDs and canonical URLs through Kroger's official API, then use AI only to draft candidate pairs
+  from that metadata plus reviewer-supplied classifications. Its output must be structurally
+  filtered, marked as requiring human review, and unable to write catalog data or affect a
+  shopper-facing comparison. A person must still write and approve every `ProductEquivalence`
+  record.
 
 ### Provider configuration
 

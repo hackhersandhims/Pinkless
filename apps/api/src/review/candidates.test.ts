@@ -29,6 +29,11 @@ describe('private review candidate input', () => {
         products: [{ ...products[0], canonicalUrl: 'https://example.com/not-kroger' }, products[1]],
       }),
     ).toBeNull();
+    expect(
+      parseReviewCandidateRequest({
+        products: [{ ...products[0], productId: 'not-a-kroger-id' }, products[1]],
+      }),
+    ).toBeNull();
   });
 });
 
