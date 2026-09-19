@@ -16,13 +16,37 @@ describe('comparison badge', () => {
     const shadowRoot = document.getElementById(BADGE_ROOT_ID)?.shadowRoot;
     expect(shadowRoot?.textContent).toContain('Comparable alternative: save $4.00');
     expect(shadowRoot?.textContent).toContain('Why this was matched');
+    expect(shadowRoot?.querySelector('img')?.alt).toBe('Pinkless');
     const link = shadowRoot?.querySelector<HTMLAnchorElement>('a');
     expect(link?.target).toBe('_blank');
     expect(link?.rel).toContain('noopener');
     expect(link?.href).toBe('https://www.walmart.com/ip/sample-razor/walmart-razor-1');
 
-    shadowRoot?.querySelector<HTMLButtonElement>('button')?.click();
+    shadowRoot?.querySelector<HTMLButtonElement>('.pinkless-badge__dismiss')?.click();
     expect(dismiss).toHaveBeenCalledOnce();
+  });
+
+  it('collapses to a right-edge control that can be expanded again', () => {
+    const window = new Window({ url: 'https://www.cvs.com/shop/item-prodid-123456' });
+    const document = window.document as unknown as Document;
+
+    renderBadge(document, showComparison(), () => undefined);
+    const badge = document
+      .getElementById(BADGE_ROOT_ID)
+      ?.shadowRoot?.querySelector<HTMLElement>('[data-pinkless-ui]');
+    const collapse = document
+      .getElementById(BADGE_ROOT_ID)
+      ?.shadowRoot?.querySelector<HTMLButtonElement>('.pinkless-badge__collapse');
+
+    collapse?.click();
+    expect(badge?.dataset.collapsed).toBe('true');
+
+    document
+      .getElementById(BADGE_ROOT_ID)
+      ?.shadowRoot?.querySelector<HTMLButtonElement>('.pinkless-badge__expand')
+      ?.click();
+    expect(badge?.dataset.collapsed).toBe('false');
+    expect(badge?.dataset.position).toBe('right');
   });
 
   it('clears stale comparison content without leaving a visible badge', () => {

@@ -5,7 +5,7 @@
 1. Run `pnpm build:extension` from the repository root.
 2. Open `chrome://extensions` in Chrome and enable **Developer mode**.
 3. Choose **Load unpacked** and select `apps/extension/dist`.
-4. Pin Pinkless, open its popup, and enter a US ZIP code.
+4. Pin Pinkless, click its icon to open the Chrome Side Panel, and enter a US ZIP code.
 
 The unpacked build runs only on explicitly declared CVS, Kroger, and Walmart
 HTTPS pages, plus the fixed team-owned local fallback routes at
