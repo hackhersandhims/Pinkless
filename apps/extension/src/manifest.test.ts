@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 
 type Manifest = {
+  action?: { default_popup?: string };
   permissions?: string[];
   host_permissions?: string[];
   content_scripts?: Array<{ matches: string[] }>;
@@ -37,7 +38,12 @@ describe('manifest scope', () => {
       expect(new URL(pattern.replace('*', 'x')).hostname, pattern).not.toContain('*');
       expect(pattern, pattern).not.toMatch(/^\*:|:\/\/\*/);
     }
-    expect(json.permissions).toEqual(['storage', 'sidePanel']);
+    expect(json.permissions).toEqual(['storage']);
+  });
+
+  it('uses the toolbar popup for store settings instead of Chrome’s separate side panel', async () => {
+    const { json } = await manifest();
+    expect(json.action?.default_popup).toBe('popup.html');
   });
 
   it('can reach only the Pinkless API', async () => {

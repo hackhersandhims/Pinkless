@@ -42,4 +42,9 @@ describe('BADGE_CSS', () => {
     expect(BADGE_CSS).toMatch(/:focus-visible\s*\{[^}]*outline:\s*2px solid var\(--ink\)/);
     expect(BADGE_CSS).not.toMatch(/outline:\s*(none|0)\b/);
   });
+
+  it('places the comparison on the page’s right edge', () => {
+    expect(BADGE_CSS).toMatch(/inset-inline-end:\s*var\(--space-4\)/);
+    expect(BADGE_CSS).not.toMatch(/inset-inline-start:/);
+  });
 });
