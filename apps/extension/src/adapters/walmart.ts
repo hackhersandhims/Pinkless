@@ -5,7 +5,7 @@ function isWalmartHost(hostname: string): boolean {
 }
 
 function productPathId(url: URL): string | undefined {
-  return url.pathname.match(/\/ip\/(?:[a-z0-9-]+\/)?(\d{3,20})\/?$/i)?.[1];
+  return url.pathname.match(/\/ip\/(?:[a-z0-9-]+\/)?([a-z0-9-]{3,64})\/?$/i)?.[1];
 }
 
 export const walmartAdapter = createStructuredProductAdapter({
@@ -15,7 +15,7 @@ export const walmartAdapter = createStructuredProductAdapter({
     !url.username &&
     !url.password &&
     isWalmartHost(url.hostname) &&
-    /^\/ip\/(?:[a-z0-9-]+\/)?\d{3,20}\/?$/i.test(url.pathname),
+    /^\/ip\/(?:[a-z0-9-]+\/)?[a-z0-9-]{3,64}\/?$/i.test(url.pathname),
   productIdFromUrl: productPathId,
   blockedPriceSelectors: [
     '[data-automation-id="subscription-option"][aria-checked="true"]',

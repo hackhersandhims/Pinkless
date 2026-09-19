@@ -6,8 +6,8 @@ function isCvsHost(hostname: string): boolean {
 
 function productPathId(url: URL): string | undefined {
   const selectedSku = url.searchParams.get('skuId');
-  if (selectedSku && /^\d{3,20}$/.test(selectedSku)) return selectedSku;
-  return url.pathname.match(/-prodid-(\d{3,20})\/?$/)?.[1];
+  if (selectedSku && /^[a-z0-9-]{3,64}$/i.test(selectedSku)) return selectedSku;
+  return url.pathname.match(/-prodid-([a-z0-9-]{3,64})\/?$/i)?.[1];
 }
 
 export const cvsAdapter = createStructuredProductAdapter({
@@ -17,7 +17,7 @@ export const cvsAdapter = createStructuredProductAdapter({
     !url.username &&
     !url.password &&
     isCvsHost(url.hostname) &&
-    /^\/shop\/[a-z0-9-]+-prodid-\d{3,20}\/?$/i.test(url.pathname),
+    /^\/shop\/[a-z0-9-]+-prodid-[a-z0-9-]{3,64}\/?$/i.test(url.pathname),
   productIdFromUrl: productPathId,
   blockedPriceSelectors: [
     '[data-testid="carepass-price"][aria-checked="true"]',
