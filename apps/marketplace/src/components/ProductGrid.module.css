@@ -1,0 +1,9 @@
+/* 4-up on wide screens (17.5rem cards fit four in the 85rem container), one column on phones. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17.5rem), 1fr));
+  gap: var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

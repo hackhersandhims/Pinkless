@@ -1,0 +1,54 @@
+.wrap {
+  padding-block: 0;
+}
+
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+  margin: 0;
+  padding: var(--space-4) 0;
+  border-block: 1px solid var(--hairline);
+}
+
+.stat {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.stat + .stat {
+  padding-left: var(--space-6);
+  border-left: 1px solid var(--hairline);
+}
+
+.term,
+.value {
+  margin: 0;
+}
+
+.value {
+  font-weight: 700;
+}
+
+/* Phones: three equal columns with the value stacked over its label, so nothing wraps raggedly. */
+@media (max-width: 47.99rem) {
+  .strip {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .stat {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .stat + .stat {
+    padding-left: var(--space-3);
+  }
+}

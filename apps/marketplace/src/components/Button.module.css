@@ -1,0 +1,73 @@
+/*
+ * Shared button/link-button styles. No CTA color token is approved
+ * (DESIGN_SYSTEM.md), so prominence comes from composition: filled plum,
+ * a hairline-outlined secondary, and a quiet text button.
+ */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--tap-target);
+  padding: var(--space-2) var(--space-6);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .button {
+    transition:
+      transform 150ms ease-out,
+      box-shadow 150ms ease-out,
+      background-color 150ms ease-out;
+  }
+
+  .button:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.dark {
+  background: var(--surface-900);
+  color: var(--on-dark);
+}
+
+.dark:hover {
+  box-shadow: var(--shadow-lift);
+}
+
+.outline {
+  border-color: var(--border);
+  background: transparent;
+  color: var(--ink);
+}
+
+.outline:hover {
+  background: var(--tint-pink);
+  border-color: var(--ink);
+}
+
+/* For use on the plum panel: cream fill, plum text. */
+.light {
+  background: var(--on-dark);
+  color: var(--surface-900);
+}
+
+.light:hover {
+  box-shadow: var(--shadow-lift);
+}
+
+.quiet {
+  padding-inline: var(--space-3);
+  background: transparent;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.quiet:hover {
+  background: var(--tint-pink);
+}

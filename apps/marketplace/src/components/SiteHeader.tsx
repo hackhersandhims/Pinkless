@@ -1,34 +1,40 @@
-import { NavLink } from 'react-router-dom';
-import { CATEGORY_LABELS, CATEGORY_ORDER } from '../lib/types';
+import { Link } from 'react-router-dom';
 import logo from '../../../../packages/tokens/assets/pinkless-lockup.png';
+import { CategoryNav } from './CategoryNav';
+import { SearchBar } from './SearchBar';
 import styles from './SiteHeader.module.css';
 
-export type SiteHeaderProps = Record<string, never>;
-
-/** Global site header: skip link, logo lockup, and category navigation. */
-export function SiteHeader(_props: SiteHeaderProps) {
+/**
+ * Global header on the cream surface: brand, a dominant search field, one
+ * utility link, then the category row. There are no account, cart, or
+ * saved-item controls because the Marketplace has none (REQUIREMENTS §2, §3).
+ */
+export function SiteHeader() {
   return (
     <header className={styles.header}>
-      <a href="#main" className={styles.skipLink}>
-        Skip to content
-      </a>
-      <img src={logo} alt="Pinkless" className={styles.logo} />
-      <nav aria-label="Categories">
-        <ul className={styles.nav}>
-          {CATEGORY_ORDER.map((slug) => (
-            <li key={slug}>
-              <NavLink
-                to={`/category/${slug}`}
-                className={({ isActive }) =>
-                  `${styles.navLink} label ${isActive ? styles.navLinkActive : ''}`
-                }
-              >
-                {CATEGORY_LABELS[slug]}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <div className={`container ${styles.bar}`}>
+        <a href="#main" className={styles.skipLink}>
+          Skip to content
+        </a>
+        <Link to="/" className={styles.brand}>
+          {/*
+           * The only approved logo asset is a flattened lockup with a
+           * near-black ground and a tagline under the mark. The frame crops to
+           * the star and wordmark without recoloring or redrawing it. A
+           * transparent, header-specific lockup would remove the dark tile.
+           */}
+          <span className={styles.logoFrame}>
+            <img src={logo} alt="Pinkless" className={styles.logo} />
+          </span>
+        </Link>
+        <div className={styles.search}>
+          <SearchBar />
+        </div>
+        <Link to={{ pathname: '/', hash: '#how-it-works' }} className={`body ${styles.utility}`}>
+          How it works
+        </Link>
+      </div>
+      <CategoryNav />
     </header>
   );
 }

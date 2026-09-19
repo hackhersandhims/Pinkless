@@ -1,53 +1,105 @@
+/*
+ * Low chrome: no outline at rest, just a soft token-derived shadow. Hover is
+ * what says "clickable": a small lift, a deeper shadow, and the arrow moving.
+ */
 .card {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  height: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
   background: var(--surface-100);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
+  box-shadow: var(--shadow-soft);
   color: var(--ink);
   text-decoration: none;
 }
 
-.card:focus-visible {
-  outline: 2px solid var(--surface-900);
-  outline-offset: 2px;
+@media (prefers-reduced-motion: no-preference) {
+  .card {
+    transition:
+      transform 180ms ease-out,
+      box-shadow 180ms ease-out;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+  }
+
+  .arrow {
+    transition: transform 180ms ease-out;
+  }
+
+  .card:hover .arrow {
+    transform: translateX(3px);
+  }
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lift);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-2) / 2);
+  padding-inline: var(--space-2);
 }
 
 .category {
-  display: block;
-  margin-bottom: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .name {
   margin: 0;
+  font-weight: 600;
 }
 
-.meta {
-  display: block;
-  margin: 2px 0 var(--space-3);
-}
-
-.offers {
+.pricing {
   display: flex;
-  flex-direction: column;
+  align-items: baseline;
+  flex-wrap: wrap;
   gap: var(--space-2);
-  margin-bottom: var(--space-3);
+  margin-top: var(--space-3);
 }
 
-.offerRow {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-2);
+.price {
+  margin: 0;
+  letter-spacing: -0.01em;
 }
 
-.offerLabel {
-  color: var(--ink);
+.retailer {
+  font-weight: 600;
 }
 
 .savings {
-  margin: 0 0 var(--space-2);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
-.footNote {
-  display: block;
+/* Pins the footer to the card bottom so rows line up across a rail. */
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding: var(--space-3) var(--space-2) var(--space-2);
+  border-top: 1px solid var(--hairline);
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--space-2) / 2);
+  font-weight: 700;
+}
+
+.arrow {
+  width: var(--space-4);
+  height: var(--space-4);
 }

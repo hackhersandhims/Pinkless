@@ -1,16 +1,26 @@
+/* A soft tinted panel rather than a dashed outline. */
 .wrap {
-  background: var(--surface-100);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: var(--space-6) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: calc(var(--space-6) * 2) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--tint-pink);
   text-align: center;
   color: var(--ink);
 }
 
-.title {
-  margin: 0 0 var(--space-2);
-}
-
+.title,
 .body {
   margin: 0;
+  max-width: 36rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
 }

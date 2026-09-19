@@ -1,0 +1,27 @@
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.eyebrow,
+.description {
+  margin: 0;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Scales the .display token (32px) by ratio: 40px. */
+.title {
+  margin: 0;
+  font-size: 1.25em;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.description {
+  max-width: 40rem;
+}

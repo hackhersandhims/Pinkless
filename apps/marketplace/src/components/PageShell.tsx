@@ -1,14 +1,16 @@
 import type { ReactNode } from 'react';
-import styles from './PageShell.module.css';
 
 export type PageShellProps = {
   children: ReactNode;
 };
 
-/** Constrains page content to the reading width and provides the `#main` landmark. */
+/**
+ * The `#main` landmark. It is full-bleed on purpose: each section wraps its
+ * own `.container`, so a section can carry a full-width background.
+ */
 export function PageShell({ children }: PageShellProps) {
   return (
-    <main id="main" className={styles.shell}>
+    <main id="main" tabIndex={-1}>
       {children}
     </main>
   );
