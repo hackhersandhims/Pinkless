@@ -3,34 +3,44 @@
 ## 1. Product decision
 
 Pinkless is a Chrome extension and companion Marketplace that compare a
-product at the point of shopping across supported retailers. The first live
-comparison network is **CVS, Kroger, and Walmart**. It must only flag an
-offer when it finds an exact product match (preferably UPC/GTIN) with a
-verified lower price at another supported retailer.
+product at the point of shopping with a **reviewed equivalent product sold at
+the same Kroger store**. Kroger is the only supported retailer. Pinkless must
+only flag an offer when the shopper's current product and a different product
+are linked by a reviewed equivalence record, both are priced by Kroger's
+official API at the same store in the same price context, and the equivalent
+costs less.
+
+> **Scope revision (Sep 2026).** This supersedes the CVS/Kroger/Walmart
+> exact-UPC design. CVS and Walmart had no approved data access, and a single
+> retailer cannot offer "the same product elsewhere". Cross-retailer
+> comparison moves to §9 (deferred).
 
 The first release is a hackathon demo, not an automated system for judging
 whether a price is discriminatory. Its user-facing promise is:
 
-> We found the same verified product at a lower price from a supported
-> retailer when last checked.
+> At your selected Kroger store, a comparable product we reviewed cost less
+> when last checked. Here is what matches and what differs.
 
-Silence is the default. A weak keyword match, unknown price, unavailable
-alternative, or non-positive savings must not produce a badge.
+Silence is the default. A weak keyword match, an unreviewed pairing, an
+unknown price, an unavailable alternative, or non-positive savings must not
+produce a badge.
 
 ## 2. MVP scope
 
 ### In scope
 
-- Three supported retailers: CVS, Kroger, and Walmart.
-- Exact packaged-product comparisons across those retailers, starting with
-  razors and expanding only when matching quality is proven.
+- One supported retailer: Kroger, through its official Products and
+  Locations APIs.
+- Same-store comparisons between two different packaged products that a
+  reviewer has linked in a `ProductEquivalence` record, starting with razors
+  and expanding only when review quality is proven.
 - Chrome Manifest V3 extension, loadable unpacked.
 - Product title, UPC/GTIN when present, current price, selected variant,
   canonical URL/product ID, and availability extraction from the current page.
-- A non-intrusive in-page badge that shows the savings and a concise matching
-  rationale.
-- A click-through to the alternative retailer listing or its Marketplace detail
-  page.
+- A non-intrusive in-page badge that names the equivalent product, shows the
+  savings, and gives a concise matching rationale with known differences.
+- A click-through to the equivalent product's Kroger listing or its
+  Marketplace detail page.
 - A Vercel-deployed Marketplace with comparison cards, explanation, freshness
   data, and outbound links.
 - A controlled fallback demo page for judging if a retailer changes its DOM or
@@ -40,7 +50,10 @@ alternative, or non-positive savings must not produce a badge.
 
 - Scraping retailer pages or calling undocumented retailer endpoints.
 - Accounts, saved preferences, payment, checkout, affiliates, or user tracking.
-- Claims that a retailer or item is legally discriminatory.
+- Claims that a retailer or item is legally discriminatory, or that a price
+  difference is caused by who a product is marketed to.
+- CVS, Walmart, Amazon, or any retailer other than Kroger (see §9).
+- Cross-store comparisons (two different Kroger stores).
 - A recommendation produced solely by AI or fuzzy keyword matching.
 - Price tracking, personal savings history, community submissions, and browser
   support beyond Chrome.
@@ -53,15 +66,13 @@ apps/extension/           Chrome MV3 content script and popup
          | product identity + selected store (no credentials)
          v
 apps/api/                 Vercel serverless API: orchestration, caching,
-                           rate limiting, and retailer credentials
+                           rate limiting, and Kroger credentials
          |
-         +--> KrogerAdapter       official product/location API
-         +--> CvsAdapter          approved CVS partner/licensed data API
-         +--> WalmartAdapter      approved Walmart product/price data API
+         +--> KrogerAdapter       official Products/Locations API
          |
          v
-packages/matcher/         pure identity, eligibility, offer, and money logic
-packages/catalog/         product metadata, reviewed equivalence policy, and
+packages/matcher/         pure identity, pairing, eligibility, and money logic
+packages/catalog/         product identity, reviewed equivalence pairs, and
                            fixtures (not live prices)
          |
          +--> apps/marketplace/   Vercel-deployed React site
@@ -85,6 +96,7 @@ pinkless/
   packages/
     catalog/
       products.json
+      equivalences.json
       schema.ts
       validate.ts
     matcher/
@@ -97,10 +109,10 @@ pinkless/
 
 ### Extension responsibilities
 
-1. Run a content script only on declared CVS, Kroger, and Walmart domains.
+1. Run a content script only on declared Kroger domains.
 2. Let a page adapter extract a normalized `ProductView` from the current page.
-3. Send the minimum needed identity and selected store context to the API.
-4. Render eligible cross-retailer offers returned by the API in one Shadow DOM
+3. Send the minimum needed identity and the selected Kroger store to the API.
+4. Render the eligible equivalent offer returned by the API in one Shadow DOM
    root.
 5. Re-evaluate with a debounced `MutationObserver` when a product page changes
    variants or navigates client-side.
@@ -113,7 +125,12 @@ location to the Pinkless API solely to obtain a comparison.
 
 - Keep all retailer credentials in Vercel environment variables; never expose
   them to the extension or Marketplace.
-- Use one provider adapter per retailer and return a shared normalized `Offer`.
+- Use one provider adapter per retailer (today: Kroger only) and return a
+  shared normalized `Offer`.
+- Price **both** the current product and its equivalent from the provider, for
+  the same store and price context, in the same request. The price the
+  extension reads from the page is never used to compute savings; it may only
+  be used to detect a stale or mismatched page, which suppresses.
 - Cache by `retailer + product ID/UPC + location + fulfillment method`, with an
   observation timestamp and provider-specific TTL/rate limit.
 - Distinguish online and store-specific prices. Never present an online price
@@ -124,14 +141,15 @@ location to the Pinkless API solely to obtain a comparison.
 
 ### Provider configuration
 
-- `PINKLESS_PROVIDER_MODE=mock` enables deterministic local CVS, Kroger, and
-  Walmart fixtures. Any other value uses the fail-closed live registry.
+- `PINKLESS_PROVIDER_MODE=mock` enables deterministic local Kroger fixtures
+  (products, equivalents, and store prices). Any other value uses the fail-closed live registry.
 - `KROGER_CLIENT_ID` and `KROGER_CLIENT_SECRET` are server-only credentials for
   Kroger's OAuth client-credentials flow. They must be configured in Vercel and
   must never use the client-visible `VITE_` prefix.
-- CVS and Walmart accept no environment credentials until their approved or
-  licensed product-and-price integrations are implemented. Their provider
-  shells reject every lookup in the meantime.
+- Request only the `product.compact` scope. Pinkless never requests Kroger's
+  Cart or Profile scopes or any customer-authorized flow.
+- The CVS and Walmart provider shells are removed from the live registry.
+  They accept no credentials.
 - `.env.example` documents variable names only. `.env` and `.env.*` files are
   ignored so credentials cannot be committed accidentally.
 - `PINKLESS_ALLOWED_ORIGINS` is an exact comma-separated allowlist containing
@@ -139,21 +157,24 @@ location to the Pinkless API solely to obtain a comparison.
 
 ### Phase 2 API contract
 
-- `GET /api/stores` accepts a supported retailer and US postal code and returns
-  normalized provider locations.
-- `POST /api/compare` accepts a normalized `current` product view and an
-  explicit retailer-to-store-ID `locations` map for store-specific prices.
-- Store IDs are retailer-specific. The API sends each provider only its own
-  selected store ID while treating the submitted map as one user location
-  context.
+- `GET /api/stores` accepts a US postal code and returns normalized Kroger
+  locations.
+- `POST /api/compare` accepts a normalized `current` product view, a Kroger
+  `locationId`, and a price context (`in-store` or `store-pickup`).
+- `GET /api/comparisons?locationId=` (new, for the Marketplace) returns every
+  active equivalence pair that currently produces a positive saving at that
+  store, computed by the same matcher function as `POST /api/compare`.
 - Browser origins must match the configured allowlist. Development may include
   safe reason codes; production `no-match` and `suppressed` responses do not.
 
 ### Marketplace responsibilities
 
 - Deploy on Vercel and call the same read-only comparison API as the extension.
-- Show a category index, comparison cards, retailer/source, price date,
-  equivalence rationale, and outbound link.
+- Let the shopper pick a Kroger store by postal code. The chosen store ID may
+  live in the URL; it is not stored server-side or tied to a person.
+- Show a category index, comparison cards naming both products, the store,
+  price context, price date, equivalence rationale, known differences, and
+  outbound links to both Kroger listings.
 - Remain usable with JavaScript enabled on current desktop browsers.
 - Have no login, checkout, or user tracking.
 
@@ -171,11 +192,13 @@ location to the Pinkless API solely to obtain a comparison.
 
 ## 4. Product identity and offer requirements
 
-Product identity is the trust boundary. A product record documents a canonical
-packaged item and approved equivalence policy; it does not freeze a retailer
-price. The matcher must use an exact UPC/GTIN where available. A retailer SKU
-or canonical URL may identify the product on a page, but title matching alone
-must never independently produce a badge.
+Product identity and reviewed equivalence are the trust boundary. A product
+record documents one canonical packaged item; a `ProductEquivalence` record
+documents why two different items are comparable. Neither freezes a price.
+The matcher must use an exact UPC/GTIN where available. A Kroger productId or
+canonical URL may identify the product on a page, but title matching alone
+must never independently produce a badge, and no pairing may be inferred
+automatically — every pair is written and reviewed by a person.
 
 All monetary amounts are integer minor units (`priceCents` in USD). Never use
 floating-point values for money.
@@ -192,12 +215,14 @@ type Size = {
 };
 
 type RetailerIdentity = {
-  retailer: string;
-  productId: string;
+  retailer: "kroger";
+  productId: string; // Kroger's 13-digit productId
   canonicalUrl: string;
   canonicalUrlPatterns: string[];
 };
 
+// One packaged item. No longer carries equivalence: a product is only
+// compared through a ProductEquivalence record.
 type Product = {
   id: string;
   upc?: string;
@@ -207,11 +232,19 @@ type Product = {
   category: "razors" | "deodorant" | "body-wash";
   size: Size;
   identities: RetailerIdentity[];
-  equivalence: {
-    rationale: string;
-    matchedAttributes: string[];
-    knownDifferences?: string[];
-  };
+  status: "active" | "paused" | "retired";
+};
+
+// A reviewed, symmetric link between two different products. Either product
+// can be the "current" one; the badge only appears when the other is cheaper.
+type ProductEquivalence = {
+  id: string;
+  productIds: [string, string];
+  rationale: string;          // what makes them comparable, in plain terms
+  matchedAttributes: string[]; // e.g. "blade count", "pack count", "net weight"
+  knownDifferences: string[];  // required, may not be empty: e.g. "handle color", "scent"
+  reviewedBy: string;
+  reviewedAt: string;          // ISO date
   status: "active" | "paused" | "retired";
 };
 
@@ -236,7 +269,14 @@ Catalog validation must reject:
 - empty equivalence rationale;
 - invalid sizes, money, URLs, or identity patterns;
 - duplicate retailer identity per product;
-- identities that would connect incompatible packaged quantities.
+- identities that would connect incompatible packaged quantities;
+- an equivalence that references a missing product, pairs a product with
+  itself, or repeats an existing pair in either order;
+- an active equivalence whose products are not both active;
+- an equivalence across categories, or between different size units or
+  amounts;
+- an equivalence with an empty rationale, empty `knownDifferences`, or no
+  reviewer and review date.
 
 ## 5. Matching and savings rules
 
@@ -258,28 +298,38 @@ type ProductView = {
 
 The matcher must:
 
-1. Resolve an active product by exact UPC, retailer product ID, or canonical URL
+1. Resolve an active product by exact UPC, Kroger product ID, or canonical URL
    pattern, in that order.
-2. Ensure the page reports USD, an in-stock product, and a positive price.
-3. Ensure the selected page variant is compatible with the canonical product.
-4. Request candidate offers only from approved retailer providers.
-5. Compare the current offer only with in-stock, positive, unexpired offers in
-   the same price context.
-6. Return `no-match` if savings are zero or negative.
-7. Return a display model only if all checks pass.
+2. Ensure the page reports an in-stock product and the selected variant is
+   compatible with the canonical product.
+3. Find the active `ProductEquivalence` records that include it. None →
+   `no-match`.
+4. Obtain provider offers for the current product and each equivalent, for the
+   same Kroger `locationId` and the same price context. Use only Kroger's
+   regular price, never a promo price.
+5. Both offers must be USD, positive, in stock, and unexpired.
+6. Savings = current regular price − equivalent regular price. Pick the
+   cheapest eligible equivalent. Zero or negative → `no-match`.
+7. Return a display model (both products, both prices, store, price context,
+   observation time, rationale, known differences) only if all checks pass.
 
-The first version must not normalize price per unit automatically, compare
-membership-only prices, or treat a same-brand product as an exact match. If
-products differ in quantity, the comparison is suppressed unless an explicit
-reviewed equivalence policy permits it.
+The matcher must not normalize price per unit, compare membership-only or
+loyalty prices, or pair products that differ in size unit or amount. Brand
+may be the same or different; being the same brand never makes two products
+equivalent on its own.
 
 ## 6. Extension UX requirements
 
 ### Badge content
 
 - Headline: `Comparable alternative: save $X.XX`
-- Supporting text: short reviewed rationale, for example: `Both are 5-blade,
-  single-handle razors; alternative was verified on Sep 18.`
+- Product line: the equivalent product's name, variant, and price at the
+  selected store.
+- Supporting text: short reviewed rationale plus the first known difference,
+  for example: `Both are 3-blade disposable razors, 4 ct. Differs: handle
+  color. Prices at Kroger On the Rhine, checked Sep 18.`
+- Copy states attributes and prices only. It never says why prices differ and
+  never labels a product by the gender it is marketed to.
 - Primary action: `See alternative`
 - Secondary disclosure: `Why this was matched`
 - Optional dismiss control: `Not now`
@@ -292,7 +342,8 @@ reviewed equivalence policy permits it.
 - Do not obscure a price, checkout control, or native accessibility element.
 - All controls work with keyboard and have descriptive labels.
 - Do not use an assertive live region or steal focus.
-- The primary action opens the catalog’s known outbound URL in a new tab.
+- The primary action opens the equivalent product's reviewed Kroger URL in a
+  new tab.
 - A dismiss action suppresses the current page only; persistent settings are not
   required for MVP.
 
@@ -306,13 +357,19 @@ reviewed equivalence policy permits it.
 | Different size, refill, bundle, condition, or pack count | Suppress unless a reviewed catalog record explicitly covers it. |
 | Current product or alternative offer is out of stock | Suppress. |
 | One offer is online and the other is store-specific | Suppress rather than imply an equivalent local-store price. |
-| CVS or Walmart credentials/data access are unavailable | Suppress that retailer; return no partial or invented price. |
+| Offers from two different Kroger stores | Suppress. |
+| No store selected | Suppress; prompt for a store rather than guessing one. |
+| Kroger credentials missing or API unavailable | Suppress; return no partial or invented price. |
+| Only one of the two products can be priced | Suppress. |
+| Page price disagrees with the provider price for the current product | Suppress (stale page or different store selected on kroger.com). |
+| Equivalence record is paused, retired, or unreviewed | Suppress. |
 | Third-party marketplace seller | Exclude from the initial catalog. |
 | Page is an ad, search result, category page, or quick-view modal | Suppress. |
 | Retailer changes DOM / extracted data is incomplete | Suppress, log a development-only diagnostic, rely on fallback demo page. |
 | Client-side route/variant change | Debounce and recompute; never leave stale savings visible. |
 | Duplicate/injected UI collision | Use a fixed unique root ID and Shadow DOM; replace rather than append. |
 | Cached offer is expired | Revalidate through the provider; suppress it if refresh fails. |
+| Products differ in anything a shopper would weigh (blade count, formula, SPF, scent family, pack count) | Do not pair them. Cosmetic differences (color, fragrance name, packaging) are allowed only when listed in `knownDifferences`. |
 | Gender marketing is ambiguous | Do not publish the comparison until reviewer documents the rationale. |
 
 ## 8. Quality gates and acceptance criteria
@@ -320,20 +377,43 @@ reviewed equivalence policy permits it.
 The demo is ready only when all of the following are true:
 
 - A known supported product shows one correct badge in under three seconds on a warm cache.
-- Its savings equal `current offer price - eligible alternative offer price` exactly.
-- Clicking the badge opens the expected alternative URL.
+- Its savings equal `current regular price - equivalent regular price` at the
+  same store exactly.
+- Clicking the badge opens the expected equivalent product's Kroger URL.
 - An unknown product, a non-product page, an unavailable item, and a product
   with no positive savings remain quiet.
 - Changing a supported product variant updates or removes the badge correctly.
 - The Marketplace identifies the source retailer, price context, and observed time for each displayed offer.
 - Product-identity catalog validation runs cleanly before a build.
-- Fixture-based tests cover every retailer adapter and the matcher’s key
-  suppression rules.
-- The unpacked extension and Vercel Marketplace use only the Pinkless API and approved retailer connections; no page scraping is used.
+- Fixture-based tests cover the Kroger page adapter, the Kroger provider, and
+  the matcher's key suppression rules, including every pairing rule above.
+- Every active equivalence record has been checked against live Kroger data
+  (both products found, same size, prices returned) at the demo store.
+- The unpacked extension and Vercel Marketplace use only the Pinkless API and
+  Kroger's official API; no page scraping is used.
 
 ## 9. Deferred production work
 
-After the first three-retailer release, add more retailer providers only after
-they have an approved data agreement and an integration test suite. Keep
-matching deterministic and reviewed; never turn remote catalog data into
+- Cross-retailer comparison (CVS, Walmart, others): add a retailer only after
+  it has an approved data agreement and an integration test suite.
+- Quantity-different pairs (for example, a 4-count equivalent that costs less
+  than a 3-count current product). Not allowed in this release.
+
+Keep matching deterministic and reviewed; never turn remote catalog data into
 executable extension logic.
+
+## 10. Open questions
+
+1. **Kroger UPC format.** Kroger's `upc` and `productId` are 13 digits (for
+   example `0004740031389`), which appears to be the UPC-A without its check
+   digit, zero-padded. Confirm against a physical package before the catalog
+   stores UPCs, and store the Kroger form in `identities[].productId`.
+2. **Page price vs API price.** The rule above suppresses when they disagree.
+   If kroger.com routinely shows the promo price on the page, compare against
+   the page's regular (strike-through) price instead, or drop the check.
+3. **Marketplace without a store.** Proposed: show the reviewed pairs and
+   their rationale with no prices until a store is picked. Alternative: a
+   configured demo store ID for judging.
+4. **Rate limits.** Each Marketplace store view prices up to 2 × (number of
+   pairs) products. Cache offers per `productId + locationId + priceContext`
+   and confirm Kroger's daily call limit for the registered app.
