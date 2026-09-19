@@ -9,16 +9,23 @@ function jsonResponse(value: unknown, status = 200): Response {
 }
 
 const product = {
-  asin: 'B08N5WRWNW',
-  title: 'Reviewed sample razor',
-  brand: 'Sample Brand',
-  price: { displayString: '$8.99' },
-  availability: { status: 'IN_STOCK' },
-  link: 'https://www.amazon.com/dp/B08N5WRWNW',
+  data: {
+    amazonProduct: {
+      asin: 'B08N5WRWNW',
+      title: 'Reviewed sample razor',
+      brand: 'Sample Brand',
+      price: { currency: 'USD', display: '$8.99' },
+      isInStock: true,
+      isNew: true,
+      seller: { name: 'Amazon.com' },
+      coupon: null,
+      url: 'https://www.amazon.com/dp/B08N5WRWNW',
+    },
+  },
 };
 
 describe('CanopyProvider', () => {
-  it('uses the reviewed ASIN, normalizes a display price without float arithmetic, and returns online offers only', async () => {
+  it('uses the current REST response envelope, normalizes a display price without float arithmetic, and returns online offers only', async () => {
     const requests: string[] = [];
     const provider = new CanopyProvider({
       apiKey: 'fixture-key',
@@ -56,14 +63,34 @@ describe('CanopyProvider', () => {
     );
   });
 
-  it('fails closed for a malformed price, unavailable product, or non-reviewed URL', async () => {
-    const unavailable = new CanopyProvider({
+  it('fails closed for a malformed price, unavailable, third-party, coupon, or non-reviewed product', async () => {
+    const malformedPrice = new CanopyProvider({
       apiKey: 'fixture-key',
       fetch: async () =>
         jsonResponse({
           ...product,
-          price: { displayString: '$8.9' },
-          availability: { status: 'OUT_OF_STOCK' },
+          data: {
+            amazonProduct: {
+              ...product.data.amazonProduct,
+              price: { currency: 'USD', display: '$8.9' },
+            },
+          },
+        }),
+    });
+    await expect(
+      malformedPrice.lookupOffers({
+        productId: 'B08N5WRWNW',
+        url: 'https://www.amazon.com/dp/B08N5WRWNW',
+        priceContext: 'online',
+      }),
+    ).rejects.toMatchObject({ code: 'invalid-response' });
+    const unavailable = new CanopyProvider({
+      apiKey: 'fixture-key',
+      fetch: async () =>
+        jsonResponse({
+          data: {
+            amazonProduct: { ...product.data.amazonProduct, isInStock: false },
+          },
         }),
     });
     await expect(
@@ -72,7 +99,42 @@ describe('CanopyProvider', () => {
         url: 'https://www.amazon.com/dp/B08N5WRWNW',
         priceContext: 'online',
       }),
-    ).rejects.toMatchObject({ code: 'invalid-response' });
+    ).resolves.toEqual([]);
+    const thirdParty = new CanopyProvider({
+      apiKey: 'fixture-key',
+      fetch: async () =>
+        jsonResponse({
+          data: {
+            amazonProduct: {
+              ...product.data.amazonProduct,
+              seller: { name: 'Marketplace Seller' },
+            },
+          },
+        }),
+    });
+    await expect(
+      thirdParty.lookupOffers({
+        productId: 'B08N5WRWNW',
+        url: 'https://www.amazon.com/dp/B08N5WRWNW',
+        priceContext: 'online',
+      }),
+    ).resolves.toEqual([]);
+    const coupon = new CanopyProvider({
+      apiKey: 'fixture-key',
+      fetch: async () =>
+        jsonResponse({
+          data: {
+            amazonProduct: { ...product.data.amazonProduct, coupon: { value: '$1 off' } },
+          },
+        }),
+    });
+    await expect(
+      coupon.lookupOffers({
+        productId: 'B08N5WRWNW',
+        url: 'https://www.amazon.com/dp/B08N5WRWNW',
+        priceContext: 'online',
+      }),
+    ).resolves.toEqual([]);
     await expect(
       unavailable.lookupOffers({
         productId: 'B08N5WRWNW',

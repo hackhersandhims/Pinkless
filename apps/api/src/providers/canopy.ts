@@ -41,6 +41,16 @@ function displayPriceToCents(value: unknown): number | null {
   return Number.isSafeInteger(cents) && cents > 0 ? cents : null;
 }
 
+function isAmazonSold(seller: unknown): boolean {
+  if (!isRecord(seller)) return false;
+  const name = requiredString(seller.name);
+  return name !== null && /^amazon(?:\.com)?(?: services,? inc\.)?$/i.test(name);
+}
+
+function hasCoupon(value: unknown): boolean {
+  return value !== undefined && value !== null && value !== false;
+}
+
 function hasReviewedAmazonUrl(value: string, asin: string): boolean {
   try {
     const url = new URL(value);
@@ -66,29 +76,34 @@ type CanopyProduct = {
 };
 
 function parseProduct(value: unknown): CanopyProduct | null {
-  if (!isRecord(value)) return null;
-  const asin = requiredString(value.asin);
-  const title = requiredString(value.title);
-  const link = requiredString(value.link);
-  const price = isRecord(value.price) ? displayPriceToCents(value.price.displayString) : null;
+  if (!isRecord(value) || !isRecord(value.data) || !isRecord(value.data.amazonProduct)) return null;
+  const product = value.data.amazonProduct;
+  const asin = requiredString(product.asin);
+  const title = requiredString(product.title);
+  const link = requiredString(product.url);
+  const priceRecord = isRecord(product.price) ? product.price : null;
+  const price = priceRecord ? displayPriceToCents(priceRecord.display) : null;
   if (
     !asin ||
     !isAsin(asin) ||
     !title ||
     !link ||
     price === null ||
+    requiredString(priceRecord?.currency) !== 'USD' ||
     !hasReviewedAmazonUrl(link, asin)
   ) {
     return null;
   }
-  const status = isRecord(value.availability) ? requiredString(value.availability.status) : null;
+  const availability = product.isInStock === true ? 'in-stock' : 'out-of-stock';
+  const isOrdinaryAmazonOffer =
+    product.isNew === true && isAmazonSold(product.seller) && !hasCoupon(product.coupon);
   return {
     asin: asin.toUpperCase(),
     title,
     link,
     amountCents: price,
-    availability: status === 'IN_STOCK' ? 'in-stock' : 'unknown',
-    ...(requiredString(value.brand) ? { brand: requiredString(value.brand)! } : {}),
+    availability: isOrdinaryAmazonOffer ? availability : 'unknown',
+    ...(requiredString(product.brand) ? { brand: requiredString(product.brand)! } : {}),
   };
 }
 
