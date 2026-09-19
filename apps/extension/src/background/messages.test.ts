@@ -75,6 +75,24 @@ describe('extension background messaging', () => {
     expect(fetcher).toHaveBeenCalledOnce();
   });
 
+  it('looks up official Kroger stores using only a validated ZIP from a Kroger page', async () => {
+    const fetcher = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ status: 'ok', locations: [] }), { status: 200 }),
+    );
+    await expect(
+      handleExtensionMessage(
+        { type: 'pinkless:stores', payload: { postalCode: '30303' } },
+        KROGER_PAGE,
+        fetcher,
+        EXTENSION_ORIGIN,
+      ),
+    ).resolves.toEqual([]);
+    expect(fetcher).toHaveBeenCalledWith(
+      new URL('https://pinkless-marketplace.vercel.app/api/stores?postalCode=30303'),
+      expect.objectContaining({ credentials: 'omit' }),
+    );
+  });
+
   it('rejects other hosts, lookalikes, other local routes, and malformed messages', async () => {
     const fetcher = vi.fn();
     for (const sender of [
@@ -90,6 +108,13 @@ describe('extension background messaging', () => {
     }
     await expect(
       handleExtensionMessage({ type: 'pinkless:compare', payload: {} }, KROGER_PAGE, fetcher),
+    ).resolves.toBeNull();
+    await expect(
+      handleExtensionMessage(
+        { type: 'pinkless:stores', payload: { postalCode: 'invalid' } },
+        KROGER_PAGE,
+        fetcher,
+      ),
     ).resolves.toBeNull();
     expect(fetcher).not.toHaveBeenCalled();
   });

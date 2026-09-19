@@ -20,9 +20,9 @@ function storeLabel(location: StoreLocation): string {
 
 function describeSelection(store: SelectedStore | undefined): string {
   if (!store) {
-    return 'No store selected. Pinkless stays quiet on Kroger pages until you choose one.';
+    return 'Pinkless follows Kroger’s visible store selector on Kroger pages.';
   }
-  return `Comparing prices at ${store.name ?? `Kroger store ${store.locationId}`}.`;
+  return `Pinkless follows Kroger’s visible store selector. ${store.name ?? `Kroger store ${store.locationId}`} is used only by the local fallback demo.`;
 }
 
 async function initialize(): Promise<void> {

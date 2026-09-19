@@ -1,6 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 import { makeProductView, makeShowOutcome } from '../testing/outcome.js';
-import { compareRequestBody, parseComparisonResponse, requestComparison } from './api.js';
+import {
+  compareRequestBody,
+  parseComparisonResponse,
+  requestComparison,
+  requestStores,
+} from './api.js';
 
 describe('compare request', () => {
   it('sends only { current } — no locations map, no other fields', async () => {
@@ -31,6 +36,14 @@ describe('compare request', () => {
     await expect(
       requestComparison(makeProductView(), vi.fn().mockRejectedValue(new Error('gone'))),
     ).rejects.toThrow();
+  });
+
+  it('requests a page-store ZIP lookup through the background and rejects malformed results', async () => {
+    const send = vi.fn().mockResolvedValue([]);
+    await expect(requestStores('30303', send)).resolves.toEqual([]);
+    expect(send).toHaveBeenCalledWith({ type: 'pinkless:stores', payload: { postalCode: '30303' } });
+    await expect(requestStores('zip', send)).resolves.toBeNull();
+    await expect(requestStores('30303', vi.fn().mockResolvedValue({}))).resolves.toBeNull();
   });
 });
 

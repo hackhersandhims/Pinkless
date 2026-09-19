@@ -7,6 +7,7 @@ import type { ComparisonOutcome, ProductView } from '../shared/types.js';
 export type CompareRequestBody = { current: ProductView };
 
 export type CompareMessage = { type: 'pinkless:compare'; payload: CompareRequestBody };
+export type StoresMessage = { type: 'pinkless:stores'; payload: { postalCode: string } };
 
 export function compareRequestBody(current: ProductView): CompareRequestBody {
   return { current };
@@ -33,7 +34,7 @@ export function parseComparisonResponse(value: unknown): ComparisonOutcome | nul
   } as ComparisonOutcome;
 }
 
-type SendMessage = (message: CompareMessage) => Promise<unknown>;
+type SendMessage = (message: CompareMessage | StoresMessage) => Promise<unknown>;
 
 const sendToBackground: SendMessage = (message) => chrome.runtime.sendMessage(message);
 
@@ -50,4 +51,14 @@ export async function requestComparison(
   const outcome = parseComparisonResponse(response);
   if (!outcome) throw new Error('Pinkless comparison unavailable');
   return outcome;
+}
+
+/** Resolves the official Kroger locations near a saved ZIP through the extension background. */
+export async function requestStores(
+  postalCode: string,
+  send: SendMessage = sendToBackground,
+): Promise<unknown[] | null> {
+  if (!/^\d{5}(?:-\d{4})?$/.test(postalCode)) return null;
+  const response = await send({ type: 'pinkless:stores', payload: { postalCode } });
+  return Array.isArray(response) ? response : null;
 }

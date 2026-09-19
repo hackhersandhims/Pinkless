@@ -11,10 +11,11 @@
     <main class="popup" data-theme="light">
       <header class="popup__header">
         <img class="popup__logo" src="assets/logo.png" alt="Pinkless" />
-        <h1 class="heading">Choose your Kroger store</h1>
+        <h1 class="heading">Match your Kroger store</h1>
         <p class="caption">
           Pinkless compares a women's product with a reviewed men's or neutral equivalent at the
-          same Kroger store. Your store stays on this device and is sent only with a comparison.
+          same Kroger store. On Kroger pages, Pinkless follows the Pickup or Delivery store shown
+          by Kroger and matches it using this ZIP code.
         </p>
       </header>
 
@@ -38,7 +39,7 @@
 
       <section class="store-choice" aria-labelledby="store-heading">
         <h2 id="store-heading" class="label">KROGER STORE</h2>
-        <label class="caption" for="kroger-store">Selected Kroger store</label>
+        <label class="caption" for="kroger-store">Local fallback store</label>
         <select id="kroger-store" class="body" disabled>
           <option value="">Search by ZIP first</option>
         </select>

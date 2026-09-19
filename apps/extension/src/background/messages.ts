@@ -5,10 +5,16 @@ import {
   RETAILER_HOSTS,
   runtimeExtensionOrigin,
 } from '../shared/config.js';
+import { lookupStores } from '../popup/stores.js';
 
 type CompareMessage = {
   type: 'pinkless:compare';
   payload: { current: Record<string, unknown> };
+};
+
+type StoresMessage = {
+  type: 'pinkless:stores';
+  payload: { postalCode: string };
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -21,6 +27,16 @@ function isCompareMessage(value: unknown): value is CompareMessage {
     value.type === 'pinkless:compare' &&
     isRecord(value.payload) &&
     isRecord(value.payload.current)
+  );
+}
+
+function isStoresMessage(value: unknown): value is StoresMessage {
+  return (
+    isRecord(value) &&
+    value.type === 'pinkless:stores' &&
+    isRecord(value.payload) &&
+    typeof value.payload.postalCode === 'string' &&
+    /^\d{5}(?:-\d{4})?$/.test(value.payload.postalCode)
   );
 }
 
@@ -48,7 +64,12 @@ export async function handleExtensionMessage(
   fetcher: typeof fetch = fetch,
   extensionOrigin = runtimeExtensionOrigin(),
 ): Promise<unknown> {
-  if (!isCompareMessage(message) || !isAllowedSender(senderUrl)) return null;
+  if (!isAllowedSender(senderUrl)) return null;
+
+  if (isStoresMessage(message)) {
+    return lookupStores(message.payload.postalCode, fetcher, extensionOrigin);
+  }
+  if (!isCompareMessage(message)) return null;
 
   try {
     const response = await fetcher(`${PINKLESS_API_BASE_URL}/api/compare`, {
