@@ -1,0 +1,57 @@
+.wrap {
+  min-width: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17.5rem), 1fr));
+  gap: var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  background: var(--surface-100);
+  box-shadow: var(--shadow-soft);
+}
+
+.block {
+  background: var(--tint-ink);
+  border-radius: var(--radius-sm);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .block {
+    animation: pulse 1.4s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.5;
+  }
+}
+
+.media {
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-md);
+}
+
+.line {
+  height: var(--space-4);
+}
+
+.short {
+  width: 60%;
+}
+
+.price {
+  width: 40%;
+  height: var(--space-6);
+}

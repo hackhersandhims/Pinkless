@@ -1,0 +1,15 @@
+{
+  "data": [
+    {
+      "locationId": "kroger-1001",
+      "name": "Kroger Downtown",
+      "address": {
+        "addressLine1": "1 Demo Way",
+        "city": "Cincinnati",
+        "state": "OH",
+        "zipCode": "45202"
+      }
+    }
+  ],
+  "meta": {}
+}

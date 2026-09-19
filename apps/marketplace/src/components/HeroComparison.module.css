@@ -1,0 +1,177 @@
+/*
+ * The pink stage is the one big brand-pink moment on the page. Cards on it
+ * are cream, slightly rotated, and lifted at different heights.
+ */
+.stage {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 36rem;
+  min-height: 34rem;
+  overflow: hidden;
+  border-radius: calc(var(--radius-lg) * 2);
+  background: var(--surface-pink);
+  color: var(--ink);
+  text-decoration: none;
+  isolation: isolate;
+}
+
+@media (min-width: 48rem) {
+  .stage {
+    min-height: 28rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .stage {
+    min-height: 32rem;
+  }
+}
+
+/* Depth: two soft cream discs behind the cards. */
+.stage::before,
+.stage::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface-100) 28%, transparent);
+}
+
+.stage::before {
+  width: 70%;
+  aspect-ratio: 1;
+  top: -22%;
+  right: -18%;
+}
+
+.stage::after {
+  width: 46%;
+  aspect-ratio: 1;
+  bottom: -20%;
+  left: -12%;
+}
+
+.card {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--surface-100);
+  box-shadow: var(--shadow-soft);
+}
+
+.back {
+  top: 6%;
+  left: 7%;
+  width: 48%;
+  gap: calc(var(--space-2) / 2);
+  transform: rotate(-3deg);
+}
+
+.front {
+  right: 7%;
+  top: 38%;
+  width: 62%;
+  padding: var(--space-3);
+  box-shadow: var(--shadow-lift);
+  transform: rotate(2deg);
+}
+
+.frontBody {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-2) / 2);
+  padding: 0 var(--space-2) var(--space-2);
+}
+
+.retailer,
+.price,
+.priceSm {
+  margin: 0;
+}
+
+.name {
+  font-weight: 600;
+}
+
+/* Savings sits under the cards on phones and across their seam from tablet up. */
+.savings {
+  position: absolute;
+  bottom: 6%;
+  left: 6%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  background: var(--surface-900);
+  color: var(--on-dark);
+  box-shadow: var(--shadow-lift);
+}
+
+@media (min-width: 48rem) {
+  .back {
+    top: 8%;
+  }
+
+  .front {
+    top: auto;
+    bottom: 8%;
+  }
+
+  .savings {
+    top: 42%;
+    bottom: auto;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card,
+  .savings {
+    transition: transform 240ms ease-out;
+  }
+
+  a.stage:hover .front {
+    transform: rotate(1deg) translateY(-6px);
+  }
+
+  a.stage:hover .back {
+    transform: rotate(-4deg) translateY(-2px);
+  }
+}
+
+.ghost {
+  min-height: 9rem;
+}
+
+.ghost.front {
+  min-height: 14rem;
+}
+
+.marks {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: var(--surface-100);
+  box-shadow: var(--shadow-soft);
+}
+
+.markIcon {
+  width: 55%;
+  height: 55%;
+}

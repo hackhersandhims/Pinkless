@@ -1,0 +1,206 @@
+[
+  {
+    "catalogProductId": "razor-5blade-cartridge-4ct",
+    "retailer": "cvs",
+    "url": "https://www.cvs.com/shop/sample-razor-prodid-cvs-razor-1",
+    "price": {
+      "amountCents": 1099,
+      "currency": "USD"
+    },
+    "priceContext": "store-pickup",
+    "availability": "in-stock",
+    "observedAt": "2026-09-18T12:00:00.000Z",
+    "expiresAt": "2099-01-01T00:00:00.000Z",
+    "locationId": "cvs-1001"
+  },
+  {
+    "catalogProductId": "razor-5blade-cartridge-4ct",
+    "retailer": "kroger",
+    "url": "https://www.kroger.com/p/sample-razor/00012345678905",
+    "price": {
+      "amountCents": 999,
+      "currency": "USD"
+    },
+    "priceContext": "store-pickup",
+    "availability": "in-stock",
+    "observedAt": "2026-09-18T12:00:00.000Z",
+    "expiresAt": "2099-01-01T00:00:00.000Z",
+    "locationId": "kroger-1001"
+  },
+  {
+    "catalogProductId": "razor-5blade-cartridge-4ct",
+    "retailer": "walmart",
+    "url": "https://www.walmart.com/ip/sample-razor/walmart-razor-1",
+    "price": {
+      "amountCents": 899,
+      "currency": "USD"
+    },
+    "priceContext": "store-pickup",
+    "availability": "in-stock",
+    "observedAt": "2026-09-18T12:00:00.000Z",
+    "expiresAt": "2099-01-01T00:00:00.000Z",
+    "locationId": "walmart-1001"
+  },
+  {
+    "catalogProductId": "razor-3blade-disposable-6ct",
+    "retailer": "cvs",
+    "url": "https://www.cvs.com/shop/daily-comfort-disposable-razor-prodid-cvs-razor-2",
+    "price": {
+      "amountCents": 699,
+      "currency": "USD"
+    },
+    "priceContext": "store-pickup",
+    "availability": "in-stock",
+    "observedAt": "2026-09-18T12:00:00.000Z",
+    "expiresAt": "2099-01-01T00:00:00.000Z",
+    "locationId": "cvs-1001"
+  },
+  {
+    "catalogProductId": "razor-3blade-disposable-6ct",
+    "retailer": "kroger",
+    "url": "https://www.kroger.com/p/daily-comfort-razor/00036000291452",
+    "price": {
+      "amountCents": 649,
+      "currency": "USD"
+    },
+    "priceContext": "store-pickup",
+    "availability": "in-stock",
+    "observedAt": "2026-09-18T12:00:00.000Z",
+    "expiresAt": "2099-01-01T00:00:00.000Z",
+    "locationId": "kroger-1001"
+  },
+  {
+    "catalogProductId": "razor-3blade-disposable-6ct",
+    "retailer": "walmart",
+    "url": "https://www.walmart.com/ip/daily-comfort-disposable-razor/walmart-razor-2",
+    "price": {
+      "amountCents": 599,
+      "currency": "USD"
+    },
+    "priceContext": "store-pickup",
+    "availability": "in-stock",
+    "observedAt": "2026-09-18T12:00:00.000Z",
+    "expiresAt": "2099-01-01T00:00:00.000Z",
+    "locationId": "walmart-1001"
+  },
+  {
+    "catalogProductId": "deodorant-invisible-solid-2-6oz",
+    "retailer": "kroger",
+    "url": "https://www.kroger.com/p/invisible-solid-antiperspirant/00079409012341",
+    "price": {
+      "amountCents": 449,
+      "currency": "USD"
+    },
+    "priceContext": "online",
+    "availability": "in-stock",
+    "observedAt": "2026-09-18T12:00:00.000Z",
+    "expiresAt": "2099-01-01T00:00:00.000Z"
+  },
+  {
+    "catalogProductId": "deodorant-invisible-solid-2-6oz",
+    "retailer": "walmart",
+    "url": "https://www.walmart.com/ip/invisible-solid-antiperspirant/walmart-deo-1",
+    "price": {
+      "amountCents": 399,
+      "currency": "USD"
+    },
+    "priceContext": "online",
+    "availability": "in-stock",
+    "observedAt": "2026-09-18T12:00:00.000Z",
+    "expiresAt": "2099-01-01T00:00:00.000Z"
+  },
+  {
+    "catalogProductId": "deodorant-clear-gel-3oz",
+    "retailer": "cvs",
+    "url": "https://www.cvs.com/shop/clear-gel-antiperspirant-prodid-cvs-deo-1",
+    "price": {
+      "amountCents": 599,
+      "currency": "USD"
+    },
+    "priceContext": "online",
+    "availability": "in-stock",
+    "observedAt": "2026-09-18T12:00:00.000Z",
+    "expiresAt": "2099-01-01T00:00:00.000Z"
+  },
+  {
+    "catalogProductId": "deodorant-clear-gel-3oz",
+    "retailer": "kroger",
+    "url": "https://www.kroger.com/p/clear-gel-antiperspirant/00037000123453",
+    "price": {
+      "amountCents": 349,
+      "currency": "USD"
+    },
+    "priceContext": "online",
+    "availability": "in-stock",
+    "observedAt": "2026-09-18T12:00:00.000Z",
+    "expiresAt": "2099-01-01T00:00:00.000Z"
+  },
+  {
+    "catalogProductId": "deodorant-clear-gel-3oz",
+    "retailer": "walmart",
+    "url": "https://www.walmart.com/ip/clear-gel-antiperspirant/walmart-deo-2",
+    "price": {
+      "amountCents": 299,
+      "currency": "USD"
+    },
+    "priceContext": "online",
+    "availability": "in-stock",
+    "observedAt": "2026-09-18T12:00:00.000Z",
+    "expiresAt": "2099-01-01T00:00:00.000Z"
+  },
+  {
+    "catalogProductId": "body-wash-moisturizing-18oz",
+    "retailer": "cvs",
+    "url": "https://www.cvs.com/shop/moisturizing-body-wash-prodid-cvs-wash-1",
+    "price": {
+      "amountCents": 899,
+      "currency": "USD"
+    },
+    "priceContext": "store-pickup",
+    "availability": "in-stock",
+    "observedAt": "2026-09-18T12:00:00.000Z",
+    "expiresAt": "2099-01-01T00:00:00.000Z",
+    "locationId": "cvs-1001"
+  },
+  {
+    "catalogProductId": "body-wash-moisturizing-18oz",
+    "retailer": "kroger",
+    "url": "https://www.kroger.com/p/moisturizing-body-wash/00011111000124",
+    "price": {
+      "amountCents": 799,
+      "currency": "USD"
+    },
+    "priceContext": "store-pickup",
+    "availability": "in-stock",
+    "observedAt": "2026-09-18T12:00:00.000Z",
+    "expiresAt": "2099-01-01T00:00:00.000Z",
+    "locationId": "kroger-1001"
+  },
+  {
+    "catalogProductId": "body-wash-sensitive-16oz",
+    "retailer": "kroger",
+    "url": "https://www.kroger.com/p/sensitive-skin-body-wash/00003700041236",
+    "price": {
+      "amountCents": 649,
+      "currency": "USD"
+    },
+    "priceContext": "store-pickup",
+    "availability": "in-stock",
+    "observedAt": "2026-09-18T12:00:00.000Z",
+    "expiresAt": "2099-01-01T00:00:00.000Z",
+    "locationId": "kroger-1001"
+  },
+  {
+    "catalogProductId": "body-wash-sensitive-16oz",
+    "retailer": "walmart",
+    "url": "https://www.walmart.com/ip/sensitive-skin-body-wash/walmart-wash-1",
+    "price": {
+      "amountCents": 599,
+      "currency": "USD"
+    },
+    "priceContext": "online",
+    "availability": "in-stock",
+    "observedAt": "2026-09-18T12:00:00.000Z",
+    "expiresAt": "2099-01-01T00:00:00.000Z"
+  }
+]

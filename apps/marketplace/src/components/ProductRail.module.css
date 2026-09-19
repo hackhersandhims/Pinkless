@@ -1,0 +1,113 @@
+.seeAll {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-target);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.seeAll:hover {
+  background: var(--tint-pink);
+}
+
+.arrow {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .arrow {
+    transition: transform 150ms ease-out;
+  }
+
+  .seeAll:hover .arrow {
+    transform: translateX(3px);
+  }
+}
+
+.arrows {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.arrowButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface-100);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.arrowButton:hover:not(:disabled) {
+  background: var(--tint-pink);
+  border-color: var(--ink);
+}
+
+.arrowButton:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.arrowIcon {
+  width: var(--space-6);
+  height: var(--space-6);
+}
+
+/*
+ * Card width is (track - gaps) / --visible, so an exact number of cards fills
+ * the row and the next one peeks in when there are more. Padding and the
+ * matching negative margin give the hover lift and shadow room inside the
+ * scroll container.
+ */
+.track {
+  --visible: 1.25;
+  --rail-gap: var(--space-4);
+
+  display: flex;
+  gap: var(--rail-gap);
+  margin: calc(-1 * var(--space-3));
+  padding: var(--space-3);
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--space-3);
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 36rem) {
+  .track {
+    --visible: 2.15;
+  }
+}
+
+@media (min-width: 56rem) {
+  .track {
+    --visible: 3;
+    --rail-gap: var(--space-6);
+  }
+}
+
+@media (min-width: 75rem) {
+  .track {
+    --visible: 4;
+  }
+}
+
+.slot {
+  flex: 0 0 calc((100% - var(--rail-gap) * (var(--visible) - 1)) / var(--visible));
+  scroll-snap-align: start;
+}

@@ -1,0 +1,69 @@
+.hero {
+  padding-block: var(--space-6) var(--section-space);
+}
+
+.inner {
+  display: grid;
+  gap: calc(var(--space-6) * 1.5);
+  align-items: center;
+}
+
+@media (min-width: 64rem) {
+  .inner {
+    /* ~55% copy / ~45% visual */
+    grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
+    gap: calc(var(--space-6) * 3);
+  }
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.eyebrow,
+.sub {
+  margin: 0;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Scales the .display token (32px) by ratio: 40px, 48px, then 56px on wide screens. */
+.headline {
+  margin: 0;
+  font-size: 1.25em;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+
+.headline span {
+  display: block;
+}
+
+@media (min-width: 48rem) {
+  .headline {
+    font-size: 1.5em;
+  }
+}
+
+@media (min-width: 64rem) {
+  .headline {
+    font-size: 1.75em;
+  }
+}
+
+.sub {
+  max-width: 32rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}

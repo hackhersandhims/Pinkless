@@ -1,0 +1,150 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-6) * 1.5);
+  color: var(--ink);
+}
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.crumbs li + li::before {
+  content: '/';
+  margin-right: var(--space-2);
+}
+
+.crumbs a {
+  text-underline-offset: 3px;
+}
+
+.summary {
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 48rem) {
+  .summary {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: calc(var(--space-6) * 2);
+    align-items: center;
+  }
+}
+
+.summaryText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.title,
+.savings,
+.savingsNote {
+  margin: 0;
+}
+
+/* Scales the .display token (32px) by ratio: 40px. */
+.title {
+  font-size: 1.25em;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.savings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.cta {
+  margin-top: var(--space-4);
+}
+
+.sectionHeading {
+  margin: 0 0 var(--space-4);
+}
+
+.subHeading {
+  margin: var(--space-4) 0 var(--space-2);
+  font-weight: 600;
+}
+
+.offers {
+  display: grid;
+  gap: var(--space-4);
+}
+
+@media (min-width: 48rem) {
+  .offers {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.offer {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-2) / 2);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background: var(--tint-ink);
+}
+
+/* The lower offer takes the plum surface, so the difference reads before any text. */
+.offerEmphasis {
+  background: var(--surface-900);
+  color: var(--on-dark);
+  box-shadow: var(--shadow-lift);
+}
+
+.offerEmphasis .offerKind {
+  color: var(--on-dark-muted);
+}
+
+.offerKind,
+.offerRetailer,
+.offerPrice {
+  margin: 0;
+}
+
+.offerKind {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.offerPrice {
+  margin-block: var(--space-2);
+  letter-spacing: -0.01em;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  padding: calc(var(--space-2) / 2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--tint-pink);
+}
+
+.list {
+  margin: 0;
+  padding-left: var(--space-4);
+}

@@ -1,0 +1,105 @@
+/*
+ * Low chrome: no outline at rest, just a soft token-derived shadow. Hover is
+ * what says "clickable": a small lift, a deeper shadow, and the arrow moving.
+ */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  height: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--surface-100);
+  box-shadow: var(--shadow-soft);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card {
+    transition:
+      transform 180ms ease-out,
+      box-shadow 180ms ease-out;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+  }
+
+  .arrow {
+    transition: transform 180ms ease-out;
+  }
+
+  .card:hover .arrow {
+    transform: translateX(3px);
+  }
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lift);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-2) / 2);
+  padding-inline: var(--space-2);
+}
+
+.category {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.pricing {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.price {
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.retailer {
+  font-weight: 600;
+}
+
+.savings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+/* Pins the footer to the card bottom so rows line up across a rail. */
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding: var(--space-3) var(--space-2) var(--space-2);
+  border-top: 1px solid var(--hairline);
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--space-2) / 2);
+  font-weight: 700;
+}
+
+.arrow {
+  width: var(--space-4);
+  height: var(--space-4);
+}
