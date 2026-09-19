@@ -6,7 +6,9 @@ import { useLocation } from 'react-router-dom';
  * `#hash` target, so do both. Renders nothing.
  */
 export function ScrollManager() {
-  const { pathname, hash } = useLocation();
+  // `key` changes on every navigation, so re-clicking a link to the current
+  // page (e.g. the logo on the homepage) still scrolls to the top.
+  const { hash, key } = useLocation();
 
   useEffect(() => {
     if (hash) {
@@ -14,7 +16,7 @@ export function ScrollManager() {
       return;
     }
     window.scrollTo(0, 0);
-  }, [pathname, hash]);
+  }, [key, hash]);
 
   return null;
 }
