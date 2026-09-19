@@ -130,3 +130,93 @@
   width: var(--space-4);
   height: var(--space-4);
 }
+
+/*
+ * Hero variant: on the home page with no store chosen, the ZIP field is the
+ * whole point of the page, so it is the largest control on it. Sizes come
+ * from the .display / .heading / .body classes; only spacing and the input
+ * frame are set here.
+ */
+.zipLabel {
+  font-weight: 600;
+}
+
+.picker[data-size='hero'] {
+  gap: var(--space-3);
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.picker[data-size='hero'] .form {
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.picker[data-size='hero'] .input {
+  flex: 1 1 12rem;
+  min-height: calc(var(--tap-target) * 1.5);
+  padding: 0 var(--space-4);
+  border: 2px solid var(--ink);
+}
+
+.picker[data-size='hero'] .input:focus-visible {
+  outline-offset: 2px;
+  box-shadow: 0 0 0 calc(var(--space-2) - 2px) color-mix(in srgb, var(--surface-pink) 55%, transparent);
+}
+
+.picker[data-size='hero'] .submit {
+  flex: 1 1 10rem;
+  min-height: calc(var(--tap-target) * 1.5);
+  padding: 0 var(--space-6);
+}
+
+.picker[data-size='hero'] .arrow {
+  width: var(--space-6);
+  height: var(--space-6);
+}
+
+.picker[data-size='hero'] .list {
+  max-height: 26rem;
+}
+
+.picker[data-size='hero'] .store {
+  min-height: calc(var(--tap-target) * 1.25);
+  padding: var(--space-3) var(--space-4);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .picker[data-size='hero'] .input,
+  .picker[data-size='hero'] .submit {
+    transition:
+      box-shadow 180ms ease-out,
+      transform 180ms ease-out;
+  }
+
+  .picker[data-size='hero'] .submit:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .picker[data-size='hero'] .submit:active {
+    transform: none;
+  }
+}
+
+/* === WILD MOTION === */
+@media (prefers-reduced-motion: no-preference) {
+
+  .picker[data-size='hero'] .submit { animation: sp-pulse 2s ease-out infinite; }
+  .picker[data-size='hero'] .submit .arrow { animation: sp-nudge 1.2s ease-in-out infinite; }
+  .picker[data-size='hero'] .input { animation: sp-glow 2.4s ease-in-out infinite; }
+  .store { animation: sp-in 360ms ease-out both; transition: transform 160ms ease-out, background-color 160ms ease-out; }
+  .list li:nth-child(2) .store { animation-delay: 50ms; } .list li:nth-child(3) .store { animation-delay: 100ms; }
+  .list li:nth-child(4) .store { animation-delay: 150ms; } .list li:nth-child(n+5) .store { animation-delay: 200ms; }
+  .store:hover { transform: translateX(6px); }
+  .store:hover .storeArrow { animation: sp-nudge 600ms ease-in-out infinite; }
+  @keyframes sp-pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--surface-900) 50%, transparent); } 100% { box-shadow: 0 0 0 16px transparent; } }
+  @keyframes sp-nudge { 50% { transform: translateX(5px); } }
+  @keyframes sp-glow { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--surface-pink) 45%, transparent); } }
+  @keyframes sp-in { from { opacity: 0; transform: translateY(10px) scale(0.98); } }
+
+}

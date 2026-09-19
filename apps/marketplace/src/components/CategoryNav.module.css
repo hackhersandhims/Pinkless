@@ -28,21 +28,30 @@
   white-space: nowrap;
 }
 
-.link:hover {
-  background: var(--tint-pink);
-}
-
-/* Inset so the ring is not clipped by the scroll container. */
-.link:focus-visible {
-  outline-offset: -2px;
-}
-
-/* Current page: an underline bar (plus aria-current from NavLink), not color. */
-.active::after {
+/* Underline grows left→right on hover; stays drawn on the current page. */
+.link::after {
   content: '';
   position: absolute;
   inset: auto var(--space-3) calc(var(--space-2) / 2);
   height: 2px;
   border-radius: var(--radius-sm);
   background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .link::after {
+    transition: transform 200ms ease-out;
+  }
+}
+
+.link:hover::after,
+.active::after {
+  transform: scaleX(1);
+}
+
+/* Inset so the ring is not clipped by the scroll container. */
+.link:focus-visible {
+  outline-offset: -2px;
 }

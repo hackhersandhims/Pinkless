@@ -31,7 +31,10 @@ export { StatStrip } from './StatStrip';
 export type { StatStripProps } from './StatStrip';
 
 export { SectionHeader } from './SectionHeader';
+export { ProductPairStage } from './ProductPairStage';
+export type { ProductPairStageProps } from './ProductPairStage';
 export { SavingsBadge } from './SavingsBadge';
+export type { SavingsBadgeProps } from './SavingsBadge';
 
 export { EmptyState } from './EmptyState';
 export type { EmptyStateProps } from './EmptyState';

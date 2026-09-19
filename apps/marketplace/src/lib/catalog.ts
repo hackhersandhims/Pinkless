@@ -20,6 +20,7 @@ import type {
   SelectedStore,
   ShowOutcome,
 } from './types.js';
+import { BLANK_KROGER_PHOTOS } from './blank-photos.js';
 
 function isPositiveCents(value: unknown): value is number {
   return typeof value === 'number' && Number.isSafeInteger(value) && value > 0;
@@ -244,10 +245,14 @@ export function storeLabel(store: SelectedStore): string {
 
 /**
  * Kroger's product photo for a 13-digit Kroger product ID, or undefined for
- * anything else. Rendered with a local illustration as the fallback.
+ * anything else, including products whose photo is Kroger's blank placeholder
+ * (see blank-photos.ts). Rendered with a local illustration as the fallback.
  */
-export function krogerImageUrl(krogerProductId: string): string | undefined {
-  return /^\d{13}$/.test(krogerProductId)
-    ? `https://www.kroger.com/product/images/medium/front/${krogerProductId}`
+export function krogerImageUrl(
+  krogerProductId: string,
+  resolution: 'medium' | 'large' = 'medium',
+): string | undefined {
+  return /^\d{13}$/.test(krogerProductId) && !BLANK_KROGER_PHOTOS.has(krogerProductId)
+    ? `https://www.kroger.com/product/images/${resolution}/front/${krogerProductId}`
     : undefined;
 }

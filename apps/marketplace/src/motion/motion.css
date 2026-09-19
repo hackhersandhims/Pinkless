@@ -1,0 +1,104 @@
+/*
+ * Shared motion primitives. Import once (main.tsx). Opt-in only: nothing here
+ * applies until a component uses the attribute or class.
+ *
+ * Reveal: mark an element `data-reveal` and call useReveal() on an ancestor.
+ * The hook sets data-reveal="pending" while the element is off screen, then
+ * "shown". Only "pending" is hidden, so an element no hook observes (no JS,
+ * no IntersectionObserver, a test) is always visible.
+ */
+:root {
+  --motion-duration: 500ms;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-hover-duration: 180ms;
+  --motion-reveal-distance: 16px;
+  --motion-lift: -4px;
+  --motion-arrow-shift: 3px;
+  --motion-zoom: 1.02;
+  --motion-press: 1px;
+}
+
+[data-reveal] {
+  transition:
+    opacity var(--motion-duration) var(--motion-ease),
+    transform var(--motion-duration) var(--motion-ease);
+}
+
+[data-reveal='pending'] {
+  opacity: 0;
+  transform: translateY(var(--motion-reveal-distance));
+}
+
+/* Softer entrance for large decorative shapes. */
+[data-reveal-variant='scale'][data-reveal='pending'] {
+  transform: scale(0.96);
+}
+
+[data-reveal-delay='60'] {
+  transition-delay: 60ms;
+}
+[data-reveal-delay='120'] {
+  transition-delay: 120ms;
+}
+[data-reveal-delay='180'] {
+  transition-delay: 180ms;
+}
+[data-reveal-delay='240'] {
+  transition-delay: 240ms;
+}
+[data-reveal-delay='300'] {
+  transition-delay: 300ms;
+}
+
+/* Hover primitives. Put the class on the element that moves. */
+.motion-lift,
+.motion-arrow,
+.motion-zoom,
+.motion-press {
+  transition: transform var(--motion-hover-duration) var(--motion-ease);
+}
+
+.motion-lift:hover,
+.motion-lift:focus-visible {
+  transform: translateY(var(--motion-lift));
+}
+
+/* The arrow moves when its parent link/button (.motion-arrow-parent) is hovered. */
+.motion-arrow-parent:hover .motion-arrow,
+.motion-arrow-parent:focus-visible .motion-arrow {
+  transform: translateX(var(--motion-arrow-shift));
+}
+
+/* The zoomed element should sit inside an overflow: hidden frame. */
+.motion-zoom-parent:hover .motion-zoom {
+  transform: scale(var(--motion-zoom));
+}
+
+.motion-press:active {
+  transform: translateY(var(--motion-press));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  [data-reveal='pending'] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .motion-lift,
+  .motion-arrow,
+  .motion-zoom,
+  .motion-press {
+    transition: none;
+  }
+
+  .motion-lift:hover,
+  .motion-lift:focus-visible,
+  .motion-arrow-parent:hover .motion-arrow,
+  .motion-arrow-parent:focus-visible .motion-arrow,
+  .motion-zoom-parent:hover .motion-zoom,
+  .motion-press:active {
+    transform: none;
+  }
+}

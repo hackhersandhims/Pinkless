@@ -1,7 +1,10 @@
-/* Full-bleed tinted band: the section surface shift between the cream top and the plum panel. */
+/*
+ * Comparisons sit on the cream page itself. The pink-tinted category zone
+ * above and the plum panel below supply the surface shifts, so this section
+ * doesn't need a third tint of its own.
+ */
 .band {
-  margin-top: var(--section-space);
   padding-block: var(--section-space);
-  background: var(--tint-pink);
+  background: var(--surface-100);
   scroll-margin-top: var(--space-4);
 }

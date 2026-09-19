@@ -1,4 +1,6 @@
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useTilt } from '../motion/useTilt';
 import type { ComparisonView } from '../lib/types';
 import { formatCents } from '../lib/money';
 import { comparisonSummary, freshnessLine } from '../lib/copy';
@@ -10,6 +12,8 @@ import styles from './HeroComparison.module.css';
 
 export type HeroComparisonProps = {
   item?: ComparisonView;
+  /** Display name of the chosen Kroger store, shown as the scene's store context. */
+  storeName?: string;
   loading?: boolean;
 };
 
@@ -22,12 +26,15 @@ const FALLBACK_CATEGORIES = ['razors', 'deodorant', 'body-wash'] as const;
  * here is illustrative. While loading it holds the same shape; with no data
  * it shows category marks instead of an empty pink block.
  */
-export function HeroComparison({ item, loading = false }: HeroComparisonProps) {
+export function HeroComparison({ item, storeName, loading = false }: HeroComparisonProps) {
   const link = useStoreLink();
+  const tiltRef = useRef<HTMLAnchorElement>(null);
+  useTilt(tiltRef);
 
   if (!item) {
     return (
       <div className={styles.stage} aria-hidden="true">
+        <span className={styles.backdrop} />
         {loading ? (
           <>
             <div className={`${styles.card} ${styles.back} ${styles.ghost}`} />
@@ -53,19 +60,43 @@ export function HeroComparison({ item, loading = false }: HeroComparisonProps) {
 
   return (
     <Link
+      ref={tiltRef}
       to={link(`/compare/${item.id}`)}
       className={styles.stage}
       aria-label={`Featured comparison: ${comparisonSummary(item)}`}
     >
+      <span className={styles.backdrop} aria-hidden="true" />
+
+      {storeName ? (
+        <span className={`caption ${styles.storeChip}`}>
+          <span className="label">Your Kroger</span>
+          <span className={styles.storeName}>{storeName}</span>
+        </span>
+      ) : null}
+
       <div className={`${styles.card} ${styles.back}`}>
+        <ProductMedia
+          category={item.category}
+          size="thumb"
+          resolution="large"
+          image={{ krogerProductId: womens.krogerProductId, alt: womens.name }}
+        />
         <span className="label">{womens.marketedToLabel}</span>
         <span className={`caption ${styles.name}`}>{womens.name}</span>
         <span className={`display ${styles.priceSm}`}>{formatCents(womens.priceCents)}</span>
       </div>
 
       <div className={`${styles.card} ${styles.front}`}>
+        <div className={styles.savings}>
+          <SavingsBadge cents={item.savingsCents} />
+          {item.percentLower !== undefined ? (
+            <span className="caption">{item.percentLower}% lower</span>
+          ) : null}
+        </div>
         <ProductMedia
           category={item.category}
+          size="hero"
+          resolution="large"
           image={{ krogerProductId: other.krogerProductId, alt: other.name }}
         />
         <div className={styles.frontBody}>
@@ -74,13 +105,6 @@ export function HeroComparison({ item, loading = false }: HeroComparisonProps) {
           <span className={`display ${styles.price}`}>{formatCents(other.priceCents)}</span>
           <span className="caption">{freshnessLine(item)}</span>
         </div>
-      </div>
-
-      <div className={styles.savings}>
-        <SavingsBadge cents={item.savingsCents} />
-        {item.percentLower !== undefined ? (
-          <span className="caption">{item.percentLower}% lower</span>
-        ) : null}
       </div>
     </Link>
   );
