@@ -4,12 +4,12 @@ import { makeProductView } from '../testing/outcome';
 import { ADAPTERS, extractProductView, type RetailerAdapter } from './index';
 
 function adapter(host: string, extract: RetailerAdapter['extract']): RetailerAdapter {
-  return { canHandle: (url) => url.hostname === host, extract };
+  return { retailer: 'cvs', canHandle: (url) => url.hostname === host, extract };
 }
 
 describe('extractProductView', () => {
-  it('has no registered adapters yet, so no page can produce a comparison', () => {
-    expect(ADAPTERS).toHaveLength(0);
+  it('registers only explicit retailer and controlled-demo adapters', () => {
+    expect(ADAPTERS.length).toBeGreaterThan(0);
     expect(extractProductView(ADAPTERS, document, location)).toBeNull();
   });
 

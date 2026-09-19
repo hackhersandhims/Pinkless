@@ -10,6 +10,7 @@ import type {
 
 const PRICE_CONTEXTS: PriceContext[] = ['online', 'store-pickup', 'in-store'];
 const RETAILER_HOSTS: Record<Retailer, string> = {
+  amazon: 'amazon.com',
   cvs: 'cvs.com',
   kroger: 'kroger.com',
   walmart: 'walmart.com',
@@ -60,18 +61,30 @@ function isIsoDate(value: unknown): value is string {
   return isString(value, 100) && Number.isFinite(Date.parse(value));
 }
 
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.length > 0 && value.every((item) => isString(item, 200));
+}
+
+function isProductSummary(value: unknown, audience: 'women' | 'men'): boolean {
+  return (
+    isRecord(value) &&
+    isString(value.id, 200) &&
+    isString(value.name, 500) &&
+    (value.brand === undefined || isString(value.brand, 200)) &&
+    isString(value.variant, 200) &&
+    value.audience === audience &&
+    isRecord(value.size) &&
+    typeof value.size.amount === 'number' &&
+    Number.isFinite(value.size.amount) &&
+    value.size.amount > 0 &&
+    ['oz', 'ml', 'count'].includes(String(value.size.unit))
+  );
+}
+
 function parseShow(value: Record<string, unknown>): ShowComparison | null {
   if (
-    !isRecord(value.product) ||
-    !isString(value.product.id, 200) ||
-    !isString(value.product.name, 500) ||
-    (value.product.brand !== undefined && !isString(value.product.brand, 200)) ||
-    !isString(value.product.variant, 200) ||
-    !isRecord(value.product.size) ||
-    typeof value.product.size.amount !== 'number' ||
-    !Number.isFinite(value.product.size.amount) ||
-    value.product.size.amount <= 0 ||
-    !['oz', 'ml', 'count'].includes(String(value.product.size.unit)) ||
+    !isProductSummary(value.product, 'women') ||
+    !isProductSummary(value.alternativeProduct, 'men') ||
     !isRecord(value.current) ||
     !isRetailer(value.current.retailer) ||
     !isMoney(value.current.price) ||
@@ -79,7 +92,7 @@ function parseShow(value: Record<string, unknown>): ShowComparison | null {
     (value.current.locationId !== undefined && !isString(value.current.locationId, 128)) ||
     !isRecord(value.alternative) ||
     !isRetailer(value.alternative.retailer) ||
-    value.alternative.retailer === value.current.retailer ||
+    value.alternative.retailer !== value.current.retailer ||
     !isString(value.alternative.productId, 128) ||
     !isRetailerUrl(value.alternative.url, value.alternative.retailer) ||
     !isMoney(value.alternative.price) ||
@@ -96,8 +109,12 @@ function parseShow(value: Record<string, unknown>): ShowComparison | null {
     value.current.price.amountCents - value.alternative.price.amountCents !==
       value.savings.amountCents ||
     (value.current.priceContext !== 'online' &&
-      (!isString(value.current.locationId, 128) || !isString(value.alternative.locationId, 128))) ||
+      (!isString(value.current.locationId, 128) ||
+        !isString(value.alternative.locationId, 128) ||
+        value.alternative.locationId !== value.current.locationId)) ||
     !isString(value.rationale, 1_000) ||
+    !isStringArray(value.matchedAttributes) ||
+    (value.knownDifferences !== undefined && !isStringArray(value.knownDifferences)) ||
     !['upc', 'retailer-product-id', 'canonical-url'].includes(String(value.matchedBy))
   ) {
     return null;

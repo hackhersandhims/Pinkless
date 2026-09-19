@@ -18,6 +18,7 @@ function product(id = 'sample-razor', upc = '012345678905'): Product {
     brand: 'Sample Brand',
     variant: 'One handle',
     category: 'razors',
+    audience: 'women',
     size: { amount: 1, unit: 'count' },
     identities: [
       identity('cvs', 'cvs-razor-1', 'https://www.cvs.com/shop/cvs-razor-1'),
@@ -29,8 +30,31 @@ function product(id = 'sample-razor', upc = '012345678905'): Product {
       rationale: 'All identities use the same UPC and package size.',
       matchedAttributes: ['UPC', 'package size'],
     },
+    reviewedAlternatives: [
+      {
+        productId: 'mens-razor',
+        rationale: "Reviewed men's equivalent with the same blade and package count.",
+        matchedAttributes: ['blade count', 'package size'],
+      },
+    ],
     status: 'active',
   };
+}
+
+function alternativeProduct(): Product {
+  const result = product('mens-razor', '036602301972');
+  result.name = "Men's Sample Razor";
+  result.audience = 'men';
+  result.reviewedAlternatives = [];
+  result.identities = [
+    {
+      retailer: 'cvs',
+      productId: 'cvs-mens-razor-1',
+      canonicalUrl: 'https://www.cvs.com/shop/cvs-mens-razor-1',
+      canonicalUrlPatterns: ['^https://www\\.cvs\\.com/shop/cvs-mens-razor-1$'],
+    },
+  ];
+  return result;
 }
 
 function current(overrides: Partial<ProductView> = {}): ProductView {
@@ -52,9 +76,9 @@ function current(overrides: Partial<ProductView> = {}): ProductView {
 
 function offer(overrides: Partial<Offer> = {}): Offer {
   return {
-    retailer: 'kroger',
-    productId: 'kroger-razor-1',
-    url: 'https://www.kroger.com/p/kroger-razor-1',
+    retailer: 'cvs',
+    productId: 'cvs-mens-razor-1',
+    url: 'https://www.cvs.com/shop/cvs-mens-razor-1',
     price: { amountCents: 999, currency: 'USD' },
     priceContext: 'store-pickup',
     condition: 'new',
@@ -89,10 +113,13 @@ describe('resolveProduct', () => {
 
 describe('compareOffers', () => {
   it('returns an exact savings display model', () => {
-    expect(compareOffers([product()], current(), [offer()], now)).toMatchObject({
+    expect(
+      compareOffers([product(), alternativeProduct()], current(), [offer()], now),
+    ).toMatchObject({
       status: 'show',
       savings: { amountCents: 300, currency: 'USD' },
-      alternative: { retailer: 'kroger', price: { amountCents: 999 } },
+      alternative: { retailer: 'cvs', price: { amountCents: 999 } },
+      alternativeProduct: { id: 'mens-razor', audience: 'men' },
       matchedBy: 'upc',
     });
   });
@@ -102,9 +129,10 @@ describe('compareOffers', () => {
     ['out of stock', offer({ availability: 'out-of-stock' })],
     ['wrong context', offer({ priceContext: 'in-store' })],
     ['wrong location', offer({ locationId: 'another-store' })],
+    ['different retailer', offer({ retailer: 'kroger' })],
     ['wrong product', offer({ productId: 'another-product' })],
   ])('suppresses an %s alternative', (_label, candidate) => {
-    expect(compareOffers([product()], current(), [candidate], now)).toEqual({
+    expect(compareOffers([product(), alternativeProduct()], current(), [candidate], now)).toEqual({
       status: 'no-match',
       reason: 'no-eligible-offer',
     });
@@ -113,7 +141,7 @@ describe('compareOffers', () => {
   it.each([1299, 1399])('does not show zero or negative savings', (amountCents) => {
     expect(
       compareOffers(
-        [product()],
+        [product(), alternativeProduct()],
         current(),
         [offer({ price: { amountCents, currency: 'USD' } })],
         now,
@@ -122,18 +150,44 @@ describe('compareOffers', () => {
   });
 
   it('suppresses invalid current price, currency, availability, and location', () => {
-    expect(compareOffers([product()], current({ currentPriceCents: 0 }), [offer()], now)).toEqual({
+    expect(
+      compareOffers(
+        [product(), alternativeProduct()],
+        current({ currentPriceCents: 0 }),
+        [offer()],
+        now,
+      ),
+    ).toEqual({
       status: 'suppressed',
       reason: 'invalid-current-price',
     });
-    expect(compareOffers([product()], current({ currency: 'CAD' }), [offer()], now)).toEqual({
+    expect(
+      compareOffers(
+        [product(), alternativeProduct()],
+        current({ currency: 'CAD' }),
+        [offer()],
+        now,
+      ),
+    ).toEqual({
       status: 'suppressed',
       reason: 'invalid-currency',
     });
     expect(
-      compareOffers([product()], current({ availability: 'out-of-stock' }), [offer()], now),
+      compareOffers(
+        [product(), alternativeProduct()],
+        current({ availability: 'out-of-stock' }),
+        [offer()],
+        now,
+      ),
     ).toEqual({ status: 'suppressed', reason: 'current-unavailable' });
-    expect(compareOffers([product()], current({ locationId: undefined }), [offer()], now)).toEqual({
+    expect(
+      compareOffers(
+        [product(), alternativeProduct()],
+        current({ locationId: undefined }),
+        [offer()],
+        now,
+      ),
+    ).toEqual({
       status: 'suppressed',
       reason: 'missing-location',
     });
@@ -141,7 +195,12 @@ describe('compareOffers', () => {
 
   it('suppresses incompatible selected variants', () => {
     expect(
-      compareOffers([product()], current({ selectedVariant: 'Three handles' }), [offer()], now),
+      compareOffers(
+        [product(), alternativeProduct()],
+        current({ selectedVariant: 'Three handles' }),
+        [offer()],
+        now,
+      ),
     ).toEqual({ status: 'suppressed', reason: 'variant-conflict' });
   });
 });

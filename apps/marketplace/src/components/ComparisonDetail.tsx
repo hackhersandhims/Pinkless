@@ -13,29 +13,28 @@ export type ComparisonDetailProps = {
 function OfferPanel({
   offer,
   heading,
+  productName,
   emphasis,
 }: {
   offer: OfferView;
   heading: string;
+  productName: string;
   emphasis?: boolean;
 }) {
   return (
     <div className={`${styles.offer} ${emphasis ? styles.offerEmphasis : ''}`}>
       <p className={`label ${styles.offerKind}`}>{heading}</p>
-      <p className={`heading ${styles.offerRetailer}`}>{offer.retailerLabel}</p>
+      <p className={`heading ${styles.offerRetailer}`}>{productName}</p>
       <p className={`display ${styles.offerPrice}`}>{formatCents(offer.priceCents)}</p>
-      <span className="caption">{offer.priceContextLabel} price</span>
+      <span className="caption">
+        {offer.retailerLabel} · {offer.priceContextLabel} price
+      </span>
       <span className="caption">{formatObservedAt(offer.observedAt)}</span>
     </div>
   );
 }
 
-/**
- * Comparison page body: the product and its saving up top, then the two
- * offers side by side (higher price, lower price), then why they were matched.
- * Both offers are the same packaged product in the same price context, so the
- * difference is a plain subtraction of integer cents.
- */
+/** Full detail for two reviewed products priced at the same retailer. */
 export function ComparisonDetail({ item }: ComparisonDetailProps) {
   const percent = percentLower(item.savingsCents, item.reference.priceCents);
 
@@ -56,19 +55,15 @@ export function ComparisonDetail({ item }: ComparisonDetailProps) {
         <ProductMedia category={item.category} size="stage" />
         <div className={styles.summaryText}>
           <span className={`label ${styles.eyebrow}`}>{item.categoryLabel}</span>
-          {/* .display supplies family and weight; the h1 scales its size by ratio. */}
           <div className="display">
-            <h1 className={styles.title}>{item.name}</h1>
+            <h1 className={styles.title}>{item.alternativeName}</h1>
           </div>
-          <span className="caption">
-            {item.brand ? `${item.brand} · ` : ''}
-            {item.variant}
-          </span>
+          <span className="caption">{item.alternativeVariant}</span>
 
           <p className={`display ${styles.savings}`}>{formatSavings(item.savingsCents)}</p>
           <p className={`body ${styles.savingsNote}`}>
-            {percent !== undefined ? `${percent}% lower at ` : 'Lower at '}
-            {item.alternative.retailerLabel} than at {item.reference.retailerLabel}.
+            {percent !== undefined ? `${percent}% lower than ` : 'Lower than '}
+            {item.name} at {item.reference.retailerLabel}.
           </p>
 
           <a
@@ -76,20 +71,25 @@ export function ComparisonDetail({ item }: ComparisonDetailProps) {
             target="_blank"
             rel="noopener noreferrer"
             className={`body ${buttons.button} ${buttons.dark} ${styles.cta}`}
-            aria-label={`See alternative at ${item.alternative.retailerLabel} (opens in a new tab)`}
+            aria-label={`See men's alternative at ${item.alternative.retailerLabel} (opens in a new tab)`}
           >
-            See alternative
+            See men's alternative
           </a>
         </div>
       </div>
 
       <section aria-labelledby="compare-offers">
         <h2 id="compare-offers" className={`heading ${styles.sectionHeading}`}>
-          The same product, two prices
+          Two reviewed products, one retailer
         </h2>
         <div className={styles.offers}>
-          <OfferPanel offer={item.reference} heading="Higher price" />
-          <OfferPanel offer={item.alternative} heading="Lower price" emphasis />
+          <OfferPanel offer={item.reference} heading="Women's product" productName={item.name} />
+          <OfferPanel
+            offer={item.alternative}
+            heading="Men's alternative"
+            productName={item.alternativeName}
+            emphasis
+          />
         </div>
       </section>
 

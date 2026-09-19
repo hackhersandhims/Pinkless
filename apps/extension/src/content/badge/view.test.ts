@@ -24,8 +24,8 @@ afterEach(() => {
 describe('badge content', () => {
   it('uses the exact REQUIREMENTS §6 strings', () => {
     const { card } = render();
-    expect(card.querySelector('h2')?.textContent).toBe('Comparable alternative: save $2.40');
-    expect(byText(card, 'a', 'See alternative')).toBeTruthy();
+    expect(card.querySelector('h2')?.textContent).toBe("Men's alternative: save $2.40");
+    expect(byText(card, 'a', "See men's alternative")).toBeTruthy();
     expect(byText(card, 'button', 'Why this was matched')).toBeTruthy();
     expect(byText(card, 'button', 'Not now')).toBeTruthy();
   });
@@ -33,7 +33,7 @@ describe('badge content', () => {
   it('states the savings in words, not only through color', () => {
     const { card } = render();
     expect(card.textContent).toContain('save $2.40');
-    expect(card.textContent).toContain('$2.40 less at Walmart');
+    expect(card.textContent).toContain('$2.40 less at Kroger');
   });
 
   it('is a labelled landmark with a real heading', () => {
@@ -74,18 +74,18 @@ describe('untrusted text', () => {
 describe('primary action', () => {
   it('is a link that opens the alternative in a new tab without giving the page a handle', () => {
     const { card } = render();
-    const link = byText<HTMLAnchorElement>(card, 'a', 'See alternative');
-    expect(link.href).toBe('https://www.walmart.com/ip/sample-razor/123');
+    const link = byText<HTMLAnchorElement>(card, 'a', "See men's alternative");
+    expect(link.href).toBe('https://www.kroger.com/p/mens-sample-razor/123');
     expect(link.target).toBe('_blank');
     expect(link.rel).toBe('noopener noreferrer');
   });
 
   it('has an accessible name that starts with its visible text', () => {
     const { card } = render();
-    const label = byText(card, 'a', 'See alternative').getAttribute('aria-label');
-    expect(label?.startsWith('See alternative')).toBe(true);
+    const label = byText(card, 'a', "See men's alternative").getAttribute('aria-label');
+    expect(label?.startsWith("See men's alternative")).toBe(true);
     expect(label).toContain('$12.59');
-    expect(label).toContain('Walmart');
+    expect(label).toContain('Kroger');
     expect(label).toContain('new tab');
   });
 });

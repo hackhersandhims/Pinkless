@@ -28,6 +28,25 @@ const identityDetails = {
   },
 } as const;
 
+const alternativeIdentityDetails = {
+  amazon: {
+    productId: 'B000000002',
+    url: 'https://www.amazon.com/dp/B000000002',
+  },
+  cvs: {
+    productId: 'cvs-mens-razor-1',
+    url: 'https://www.cvs.com/shop/mens-razor-prodid-cvs-mens-razor-1',
+  },
+  kroger: {
+    productId: '00036000291452',
+    url: 'https://www.kroger.com/p/mens-razor/00036000291452',
+  },
+  walmart: {
+    productId: 'walmart-mens-razor-1',
+    url: 'https://www.walmart.com/ip/mens-razor/walmart-mens-razor-1',
+  },
+} as const;
+
 function catalogProduct(): Product {
   return {
     id: 'sample-razor',
@@ -36,9 +55,47 @@ function catalogProduct(): Product {
     brand: 'Sample Brand',
     variant: 'One handle',
     category: 'razors',
+    audience: 'women',
     size: { amount: 1, unit: 'count' },
-    identities: (Object.keys(identityDetails) as Retailer[]).map((retailer) => {
-      const details = identityDetails[retailer];
+    identities: (Object.keys(identityDetails) as Array<keyof typeof identityDetails>).map(
+      (retailer) => {
+        const details = identityDetails[retailer];
+        return {
+          retailer,
+          productId: details.productId,
+          canonicalUrl: details.url,
+          canonicalUrlPatterns: [`^${details.url.replaceAll('.', '\\.')}$`],
+        };
+      },
+    ),
+    equivalence: {
+      policy: 'exact-packaged-product',
+      rationale: 'All identities use the same UPC and package size.',
+      matchedAttributes: ['UPC', 'package size'],
+    },
+    reviewedAlternatives: [
+      {
+        productId: 'mens-razor',
+        rationale: "Reviewed men's razor with the same blade and package count.",
+        matchedAttributes: ['blade count', 'package size'],
+      },
+    ],
+    status: 'active',
+  };
+}
+
+function catalogAlternative(): Product {
+  return {
+    id: 'mens-razor',
+    upc: '036602301972',
+    name: "Men's Sample Razor",
+    brand: 'Sample Brand',
+    variant: 'One handle',
+    category: 'razors',
+    audience: 'men',
+    size: { amount: 1, unit: 'count' },
+    identities: (Object.keys(alternativeIdentityDetails) as Retailer[]).map((retailer) => {
+      const details = alternativeIdentityDetails[retailer];
       return {
         retailer,
         productId: details.productId,
@@ -48,18 +105,49 @@ function catalogProduct(): Product {
     }),
     equivalence: {
       policy: 'exact-packaged-product',
-      rationale: 'All identities use the same UPC and package size.',
+      rationale: 'Every identity is the same packaged men product.',
       matchedAttributes: ['UPC', 'package size'],
     },
+    reviewedAlternatives: [],
     status: 'active',
+  };
+}
+
+function mockDataWithAlternative(retailer: Retailer) {
+  const data = createMockData(retailer, now);
+  const details = alternativeIdentityDetails[retailer];
+  const existingOffer = data.offers[0]!;
+  return {
+    ...data,
+    products: [
+      ...data.products,
+      {
+        retailer,
+        productId: details.productId,
+        upc: '036602301972',
+        name: "Men's Sample Razor",
+        brand: 'Sample Brand',
+        size: '1 count',
+      },
+    ],
+    offers: [
+      ...data.offers,
+      {
+        ...existingOffer,
+        productId: details.productId,
+        url: details.url,
+        price: { amountCents: 899, currency: 'USD' as const },
+      },
+    ],
   };
 }
 
 function mockRegistry(): ProviderRegistry {
   return {
-    cvs: new MockRetailerProvider('cvs', createMockData('cvs', now)),
-    kroger: new MockRetailerProvider('kroger', createMockData('kroger', now)),
-    walmart: new MockRetailerProvider('walmart', createMockData('walmart', now)),
+    amazon: new MockRetailerProvider('amazon', mockDataWithAlternative('amazon')),
+    cvs: new MockRetailerProvider('cvs', mockDataWithAlternative('cvs')),
+    kroger: new MockRetailerProvider('kroger', mockDataWithAlternative('kroger')),
+    walmart: new MockRetailerProvider('walmart', mockDataWithAlternative('walmart')),
   };
 }
 
@@ -88,7 +176,11 @@ function compareBody() {
 
 function compareHandler(registry = mockRegistry(), nodeEnv = 'test') {
   const gateway = new ProviderGateway(registry, { now: () => now });
-  const service = new ComparisonService([catalogProduct()], gateway, () => now);
+  const service = new ComparisonService(
+    [catalogProduct(), catalogAlternative()],
+    gateway,
+    () => now,
+  );
   return createCompareHandler(service, {
     NODE_ENV: nodeEnv,
     PINKLESS_ALLOWED_ORIGINS: allowedOrigin,
@@ -104,12 +196,13 @@ function post(body: unknown, origin = allowedOrigin): Request {
 }
 
 describe('comparison route', () => {
-  it('returns the cheapest verified offer from providers queried in parallel', async () => {
+  it('returns a verified men alternative from the current retailer only', async () => {
     const response = await compareHandler()(post(compareBody()));
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({
       status: 'show',
-      alternative: { retailer: 'walmart', price: { amountCents: 899 } },
+      alternative: { retailer: 'cvs', price: { amountCents: 899 } },
+      alternativeProduct: { id: 'mens-razor', audience: 'men' },
       savings: { amountCents: 400, currency: 'USD' },
     });
     expect(response.headers.get('access-control-allow-origin')).toBe(allowedOrigin);
@@ -135,7 +228,8 @@ describe('comparison route', () => {
 
   it('suppresses a comparison when alternative providers are unavailable', async () => {
     const registry: ProviderRegistry = {
-      cvs: new MockRetailerProvider('cvs', createMockData('cvs', now)),
+      amazon: new UnavailableRetailerProvider('amazon', 'fixture'),
+      cvs: new UnavailableRetailerProvider('cvs', 'fixture'),
       kroger: new UnavailableRetailerProvider('kroger', 'fixture'),
       walmart: new UnavailableRetailerProvider('walmart', 'fixture'),
     };

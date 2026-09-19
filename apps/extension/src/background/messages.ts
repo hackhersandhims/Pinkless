@@ -29,7 +29,9 @@ export async function handleExtensionMessage(
   }
   const isRetailerPage =
     sender.protocol === 'https:' &&
-    ['www.cvs.com', 'www.kroger.com', 'www.walmart.com'].includes(sender.hostname);
+    ['www.amazon.com', 'www.cvs.com', 'www.kroger.com', 'www.walmart.com'].includes(
+      sender.hostname,
+    );
   if (!isRetailerPage && !demoRetailerForUrl(sender)) {
     return null;
   }

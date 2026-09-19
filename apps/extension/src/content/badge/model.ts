@@ -19,6 +19,7 @@ export type BadgeModel = {
 };
 
 const RETAILER_DOMAINS: Record<Retailer, string> = {
+  amazon: 'amazon.com',
   cvs: 'cvs.com',
   kroger: 'kroger.com',
   walmart: 'walmart.com',
@@ -61,7 +62,8 @@ export function toBadgeModel(
 ): BadgeModel | null {
   try {
     if (outcome.status !== 'show') return null;
-    const { product, current, alternative, savings, rationale, matchedBy } = outcome;
+    const { product, alternativeProduct, current, alternative, savings, rationale, matchedBy } =
+      outcome;
 
     if (typeof rationale !== 'string' || rationale.trim() === '') return null;
     if (!isPositiveCents(current.price.amountCents) || current.price.currency !== 'USD')
@@ -75,7 +77,14 @@ export function toBadgeModel(
     }
     if (alternative.availability !== 'in-stock' || alternative.condition !== 'new') return null;
     if (alternative.priceContext !== current.priceContext) return null;
-    if (alternative.retailer === current.retailer) return null;
+    if (product.audience !== 'women' || alternativeProduct.audience !== 'men') return null;
+    if (alternative.retailer !== current.retailer) return null;
+    if (
+      current.priceContext !== 'online' &&
+      (!current.locationId || alternative.locationId !== current.locationId)
+    ) {
+      return null;
+    }
 
     const observedAtMs = Date.parse(alternative.observedAt);
     const expiresAtMs = Date.parse(alternative.expiresAt);
@@ -85,36 +94,45 @@ export function toBadgeModel(
     const href = safeOutboundUrl(alternative.url, alternative.retailer);
     const matchLabel = MATCH_METHOD_LABELS[matchedBy];
     const contextLabel = PRICE_CONTEXT_LABELS[current.priceContext];
-    const alternativeRetailer = RETAILER_LABELS[alternative.retailer];
-    const currentRetailer = RETAILER_LABELS[current.retailer];
-    if (!href || !matchLabel || !contextLabel || !alternativeRetailer || !currentRetailer) {
+    const retailer = RETAILER_LABELS[current.retailer];
+    if (!href || !matchLabel || !contextLabel || !retailer) {
       return null;
     }
 
     const alternativePrice = formatCents(alternative.price.amountCents);
-    const productName = [product.brand, product.name].filter(Boolean).join(' ');
+    const currentProductName = [product.brand, product.name].filter(Boolean).join(' ');
+    const alternativeProductName = [alternativeProduct.brand, alternativeProduct.name]
+      .filter(Boolean)
+      .join(' ');
 
     return {
-      headline: `Comparable alternative: save ${formatCents(savings.amountCents)}`,
+      headline: `Men's alternative: save ${formatCents(savings.amountCents)}`,
       rationale,
-      offerLine: `${alternativePrice} at ${alternativeRetailer} · ${formatChecked(alternative.observedAt)}`,
+      offerLine: `${alternativeProduct.name} · ${alternativePrice} at ${retailer} · ${formatChecked(alternative.observedAt)}`,
       action: {
         href,
-        ariaLabel: `See alternative: ${alternativePrice} at ${alternativeRetailer} (opens in a new tab)`,
+        ariaLabel: `See men's alternative: ${alternativeProduct.name}, ${alternativePrice} at ${retailer} (opens in a new tab)`,
       },
       details: [
-        { term: 'Product', description: `${productName}, ${product.variant}` },
+        {
+          term: "Women's product",
+          description: `${currentProductName}, ${product.variant}`,
+        },
+        {
+          term: "Men's alternative",
+          description: `${alternativeProductName}, ${alternativeProduct.variant}`,
+        },
         {
           term: 'This page',
-          description: `${formatCents(current.price.amountCents)} at ${currentRetailer}, ${contextLabel}`,
+          description: `${formatCents(current.price.amountCents)} at ${retailer}, ${contextLabel}`,
         },
         {
           term: 'Alternative',
-          description: `${alternativePrice} at ${alternativeRetailer}, ${contextLabel}`,
+          description: `${alternativePrice} at ${retailer}, ${contextLabel}`,
         },
         {
           term: 'Difference',
-          description: `${formatCents(savings.amountCents)} less at ${alternativeRetailer}`,
+          description: `${formatCents(savings.amountCents)} less at ${retailer}`,
         },
         { term: 'Matched by', description: matchLabel },
       ],

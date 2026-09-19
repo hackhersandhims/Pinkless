@@ -6,8 +6,29 @@ export type {
   PriceContext,
   Retailer,
 } from '../../../../packages/catalog/src/schema.js';
+import type { Retailer } from '../../../../packages/catalog/src/schema.js';
+import type { ComparisonOutcome } from '../../../../packages/matcher/src/types.js';
 export type {
   ComparisonOutcome,
   IdentityMatchMethod,
   ProductView,
 } from '../../../../packages/matcher/src/types.js';
+
+export type ShowComparison = Extract<ComparisonOutcome, { status: 'show' }>;
+
+export type ComparisonApiResponse =
+  | ShowComparison
+  | { status: 'no-match'; reason?: string }
+  | { status: 'suppressed'; reason?: string };
+
+export type RetailerLocation = {
+  retailer: Retailer;
+  locationId: string;
+  name: string;
+  address: {
+    line1: string;
+    city: string;
+    state: string;
+    postalCode: string;
+  };
+};

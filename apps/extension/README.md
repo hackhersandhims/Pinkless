@@ -7,7 +7,7 @@
 3. Choose **Load unpacked** and select `apps/extension/dist`.
 4. Pin Pinkless, click its icon to open the Chrome Side Panel, and enter a US ZIP code.
 
-The unpacked build runs only on explicitly declared CVS, Kroger, and Walmart
+The unpacked build runs only on explicitly declared Amazon, CVS, Kroger, and Walmart
 HTTPS pages, plus the fixed team-owned local fallback routes at
 `http://localhost:4174/product/{cvs|kroger|walmart}`. It requests no browsing
 history and stores only the ZIP code and explicit retailer store IDs selected
@@ -31,13 +31,13 @@ configure the production origin allowlist before publishing.
 
 ## Expected behavior
 
-- Supported exact products may show one Shadow DOM badge after the API returns
-  a verified cheaper offer.
+- Supported women products may show one Shadow DOM badge after the API returns
+  a verified cheaper men alternative from the same retailer.
 - Unknown, incomplete, promotional, unavailable, expired, or non-cheaper
   results stay quiet.
 - Variant or client-side route changes clear the prior result immediately and
   trigger one debounced recomputation.
-- `See alternative` opens the reviewed retailer URL in a new tab; `Not now`
+- `See men's alternative` opens the reviewed same-retailer URL in a new tab; `Not now`
   hides the badge for the current page only.
 
 ## Controlled fallback rehearsal

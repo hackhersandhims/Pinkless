@@ -3,16 +3,16 @@
 ## 1. Product decision
 
 Pinkless is a Chrome extension and companion Marketplace that compare a
-product at the point of shopping across supported retailers. The first live
-comparison network is **CVS, Kroger, and Walmart**. It must only flag an
-offer when it finds an exact product match (preferably UPC/GTIN) with a
-verified lower price at another supported retailer.
+women-marketed product with a reviewed men-marketed alternative at the same
+retailer. The first retailer network is **Amazon, CVS, Kroger, and Walmart**.
+It must never use one retailer's product or price as the alternative for a page
+at another retailer.
 
 The first release is a hackathon demo, not an automated system for judging
 whether a price is discriminatory. Its user-facing promise is:
 
-> We found the same verified product at a lower price from a supported
-> retailer when last checked.
+> We found a reviewed men's alternative at the same retailer for a lower
+> ordinary price when last checked.
 
 Silence is the default. A weak keyword match, unknown price, unavailable
 alternative, or non-positive savings must not produce a badge.
@@ -21,16 +21,16 @@ alternative, or non-positive savings must not produce a badge.
 
 ### In scope
 
-- Three supported retailers: CVS, Kroger, and Walmart.
-- Exact packaged-product comparisons across those retailers, starting with
-  razors and expanding only when matching quality is proven.
+- Four supported retailers: Amazon, CVS, Kroger, and Walmart.
+- Human-reviewed women-to-men product alternatives within one retailer,
+  starting with razors and expanding only when matching quality is proven.
 - Chrome Manifest V3 extension, loadable unpacked.
 - Product title, UPC/GTIN when present, current price, selected variant,
   canonical URL/product ID, and availability extraction from the current page.
 - A non-intrusive in-page badge that shows the savings and a concise matching
   rationale.
-- A click-through to the alternative retailer listing or its Marketplace detail
-  page.
+- A click-through to the alternative product at the current retailer or its
+  Marketplace detail page.
 - A Vercel-deployed Marketplace with comparison cards, explanation, freshness
   data, and outbound links.
 - A controlled fallback demo page for judging if a retailer changes its DOM or
@@ -58,10 +58,12 @@ apps/api/                 Vercel serverless API: orchestration, caching,
          +--> KrogerAdapter       official product/location API
          +--> CvsAdapter          approved CVS partner/licensed data API
          +--> WalmartAdapter      approved Walmart product/price data API
+         +--> CanopyAdapter       approved Amazon product/price data API
          |
          v
 packages/matcher/         pure identity, eligibility, offer, and money logic
-packages/catalog/         product metadata, reviewed equivalence policy, and
+packages/catalog/         product metadata, exact identities, reviewed
+                           women-to-men alternative links, and
                            fixtures (not live prices)
          |
          +--> apps/marketplace/   Vercel-deployed React site
@@ -97,11 +99,11 @@ pinkless/
 
 ### Extension responsibilities
 
-1. Run a content script only on declared CVS, Kroger, and Walmart domains.
+1. Run a content script only on declared Amazon, CVS, Kroger, and Walmart domains.
 2. Let a page adapter extract a normalized `ProductView` from the current page.
 3. Send the minimum needed identity and selected store context to the API.
-4. Render eligible cross-retailer offers returned by the API in one Shadow DOM
-   root.
+4. Render only an eligible same-retailer men's alternative returned by the API
+   in one Shadow DOM root.
 5. Re-evaluate with a debounced `MutationObserver` when a product page changes
    variants or navigates client-side.
 
@@ -124,11 +126,15 @@ location to the Pinkless API solely to obtain a comparison.
 
 ### Provider configuration
 
-- `PINKLESS_PROVIDER_MODE=mock` enables deterministic local CVS, Kroger, and
-  Walmart fixtures. Any other value uses the fail-closed live registry.
+- `PINKLESS_PROVIDER_MODE=mock` enables deterministic local Amazon, CVS,
+  Kroger, and Walmart fixtures. Any other value uses the fail-closed live registry.
 - `KROGER_CLIENT_ID` and `KROGER_CLIENT_SECRET` are server-only credentials for
   Kroger's OAuth client-credentials flow. They must be configured in Vercel and
   must never use the client-visible `VITE_` prefix.
+- `CANOPY_API_KEY` is a server-only credential for the approved Amazon data
+  connection. It revalidates catalog-reviewed Amazon ASINs and canonical URLs
+  for online offers. The Amazon page adapter extracts only identity and the
+  ordinary Amazon-sold offer; third-party and subscription offers are suppressed.
 - CVS and Walmart accept no environment credentials until their approved or
   licensed product-and-price integrations are implemented. Their provider
   shells reject every lookup in the meantime.
@@ -143,9 +149,8 @@ location to the Pinkless API solely to obtain a comparison.
   normalized provider locations.
 - `POST /api/compare` accepts a normalized `current` product view and an
   explicit retailer-to-store-ID `locations` map for store-specific prices.
-- Store IDs are retailer-specific. The API sends each provider only its own
-  selected store ID while treating the submitted map as one user location
-  context.
+- Store IDs are retailer-specific. The API queries only the current retailer
+  and uses that retailer's current selected store ID for both products.
 - Browser origins must match the configured allowlist. Development may include
   safe reason codes; production `no-match` and `suppressed` responses do not.
 
@@ -153,7 +158,7 @@ location to the Pinkless API solely to obtain a comparison.
 
 - Deploy on Vercel and call the same read-only comparison API as the extension.
 - Show a category index, comparison cards, retailer/source, price date,
-  equivalence rationale, and outbound link.
+  reviewed alternative rationale, and outbound link.
 - Remain usable with JavaScript enabled on current desktop browsers.
 - Have no login, checkout, or user tracking.
 
@@ -164,18 +169,18 @@ location to the Pinkless API solely to obtain a comparison.
   serverless functions for the comparison API.
 - **Vite-based extension build** (or a small direct MV3 setup) that emits an
   unpacked Chrome extension.
-- **JSON** for product identity/equivalence policy and fixtures, validated
+- **JSON** for product identity/reviewed-alternative policy and fixtures, validated
   during development and CI. Live offers are server-fetched and cached.
 - **Plain CSS** for the injected badge to minimize extension build complexity;
   use a Shadow DOM to isolate it from retailer styles.
 
 ## 4. Product identity and offer requirements
 
-Product identity is the trust boundary. A product record documents a canonical
-packaged item and approved equivalence policy; it does not freeze a retailer
-price. The matcher must use an exact UPC/GTIN where available. A retailer SKU
-or canonical URL may identify the product on a page, but title matching alone
-must never independently produce a badge.
+Product identity and reviewed alternative links are the trust boundary. Each
+product record documents one canonical packaged item. A women product may
+explicitly reference reviewed men products; the matcher never infers that
+relationship. Exact UPC/GTIN, retailer SKU, or canonical URL identifies the
+current page, but title matching alone must never produce a badge.
 
 All monetary amounts are integer minor units (`priceCents` in USD). Never use
 floating-point values for money.
@@ -205,13 +210,21 @@ type Product = {
   brand?: string;
   variant: string;
   category: "razors" | "deodorant" | "body-wash";
+  audience: "women" | "men" | "unisex";
   size: Size;
   identities: RetailerIdentity[];
   equivalence: {
+    policy: "exact-packaged-product";
     rationale: string;
     matchedAttributes: string[];
     knownDifferences?: string[];
   };
+  reviewedAlternatives: Array<{
+    productId: string;
+    rationale: string;
+    matchedAttributes: string[];
+    knownDifferences?: string[];
+  }>;
   status: "active" | "paused" | "retired";
 };
 
@@ -236,7 +249,11 @@ Catalog validation must reject:
 - empty equivalence rationale;
 - invalid sizes, money, URLs, or identity patterns;
 - duplicate retailer identity per product;
-- identities that would connect incompatible packaged quantities.
+- identities that would connect incompatible packaged quantities;
+- missing, duplicate, self-referential, or nonexistent reviewed alternative links;
+- reviewed alternatives that do not connect a women product to an active men
+  product in the same category with at least one shared retailer;
+- quantity-different alternatives without a documented reviewed difference.
 
 ## 5. Matching and savings rules
 
@@ -262,25 +279,27 @@ The matcher must:
    pattern, in that order.
 2. Ensure the page reports USD, an in-stock product, and a positive price.
 3. Ensure the selected page variant is compatible with the canonical product.
-4. Request candidate offers only from approved retailer providers.
-5. Compare the current offer only with in-stock, positive, unexpired offers in
-   the same price context.
-6. Return `no-match` if savings are zero or negative.
-7. Return a display model only if all checks pass.
+4. Follow only explicit reviewed women-to-men links from the catalog.
+5. Request each candidate only from the provider for the current retailer.
+6. Compare the current offer only with in-stock, positive, unexpired offers in
+   the same price context and, for store prices, the same store ID.
+7. Reject any candidate offer whose retailer differs from the current retailer.
+8. Return `no-match` if savings are zero or negative.
+9. Return a display model only if all checks pass.
 
 The first version must not normalize price per unit automatically, compare
-membership-only prices, or treat a same-brand product as an exact match. If
-products differ in quantity, the comparison is suppressed unless an explicit
-reviewed equivalence policy permits it.
+membership-only prices, or treat gender label, title, category, or brand as an
+automatic match. If products differ in quantity, the comparison is suppressed
+unless the reviewed alternative link explicitly documents that difference.
 
 ## 6. Extension UX requirements
 
 ### Badge content
 
-- Headline: `Comparable alternative: save $X.XX`
+- Headline: `Men's alternative: save $X.XX`
 - Supporting text: short reviewed rationale, for example: `Both are 5-blade,
   single-handle razors; alternative was verified on Sep 18.`
-- Primary action: `See alternative`
+- Primary action: `See men's alternative`
 - Secondary disclosure: `Why this was matched`
 - Optional dismiss control: `Not now`
 
@@ -306,6 +325,7 @@ reviewed equivalence policy permits it.
 | Different size, refill, bundle, condition, or pack count | Suppress unless a reviewed catalog record explicitly covers it. |
 | Current product or alternative offer is out of stock | Suppress. |
 | One offer is online and the other is store-specific | Suppress rather than imply an equivalent local-store price. |
+| Alternative offer comes from a different retailer | Suppress; never fall back to a cross-retailer comparison. |
 | CVS or Walmart credentials/data access are unavailable | Suppress that retailer; return no partial or invented price. |
 | Third-party marketplace seller | Exclude from the initial catalog. |
 | Page is an ad, search result, category page, or quick-view modal | Suppress. |
@@ -320,12 +340,13 @@ reviewed equivalence policy permits it.
 The demo is ready only when all of the following are true:
 
 - A known supported product shows one correct badge in under three seconds on a warm cache.
-- Its savings equal `current offer price - eligible alternative offer price` exactly.
+- Its savings equal `current offer price - eligible same-retailer men's alternative price` exactly.
 - Clicking the badge opens the expected alternative URL.
 - An unknown product, a non-product page, an unavailable item, and a product
   with no positive savings remain quiet.
 - Changing a supported product variant updates or removes the badge correctly.
-- The Marketplace identifies the source retailer, price context, and observed time for each displayed offer.
+- The Marketplace identifies the shared retailer, both product names, price
+  context, and observed time for each displayed comparison.
 - Product-identity catalog validation runs cleanly before a build.
 - Fixture-based tests cover every retailer adapter and the matcher’s key
   suppression rules.
@@ -333,7 +354,7 @@ The demo is ready only when all of the following are true:
 
 ## 9. Deferred production work
 
-After the first three-retailer release, add more retailer providers only after
+After the first retailer release, add more retailer providers only after
 they have an approved data agreement and an integration test suite. Keep
 matching deterministic and reviewed; never turn remote catalog data into
 executable extension logic.
