@@ -1,131 +1,176 @@
 <div align="center">
 
 <img src="logo.png" alt="Pinkless logo" width="280" />
+<!-- TODO: replace or supplement the logo with a banner image (optional) -->
 
-**The men's version, for less — right where you shop.**
+**See the markup. Skip the markup.**
 
-Pinkless is a Chrome extension and Marketplace that compares products marketed
-to women with reviewed men's or neutral equivalents at the same Kroger store.
-It speaks up only when both are priced by Kroger's official API at your
-selected store and the men's or neutral version costs less.
+A Chrome extension and companion Marketplace that spot a women's product and show a
+human-reviewed men's or neutral equivalent that costs less at the same store, with both prices
+pulled from the retailer's official data.
 
+[![marketplace CI](https://github.com/hackhersandhims/Pinkless/actions/workflows/marketplace.yml/badge.svg)](https://github.com/hackhersandhims/Pinkless/actions/workflows/marketplace.yml)
 ![Chrome Extension](https://img.shields.io/badge/Chrome-Manifest%20V3-ff99d8?logo=googlechrome&logoColor=white)
-![Retailer](https://img.shields.io/badge/Retailer-Kroger-ff99d8)
-![Hosting](https://img.shields.io/badge/Marketplace-Vercel-ff99d8?logo=vercel&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-React%20%2B%20Vite-ff99d8?logo=typescript&logoColor=white)
+![Hosting](https://img.shields.io/badge/Marketplace-Vercel-ff99d8?logo=vercel&logoColor=white)
+<!-- TODO: add a license badge once a LICENSE file exists -->
 
-[Scope](#scope) · [Getting started](#getting-started) · [Commands](#commands) ·
-[Repository layout](#repository-layout) · [Docs](#docs)
+Built for **HackHers**.
+
+[Problem](#the-problem) · [What it does](#what-it-does) · [Demo](#demo) ·
+[How it works](#how-it-works) · [Tech stack](#tech-stack) · [Roadmap](#roadmap) ·
+[Team](#team--acknowledgments)
 
 </div>
 
 ---
 
-## Scope
+## The problem
 
-|                         | MVP                                                                     |
-| ----------------------- | ----------------------------------------------------------------------- |
-| **Retailer**            | Kroger (official Products and Locations APIs)                           |
-| **Comparison**          | Women's product vs reviewed men's/neutral equivalent, same store        |
-| **Marketplace hosting** | Vercel                                                                  |
-| **Not included**        | Scraping, accounts, tracking, checkout, or fuzzy product matching       |
+A [NYC Department of Consumer Affairs study](https://www.nyc.gov/assets/dca/downloads/pdf/partners/Study-of-Gender-Pricing-in-NYC.pdf)
+of about 800 products across five industries found that the women's version cost more 42% of the
+time, 7% more on average, and up to 13% more in personal care. Take razors: Gillette Venus
+Sensitive and Gillette Sensor3 Sensitive come from the same maker and both have three blades, yet
+the women's version runs about 46% more per razor.
+<!-- TODO: cite a source and date for the ~46% Gillette figure (it is not derived from anything in this repo) -->
 
-## Getting started
+Pinkless doesn't argue about _why_ a price differs. It shows you two reviewed products, two Kroger
+prices, and one store, and lets you decide.
 
-### Requirements
+## What it does
 
-- Node.js 20 or newer
-- pnpm 9 or newer (Corepack is included with current Node releases)
+> **Current scope:** Kroger is the only supported retailer in this release. More retailers are on
+> the [roadmap](#roadmap).
 
-No credentials or external services are needed to build or test the project.
-Provider calls fail closed by default. For deterministic local provider data,
-copy `.env.example` to `.env.local` and use `PINKLESS_PROVIDER_MODE=mock`.
+**Chrome extension**
 
-Live Kroger calls require server-side `KROGER_CLIENT_ID` and
-`KROGER_CLIENT_SECRET` values from the Kroger developer portal (Products and
-Locations scopes only). Put them in the repo-root `.env` for local work and in
-Vercel project settings for deploys; never expose them through a `VITE_`
-variable. `pnpm --filter @pinkless/marketplace dev` serves the `api/`
-functions from the Vite dev server, so the local Marketplace shows live Kroger
-prices when those keys are set.
+- While you shop on kroger.com, it recognizes when you're looking at a women's product that has a
+  reviewed men's or neutral equivalent.
+- If the equivalent costs less **at your selected Kroger store**, it shows one badge with the
+  savings, what matches, what differs, the store, and the date checked.
+- **See alternative** opens the equivalent's Kroger page in a new tab. **Not now** dismisses the
+  badge for that page.
+- You pick your Kroger store by ZIP code, and that choice stays on your device.
+- When it isn't sure, it says nothing. A weak match never produces a badge.
 
-The Vercel project is not linked yet. When it is created,
-`PINKLESS_ALLOWED_ORIGINS` must list the deployed Marketplace origin and the
-published `chrome-extension://` origin exactly.
+**Marketplace**
 
-### Install and build
+- Pick a Kroger store, then browse every reviewed pair where the men's or neutral product costs
+  less there.
+- Every price shows its store and when it was checked.
+- No login, checkout, or tracking.
 
-```bash
-corepack enable
-pnpm install
-pnpm build
+Every pair is written and reviewed by a person, never guessed automatically.
+
+## Demo
+
+<!-- TODO: add a demo GIF or screenshots of the badge and the Marketplace -->
+<!-- TODO: add a demo video link, if there is one -->
+
+| Live Marketplace                                                           | Demo video | Screenshots |
+| -------------------------------------------------------------------------- | ---------- | ----------- |
+| [pinkless-marketplace.vercel.app](https://pinkless-marketplace.vercel.app) | _TODO_     | _TODO_      |
+
+## How it works
+
+```mermaid
+flowchart LR
+    subgraph Surfaces
+        EXT["Chrome extension<br/>content script · side panel"]
+        MKT["Marketplace<br/>React + Vite"]
+    end
+
+    subgraph API["Pinkless API (Vercel Functions)"]
+        ROUTES["POST /api/compare<br/>GET /api/comparisons<br/>GET /api/stores"]
+        MATCH["packages/matcher<br/>resolve product · check eligibility · compute savings"]
+        GW["Provider gateway<br/>cache · rate limit · timeout"]
+    end
+
+    CAT[("packages/catalog<br/>products.json<br/>equivalences.json")]
+    KROGER["Kroger official API<br/>Products + Locations"]
+
+    EXT -- "product identity + store ID" --> ROUTES
+    MKT -- "store ID" --> ROUTES
+    ROUTES --> MATCH
+    MATCH -- "reads" --> CAT
+    ROUTES --> GW
+    GW -- "prices both products" --> KROGER
 ```
 
-### Run the Marketplace
+1. **The extension only reports identity.** Its Kroger adapter extracts a normalized `ProductView`
+   (product ID, canonical URL, title, page price, availability, selected variant). A background
+   service worker sends that plus the selected store, and nothing else, to the API. The extension
+   holds no credentials and does no matching.
+2. **The API does the pricing.** It resolves the product against the catalog (exact UPC, then
+   Kroger product ID, then canonical URL pattern), then prices the current product **and** its
+   reviewed equivalents through the Kroger provider at that store. The page's own price is only a
+   consistency check; a mismatch suppresses.
+3. **The matcher decides.** `packages/matcher` is deterministic: no fuzzy matching, no ML. It only
+   compares a women's product with an active, human-reviewed men's/neutral pair, and only when both
+   offers are eligible and the savings are positive.
+4. **The Marketplace is another client.** It calls `GET /api/comparisons` for the selected store
+   and never touches Kroger directly. Because both surfaces go through the API, they read one
+   catalog and can't drift.
 
-```bash
-pnpm --filter @pinkless/marketplace dev
-```
+Kroger credentials live only in server-side environment variables (Vercel). The extension and
+Marketplace never see them.
 
-### Run the controlled fallback demo
+### Silence is the default
 
-```bash
-pnpm --filter @pinkless/demo dev
-```
+A weak match should never produce a badge, so anything not explicitly covered by a reviewed catalog
+record is left alone. Pinkless shows nothing when:
 
-Then open `http://localhost:4174/product/cvs` (or `kroger` or `walmart`). See
-the [fallback demo guide](apps/demo/README.md) for the incognito rehearsal.
+- the product isn't in the catalog, isn't marketed to women, or has no active reviewed pair;
+- the pair crosses categories or sizes;
+- no store is selected, or the two offers aren't from the same store and price context (including
+  online vs. in-store);
+- either offer is out of stock, expired, non-USD, or not a positive price;
+- the page price disagrees with Kroger's price for the same product;
+- Kroger credentials or the Kroger API are unavailable (no partial or invented prices);
+- the men's or neutral product isn't cheaper (savings of zero or less).
 
-### Try the extension
+Prices are Kroger's **regular** price in **integer cents**, never promo prices, never floats. Copy
+states prices, store, date, and who a product is marketed to; it never says why prices differ.
 
-1. Run `pnpm build:extension`.
-2. Open `chrome://extensions` and enable **Developer mode**.
-3. Choose **Load unpacked** and select `apps/extension/dist`.
+## Tech stack
 
-See the [extension guide](apps/extension/README.md) for local API, store-selection,
-and browser-testing details.
+| Area        | What's used                                                                                        |
+| ----------- | -------------------------------------------------------------------------------------------------- |
+| Language    | TypeScript 5.9                                                                                     |
+| Marketplace | React 19, React Router 7, Vite 7, CSS Modules                                                      |
+| Extension   | Chrome Manifest V3 (content script, service worker, side panel), bundled with Vite                 |
+| API         | Vercel Functions (`api/`), Web-standard `Request`/`Response` handlers                              |
+| Data source | Kroger public API (Products and Locations), OAuth client credentials, `product.compact` scope only |
+| Design      | Shared design tokens in `packages/tokens` ([DESIGN_SYSTEM.md](DESIGN_SYSTEM.md))                   |
+| Testing     | Vitest 4, Testing Library, jsdom, happy-dom                                                        |
+| Tooling     | pnpm workspaces, Prettier, GitHub Actions                                                          |
 
-## Commands
+## Roadmap
 
-| Command                  | What it does                              |
-| ------------------------ | ----------------------------------------- |
-| `pnpm format`            | Check formatting                          |
-| `pnpm typecheck`         | Check TypeScript                          |
-| `pnpm test`              | Run unit tests                            |
-| `pnpm catalog:validate`  | Validate the product identity catalog     |
-| `pnpm build`             | Validate, typecheck, then build both apps |
-| `pnpm build:extension`   | Build only the Chrome extension           |
-| `pnpm build:demo`        | Build only the controlled fallback demo   |
-| `pnpm build:marketplace` | Build only the Marketplace                |
+Everything here is future work; none of it is in the current build.
 
-## Repository layout
+- [ ] **Public launch.** Make the Marketplace and extension available to everyone.
+- [ ] **More reviewed pairs and categories.** Razors, deodorant, and shave care are covered so far.
+      Body wash and more are next, once each pair has been reviewed by a person.
+- [ ] **Savings tracker.** See how much you've saved over time.
+- [ ] **Community submissions.** Suggest a pair for review. Nothing would publish without a
+      person's sign-off.
+- [ ] **Other retailers.** Added once each has approved data access.
 
-```text
-api/                Thin Vercel Function entry points for comparison and stores
-apps/api/           Provider contracts and server-only retailer integrations
-apps/extension/     Chrome MV3 extension, retailer adapters, popup, and badge
-apps/demo/          Controlled static fallback product page for judging
-apps/marketplace/   Static React/Vite Marketplace for Vercel
-packages/catalog/   Products, reviewed women's→men's/neutral pairs, and validation
-packages/matcher/   Pure matching and savings rules
-fixtures/           Sanitized retailer, catalog, and provider fixtures
-```
+## Team & acknowledgments
 
-## API contracts
+Built at **HackHers**.
 
-- `GET /api/stores?postalCode=45202` returns nearby Kroger stores.
-- `POST /api/compare` accepts `{ current }`, a normalized Kroger product view
-  including the selected store (`locationId`) and price context. The API
-  prices the product and its reviewed equivalents at that store itself.
-- `GET /api/comparisons?locationId=01400513&priceContext=in-store` lists every
-  reviewed pair where the men's or neutral product costs less at that store.
-- All routes enforce an exact origin allowlist. Production suppression and
-  no-match responses omit diagnostic reason codes.
+- [@pooravrawat1](https://github.com/pooravrawat1)
+- [@jsberesford](https://github.com/jsberesford)
+- [@natashanarine](https://github.com/natashanarine)
+- [@edamai-13](https://github.com/edamai-13)
 
-## Docs
+Research: the NYC Department of Consumer Affairs gender-pricing study linked above. Prices come from
+Kroger's public developer API.
 
-- [Local development](LOCAL_DEVELOPMENT.md): run the Marketplace, API, and unpacked Chrome extension
-- [Requirements](Files/REQUIREMENTS.md): detailed product and delivery requirements
-- [Tasks](Files/TASKS.md): implementation checklist
+## License
 
-Hello
+<!-- TODO: no LICENSE file exists in the repo. Choose a license, add LICENSE, then update this section and add a badge. -->
+
+_No license file yet._
