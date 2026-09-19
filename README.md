@@ -69,7 +69,7 @@ Every pair is written and reviewed by a person, never guessed automatically.
 
 | Live Marketplace                                                           | Demo video | Screenshots |
 | -------------------------------------------------------------------------- | ---------- | ----------- |
-| [pinkless-marketplace.vercel.app](https://pinkless-marketplace.vercel.app) | _TODO_     | _TODO_      |
+| [pinkless-marketplace.vercel.app](https://pinkless-marketplace.vercel.app) | https://youtu.be/hSI9xElOEb4?si=wQ_Sd57UyJ7zNlc_     | _TODO_      |
 
 ## How it works
 
