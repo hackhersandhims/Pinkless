@@ -1,30 +1,59 @@
-import { TOKENS_CSS } from './tokens';
+import { observePageChanges } from '../adapters/page-change.js';
+import { loadSettings } from '../shared/settings.js';
+import { requestComparison } from './api.js';
+import { BADGE_ROOT_ID } from './badge.js';
+import { ContentController } from './controller.js';
 
-// The content-script pipeline (retailer adapter → API → badge) is added in Phase 4.
-// BADGE_ROOT_ID must stay a fixed, unique value per REQUIREMENTS.md §7
-// ("Duplicate/injected UI collision"): the badge mount replaces this element
-// rather than appending a new one.
-export const BADGE_ROOT_ID = 'pinkless-badge-root';
+type RunningContentScript = {
+  controller: ContentController;
+  stop: () => void;
+};
 
-// Creates (or reuses) the badge's Shadow DOM root with design tokens inlined
-// into its own <style> tag, since a shadow root cannot inherit page-level CSS.
-export function getBadgeShadowRoot(): ShadowRoot {
-  let host = document.getElementById(BADGE_ROOT_ID);
+const CONTENT_SCRIPT_KEY = '__pinklessContentScript';
+const pageWindow = window as Window & { [CONTENT_SCRIPT_KEY]?: RunningContentScript };
 
-  if (!host) {
-    host = document.createElement('div');
-    host.id = BADGE_ROOT_ID;
-    document.body.appendChild(host);
-  }
-
-  const shadowRoot = host.shadowRoot ?? host.attachShadow({ mode: 'open' });
-
-  if (!shadowRoot.querySelector('style[data-pinkless-tokens]')) {
-    const style = document.createElement('style');
-    style.setAttribute('data-pinkless-tokens', '');
-    style.textContent = TOKENS_CSS;
-    shadowRoot.appendChild(style);
-  }
-
-  return shadowRoot;
+function developmentDiagnostic(message: string): void {
+  if (!chrome.runtime.getManifest().update_url) console.debug(`[pinkless] ${message}`);
 }
+
+function startContentScript(): RunningContentScript {
+  pageWindow[CONTENT_SCRIPT_KEY]?.stop();
+
+  const controller = new ContentController({
+    document,
+    location,
+    loadSettings,
+    requestComparison,
+    diagnostic: developmentDiagnostic,
+  });
+  const disconnectObserver = observePageChanges(
+    document,
+    () => void controller.recompute(),
+    undefined,
+    BADGE_ROOT_ID,
+  );
+  const storageListener = (
+    _changes: Record<string, chrome.storage.StorageChange>,
+    area: string,
+  ) => {
+    if (area === 'local') void controller.recompute();
+  };
+  chrome.storage.onChanged.addListener(storageListener);
+
+  const running = {
+    controller,
+    stop: () => {
+      disconnectObserver();
+      chrome.storage.onChanged.removeListener(storageListener);
+      controller.stop();
+    },
+  };
+  pageWindow[CONTENT_SCRIPT_KEY] = running;
+  void controller.recompute();
+  return running;
+}
+
+startContentScript();
+
+export { BADGE_ROOT_ID, clearBadge, getBadgeShadowRoot, renderBadge } from './badge.js';
+export { ContentController } from './controller.js';

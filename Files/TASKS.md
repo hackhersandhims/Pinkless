@@ -79,18 +79,18 @@ fixtures and no incomplete page can trigger a comparison.
 
 ## Phase 4 — Extension core
 
-- [ ] Create a Manifest V3 extension with content-script matches restricted to
+- [x] Create a Manifest V3 extension with content-script matches restricted to
   CVS, Kroger, and Walmart domains.
-- [ ] Connect page adapter → Pinkless API → matcher → renderer in the content script.
-- [ ] Add explicit user store selection or ZIP-based store lookup.
-- [ ] Build a small badge in a Shadow DOM root with a stable, unique root ID.
-- [ ] Add keyboard-accessible `See alternative`, `Why this was matched`, and
+- [x] Connect page adapter → Pinkless API → matcher → renderer in the content script.
+- [x] Add explicit user store selection or ZIP-based store lookup.
+- [x] Build a small badge in a Shadow DOM root with a stable, unique root ID.
+- [x] Add keyboard-accessible `See alternative`, `Why this was matched`, and
   dismiss controls.
-- [ ] Open the vetted alternative URL in a new tab from the primary action.
-- [ ] Ensure repeated content-script execution or DOM updates cannot create a
+- [x] Open the vetted alternative URL in a new tab from the primary action.
+- [x] Ensure repeated content-script execution or DOM updates cannot create a
   duplicate badge.
-- [ ] Add a minimal popup: provider status, store selection, Marketplace link, and version.
-- [ ] Load the extension unpacked and manually test a product page for each retailer.
+- [x] Add a minimal popup: provider status, store selection, Marketplace link, and version.
+- [x] Load the extension unpacked and manually test a product page for each retailer.
 
 **Done when:** the full extension flow works with activated providers and
 silently fails when a product, price, provider, or location is unsafe.
@@ -132,6 +132,8 @@ savings as the extension.
 
 - [ ] Create and link the Vercel project; configure preview/production domains,
   allowed origins, server-only credentials, and the first preview deployment.
+- [ ] Replace the extension's local API/Marketplace URLs and local API host
+  permission with the final Vercel origins.
 - [ ] Register Pinkless with Kroger and store credentials only in Vercel environment variables.
 - [ ] Obtain approved CVS product-and-price data access and activate its provider.
 - [ ] Obtain approved Walmart product-and-price data access and activate its provider.

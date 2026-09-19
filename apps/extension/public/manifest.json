@@ -7,9 +7,15 @@
     "default_popup": "popup.html",
     "default_title": "Pinkless"
   },
+  "background": {
+    "service_worker": "background/index.js",
+    "type": "module"
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["http://localhost:3000/*"],
   "content_scripts": [
     {
-      "matches": ["https://www.target.com/*"],
+      "matches": ["https://www.cvs.com/*", "https://www.kroger.com/*", "https://www.walmart.com/*"],
       "js": ["content/index.js"],
       "run_at": "document_idle"
     }

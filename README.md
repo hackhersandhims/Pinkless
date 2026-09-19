@@ -70,6 +70,9 @@ pnpm --filter @pinkless/marketplace dev
 2. Open `chrome://extensions` and enable **Developer mode**.
 3. Choose **Load unpacked** and select `apps/extension/dist`.
 
+See the [extension guide](apps/extension/README.md) for local API, store-selection,
+and browser-testing details.
+
 ## Commands
 
 | Command                  | What it does                              |
@@ -87,7 +90,7 @@ pnpm --filter @pinkless/marketplace dev
 ```text
 api/                Thin Vercel Function entry points for comparison and stores
 apps/api/           Provider contracts and server-only retailer integrations
-apps/extension/     Chrome MV3 extension and CVS/Kroger/Walmart page adapters
+apps/extension/     Chrome MV3 extension, retailer adapters, popup, and badge
 apps/marketplace/   Static React/Vite Marketplace for Vercel
 packages/catalog/   Canonical product identity data and validation
 packages/matcher/   Pure matching and savings rules
@@ -106,6 +109,7 @@ fixtures/           Sanitized retailer, catalog, and provider fixtures
 
 ## Docs
 
+- [Local development](LOCAL_DEVELOPMENT.md): run the Marketplace, API, and unpacked Chrome extension
 - [Requirements](Files/REQUIREMENTS.md): detailed product and delivery requirements
 - [Tasks](Files/TASKS.md): implementation checklist
 

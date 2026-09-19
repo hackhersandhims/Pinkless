@@ -4,12 +4,53 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pinkless</title>
+    <link rel="stylesheet" href="tokens.css" />
+    <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
-    <main>
-      <h1>Pinkless</h1>
-      <p>Target support is being set up.</p>
+    <main class="popup" data-theme="light">
+      <header class="popup__header">
+        <p class="label">PINKLESS</p>
+        <h1 class="heading">Choose nearby stores</h1>
+        <p class="caption">Store choices stay on this device and are used only for comparisons.</p>
+      </header>
+
+      <form id="store-search" class="store-search">
+        <label class="label" for="postal-code">US ZIP code</label>
+        <div class="store-search__controls">
+          <input
+            id="postal-code"
+            class="body"
+            name="postalCode"
+            inputmode="numeric"
+            autocomplete="postal-code"
+            pattern="[0-9]{5}(-[0-9]{4})?"
+            maxlength="10"
+            required
+          />
+          <button class="label" type="submit">Find stores</button>
+        </div>
+        <p id="search-message" class="caption" aria-live="polite"></p>
+      </form>
+
+      <section aria-labelledby="provider-heading">
+        <h2 id="provider-heading" class="label">PROVIDERS & STORES</h2>
+        <div id="provider-list" class="provider-list"></div>
+      </section>
+
+      <footer class="popup__footer">
+        <a
+          id="marketplace-link"
+          class="body"
+          href="http://localhost:5173"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open the Pinkless Marketplace in a new tab"
+          >Open Marketplace</a
+        >
+        <span id="extension-version" class="caption"></span>
+      </footer>
     </main>
-    <script type="module" src="popup/index.js"></script>
+    <script src="popup/index.js"></script>
   </body>
 </html>
