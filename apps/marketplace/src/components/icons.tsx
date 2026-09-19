@@ -71,6 +71,17 @@ export function GridIcon({ className }: IconProps) {
   );
 }
 
+export function StoreIcon({ className }: IconProps) {
+  return (
+    <Icon className={className}>
+      <path d="M4 9.5 5.5 4h13L20 9.5" />
+      <path d="M4 9.5a2.67 2.67 0 0 0 5.33 0 2.67 2.67 0 0 0 5.34 0 2.67 2.67 0 0 0 5.33 0" />
+      <path d="M5.5 12v8h13v-8" />
+      <path d="M10 20v-4.5h4V20" />
+    </Icon>
+  );
+}
+
 export function RazorIcon({ className }: IconProps) {
   return (
     <Icon className={className}>

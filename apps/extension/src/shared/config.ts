@@ -1,30 +1,33 @@
-export const RETAILERS = ['amazon', 'cvs', 'kroger', 'walmart'] as const;
-export type Retailer = (typeof RETAILERS)[number];
+import type { StorePriceContext } from './types.js';
 
-export const RETAILER_LABELS: Record<Retailer, string> = {
-  amazon: 'Amazon',
-  cvs: 'CVS',
-  kroger: 'Kroger',
-  walmart: 'Walmart',
-};
+/** Kroger is the only supported retailer (REQUIREMENTS §1–§3). */
+export const RETAILER = 'kroger' as const;
+export const RETAILER_LABEL = 'Kroger';
+export const RETAILER_DOMAIN = 'kroger.com';
+
+/** Hosts where the content script may ask for a comparison. Mirrors manifest `matches`. */
+export const RETAILER_HOSTS = ['www.kroger.com'] as const;
 
 /**
- * The controlled Phase 5 fallback is intentionally limited to this local
- * development origin and to explicit product routes. It is not a general
- * localhost permission and it never enables collection from arbitrary pages.
+ * Both products are priced at the selected store's shelf price. The API accepts only store
+ * contexts (`in-store` | `store-pickup`); the page price is a consistency check, never savings.
+ */
+export const STORE_PRICE_CONTEXT: StorePriceContext = 'in-store';
+
+/**
+ * The controlled fallback page is limited to this local development origin and one explicit
+ * product route. It is not a general localhost permission.
  */
 export const CONTROLLED_DEMO_ORIGINS = ['http://localhost:4174'] as const;
+export const CONTROLLED_DEMO_PATH = /^\/product\/kroger\/?$/;
 
-export function demoRetailerForUrl(url: URL): Retailer | undefined {
-  if (
-    url.username ||
-    url.password ||
-    !CONTROLLED_DEMO_ORIGINS.includes(url.origin as (typeof CONTROLLED_DEMO_ORIGINS)[number])
-  ) {
-    return undefined;
-  }
-  const match = url.pathname.match(/^\/product\/(cvs|kroger|walmart)\/?$/);
-  return match?.[1] as Retailer | undefined;
+export function isControlledDemoUrl(url: URL): boolean {
+  return (
+    !url.username &&
+    !url.password &&
+    CONTROLLED_DEMO_ORIGINS.includes(url.origin as (typeof CONTROLLED_DEMO_ORIGINS)[number]) &&
+    CONTROLLED_DEMO_PATH.test(url.pathname)
+  );
 }
 
 // Phase 7 replaces these local origins when the Vercel projects exist.

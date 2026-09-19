@@ -1,130 +1,61 @@
-import type { Retailer } from '../../../../packages/catalog/src/schema.js';
+import type { Product } from '../../../../packages/catalog/src/schema.js';
+import { catalog } from '../catalog.js';
 import type { MockProviderData } from './mock.js';
 
-type MockDetails = {
-  productId: string;
-  locationId?: string;
-  name: string;
-  url: string;
-  price: number;
+export const MOCK_KROGER_LOCATION_ID = 'kroger-1001';
+
+/**
+ * Fixture regular prices by Kroger productId, in integer cents. They mirror
+ * what Kroger's API returned at store 01400513 on 2026-09-19 so the mock demo
+ * looks like live data, but they are fixtures: never shown as observed prices
+ * outside `PINKLESS_PROVIDER_MODE=mock`.
+ */
+const FIXTURE_PRICES: Record<string, number> = {
+  '0007033071417': 679,
+  '0007033071397': 599,
 };
 
-const DETAILS: Record<Retailer, MockDetails> = {
-  amazon: {
-    productId: 'B000000001',
-    name: 'Amazon Online',
-    url: 'https://www.amazon.com/dp/B000000001',
-    price: 899,
-  },
-  cvs: {
-    productId: 'cvs-razor-1',
-    locationId: 'cvs-1001',
-    name: 'CVS Downtown',
-    url: 'https://www.cvs.com/shop/sample-razor-prodid-cvs-razor-1',
-    price: 1099,
-  },
-  kroger: {
-    productId: '00012345678905',
-    locationId: 'kroger-1001',
-    name: 'Kroger Downtown',
-    url: 'https://www.kroger.com/p/sample-razor/00012345678905',
-    price: 999,
-  },
-  walmart: {
-    productId: 'walmart-razor-1',
-    locationId: 'walmart-1001',
-    name: 'Walmart Downtown',
-    url: 'https://www.walmart.com/ip/sample-razor/walmart-razor-1',
-    price: 899,
-  },
-} as const;
-
-const ALTERNATIVE_DETAILS: Record<Retailer, Pick<MockDetails, 'productId' | 'url' | 'price'>> = {
-  amazon: {
-    productId: 'B000000002',
-    url: 'https://www.amazon.com/dp/B000000002',
-    price: 699,
-  },
-  cvs: {
-    productId: 'cvs-razor-2',
-    url: 'https://www.cvs.com/shop/daily-comfort-disposable-razor-prodid-cvs-razor-2',
-    price: 699,
-  },
-  kroger: {
-    productId: '00036000291452',
-    url: 'https://www.kroger.com/p/daily-comfort-razor/00036000291452',
-    price: 649,
-  },
-  walmart: {
-    productId: 'walmart-razor-2',
-    url: 'https://www.walmart.com/ip/daily-comfort-disposable-razor/walmart-razor-2',
-    price: 599,
-  },
-};
-
-export function createMockData(retailer: Retailer, now = new Date()): MockProviderData {
-  const details = DETAILS[retailer];
-  const alternative = ALTERNATIVE_DETAILS[retailer];
-  const isOnlineOnly = retailer === 'amazon';
+/** Deterministic Kroger fixtures for every catalog product with a fixture price. */
+export function createMockData(
+  now = new Date(),
+  products: Product[] = catalog.products,
+): MockProviderData {
+  const identities = products.flatMap((product) =>
+    product.identities
+      .filter((identity) => identity.retailer === 'kroger')
+      .map((identity) => ({ product, identity })),
+  );
+  const priced = identities.filter(({ identity }) => FIXTURE_PRICES[identity.productId]);
+  const expiresAt = new Date(now.valueOf() + 60 * 60 * 1000).toISOString();
   return {
-    products: [
+    products: identities.map(({ product, identity }) => ({
+      retailer: 'kroger',
+      productId: identity.productId,
+      name: product.name,
+      ...(product.brand ? { brand: product.brand } : {}),
+      size: `${product.size.amount} ${product.size.unit}`,
+    })),
+    locations: [
       {
-        retailer,
-        productId: details.productId,
-        upc: '012345678905',
-        name: 'Sample Razor',
-        brand: 'Sample Brand',
-        size: '1 count',
-      },
-      {
-        retailer,
-        productId: alternative.productId,
-        upc: '036000291452',
-        name: "Men's Daily Comfort Razor",
-        brand: 'Northbank',
-        size: '4 count',
+        retailer: 'kroger',
+        locationId: MOCK_KROGER_LOCATION_ID,
+        name: 'Kroger Downtown (fixture)',
+        address: { line1: '1 Demo Way', city: 'Cincinnati', state: 'OH', postalCode: '45202' },
       },
     ],
-    locations: isOnlineOnly
-      ? []
-      : [
-          {
-            retailer,
-            locationId: details.locationId!,
-            name: details.name,
-            address: {
-              line1: '1 Demo Way',
-              city: 'Cincinnati',
-              state: 'OH',
-              postalCode: '45202',
-            },
-          },
-        ],
-    offers: [
-      {
-        retailer,
-        productId: details.productId,
-        url: details.url,
-        price: { amountCents: details.price, currency: 'USD' },
-        priceContext: isOnlineOnly ? 'online' : 'store-pickup',
-        condition: 'new',
-        availability: 'in-stock',
-        ...(isOnlineOnly ? {} : { locationId: details.locationId! }),
+    offers: priced.flatMap(({ identity }) =>
+      (['in-store', 'store-pickup'] as const).map((priceContext) => ({
+        retailer: 'kroger' as const,
+        productId: identity.productId,
+        url: identity.canonicalUrl,
+        price: { amountCents: FIXTURE_PRICES[identity.productId]!, currency: 'USD' as const },
+        priceContext,
+        condition: 'new' as const,
+        availability: 'in-stock' as const,
+        locationId: MOCK_KROGER_LOCATION_ID,
         observedAt: now.toISOString(),
-        expiresAt: new Date(now.valueOf() + 60 * 60 * 1000).toISOString(),
-      },
-      {
-        retailer,
-        productId: alternative.productId,
-        url: alternative.url,
-        price: { amountCents: alternative.price, currency: 'USD' },
-        priceContext: isOnlineOnly ? 'online' : 'store-pickup',
-        condition: 'new',
-        availability: 'in-stock',
-        ...(isOnlineOnly ? {} : { locationId: details.locationId! }),
-        observedAt: now.toISOString(),
-        expiresAt: new Date(now.valueOf() + 60 * 60 * 1000).toISOString(),
-      },
-    ],
+        expiresAt,
+      })),
+    ),
   };
 }

@@ -5,24 +5,21 @@ export type {
   Offer,
   PriceContext,
   Retailer,
+  StorePriceContext,
 } from '../../../../packages/catalog/src/schema.js';
 import type { Retailer } from '../../../../packages/catalog/src/schema.js';
 import type { ComparisonOutcome } from '../../../../packages/matcher/src/types.js';
 export type {
   ComparisonOutcome,
   IdentityMatchMethod,
+  ProductSummary,
   ProductView,
+  ShowOutcome,
 } from '../../../../packages/matcher/src/types.js';
 
-export type ShowComparison = Extract<ComparisonOutcome, { status: 'show' }>;
-
-export type ComparisonApiResponse =
-  | ShowComparison
-  | { status: 'no-match'; reason?: string }
-  | { status: 'suppressed'; reason?: string };
-
-export type RetailerLocation = {
-  retailer: Retailer;
+/** A Kroger store as returned by `GET /api/stores`. */
+export type StoreLocation = {
+  retailer: 'kroger';
   locationId: string;
   name: string;
   address: {

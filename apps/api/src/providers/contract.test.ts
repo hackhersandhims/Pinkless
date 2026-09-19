@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { RETAILERS, type Retailer } from '../../../../packages/catalog/src/schema.js';
 import { MockRetailerProvider, type MockProviderData } from './mock.js';
 import { createProviderRegistry } from './registry.js';
-import { CvsProvider, WalmartProvider } from './unavailable.js';
+import { UnavailableRetailerProvider } from './unavailable.js';
 
 async function fixture(retailer: Retailer): Promise<MockProviderData> {
   const url = new URL(`../../../../fixtures/providers/${retailer}.json`, import.meta.url);
@@ -68,8 +68,8 @@ describe.each(RETAILERS)('%s provider contract fixture', (retailer) => {
   });
 });
 
-describe('unavailable provider shells', () => {
-  it.each([new CvsProvider(), new WalmartProvider()])(
+describe('unavailable provider shell', () => {
+  it.each([new UnavailableRetailerProvider('kroger', 'Kroger credentials are not configured.')])(
     '$retailer fails closed for every lookup',
     async (provider) => {
       await expect(provider.lookupProduct({ upc: '012345678905' })).rejects.toMatchObject({
@@ -82,7 +82,7 @@ describe('unavailable provider shells', () => {
         provider.lookupOffers({
           upc: '012345678905',
           url: `https://www.${provider.retailer}.com/product`,
-          priceContext: 'online',
+          priceContext: 'in-store',
         }),
       ).rejects.toMatchObject({ code: 'not-configured' });
     },

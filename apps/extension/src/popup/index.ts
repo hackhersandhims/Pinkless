@@ -1,23 +1,12 @@
-import {
-  PINKLESS_MARKETPLACE_URL,
-  RETAILER_LABELS,
-  RETAILERS,
-  type Retailer,
-} from '../shared/config.js';
+import { PINKLESS_MARKETPLACE_URL } from '../shared/config.js';
 import {
   loadSettings,
   savePostalCode,
-  saveRetailerLocation,
-  type ExtensionSettings,
+  saveSelectedStore,
+  type SelectedStore,
 } from '../shared/settings.js';
-import type { RetailerLocation } from '../shared/types.js';
+import type { StoreLocation } from '../shared/types.js';
 import { lookupStores } from './stores.js';
-
-type ProviderCard = {
-  element: HTMLElement;
-  status: HTMLSpanElement;
-  select: HTMLSelectElement;
-};
 
 function requiredElement<ElementType extends Element>(selector: string): ElementType {
   const element = document.querySelector<ElementType>(selector);
@@ -25,132 +14,63 @@ function requiredElement<ElementType extends Element>(selector: string): Element
   return element;
 }
 
-function createProviderCard(retailer: Retailer): ProviderCard {
-  const card = document.createElement('article');
-  card.className = 'provider-card';
-
-  const heading = document.createElement('div');
-  heading.className = 'provider-card__heading';
-  const name = document.createElement('h3');
-  name.className = 'body';
-  name.textContent = RETAILER_LABELS[retailer];
-  const status = document.createElement('span');
-  status.className = 'provider-card__status caption';
-  status.dataset.state = 'unchecked';
-  status.textContent = 'Not checked';
-  heading.append(name, status);
-
-  const label = document.createElement('label');
-  label.className = 'caption';
-  label.htmlFor = `${retailer}-store`;
-  label.textContent = `Selected ${RETAILER_LABELS[retailer]} store`;
-  const select = document.createElement('select');
-  select.id = `${retailer}-store`;
-  select.className = 'body';
-  select.disabled = true;
-  select.append(new Option('Search by ZIP first', ''));
-  select.addEventListener('change', () => {
-    void saveRetailerLocation(retailer, select.value || undefined).then(() => {
-      status.dataset.state = select.value ? 'saved' : 'available';
-      status.textContent = select.value ? 'Saved' : 'Available';
-    });
-  });
-
-  card.append(heading, label, select);
-  return { element: card, status, select };
+function storeLabel(location: StoreLocation): string {
+  return `${location.name} — ${location.address.line1}, ${location.address.city}, ${location.address.state}`;
 }
 
-function locationLabel(location: RetailerLocation): string {
-  return `${location.name} — ${location.address.city}, ${location.address.state}`;
-}
-
-function renderLocations(
-  card: ProviderCard,
-  retailer: Retailer,
-  locations: RetailerLocation[] | null,
-  selectedLocationId?: string,
-): void {
-  card.select.replaceChildren();
-  if (locations === null) {
-    card.status.dataset.state = 'unavailable';
-    card.status.textContent = 'Unavailable';
-    card.select.disabled = true;
-    card.select.append(new Option('Provider unavailable', ''));
-    return;
+function describeSelection(store: SelectedStore | undefined): string {
+  if (!store) {
+    return 'No store selected. Pinkless stays quiet on Kroger pages until you choose one.';
   }
-  if (locations.length === 0) {
-    card.status.dataset.state = 'empty';
-    card.status.textContent = 'No nearby stores';
-    card.select.disabled = true;
-    card.select.append(new Option('No stores found', ''));
-    return;
-  }
-
-  card.status.dataset.state = 'available';
-  card.status.textContent = 'Available';
-  card.select.disabled = false;
-  card.select.append(new Option(`Choose a ${RETAILER_LABELS[retailer]} store`, ''));
-  for (const location of locations) {
-    card.select.append(new Option(locationLabel(location), location.locationId));
-  }
-  if (selectedLocationId && locations.some(({ locationId }) => locationId === selectedLocationId)) {
-    card.select.value = selectedLocationId;
-  }
-}
-
-async function searchStores(
-  postalCode: string,
-  cards: Record<Retailer, ProviderCard>,
-  settings: ExtensionSettings,
-): Promise<void> {
-  await savePostalCode(postalCode);
-  for (const card of Object.values(cards)) {
-    card.status.dataset.state = 'checking';
-    card.status.textContent = 'Checking…';
-    card.select.disabled = true;
-  }
-  const results = await Promise.all(
-    RETAILERS.map(
-      async (retailer) => [retailer, await lookupStores(retailer, postalCode)] as const,
-    ),
-  );
-  for (const [retailer, locations] of results) {
-    renderLocations(cards[retailer], retailer, locations, settings.locations[retailer]);
-  }
+  return `Comparing prices at ${store.name ?? `Kroger store ${store.locationId}`}.`;
 }
 
 async function initialize(): Promise<void> {
-  const providerList = requiredElement<HTMLDivElement>('#provider-list');
   const postalInput = requiredElement<HTMLInputElement>('#postal-code');
   const form = requiredElement<HTMLFormElement>('#store-search');
   const message = requiredElement<HTMLParagraphElement>('#search-message');
   const submit = requiredElement<HTMLButtonElement>('#store-search button[type="submit"]');
+  const select = requiredElement<HTMLSelectElement>('#kroger-store');
+  const selection = requiredElement<HTMLParagraphElement>('#store-selection');
   const version = requiredElement<HTMLSpanElement>('#extension-version');
   const marketplace = requiredElement<HTMLAnchorElement>('#marketplace-link');
 
   version.textContent = `v${chrome.runtime.getManifest().version}`;
   marketplace.href = PINKLESS_MARKETPLACE_URL;
 
-  const cards = Object.fromEntries(
-    RETAILERS.map((retailer) => {
-      const card = createProviderCard(retailer);
-      providerList.append(card.element);
-      return [retailer, card];
-    }),
-  ) as Record<Retailer, ProviderCard>;
-
   let settings = await loadSettings();
+  let locations: StoreLocation[] = [];
   if (settings.postalCode) postalInput.value = settings.postalCode;
-  for (const retailer of RETAILERS) {
-    const selected = settings.locations[retailer];
-    if (!selected) continue;
-    const card = cards[retailer];
-    card.select.replaceChildren(new Option(`Saved store (${selected})`, selected));
-    card.select.value = selected;
-    card.select.disabled = false;
-    card.status.dataset.state = 'saved';
-    card.status.textContent = 'Saved';
+  selection.textContent = describeSelection(settings.store);
+
+  select.replaceChildren();
+  if (settings.store) {
+    select.append(
+      new Option(
+        settings.store.name ?? `Saved store (${settings.store.locationId})`,
+        settings.store.locationId,
+      ),
+      new Option('Clear store', ''),
+    );
+    select.value = settings.store.locationId;
+    select.disabled = false;
+  } else {
+    select.append(new Option('Search by ZIP first', ''));
+    select.disabled = true;
   }
+
+  select.addEventListener('change', () => {
+    const chosen = locations.find(({ locationId }) => locationId === select.value);
+    const store: SelectedStore | undefined = chosen
+      ? { locationId: chosen.locationId, name: chosen.name }
+      : select.value && settings.store?.locationId === select.value
+        ? settings.store
+        : undefined;
+    void saveSelectedStore(store).then(async () => {
+      settings = await loadSettings();
+      selection.textContent = describeSelection(settings.store);
+    });
+  });
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -160,11 +80,33 @@ async function initialize(): Promise<void> {
       return;
     }
     submit.disabled = true;
-    message.textContent = 'Checking supported providers…';
-    void searchStores(postalCode, cards, settings)
-      .then(async () => {
-        settings = await loadSettings();
-        message.textContent = 'Choose a store for each available retailer.';
+    message.textContent = 'Finding Kroger stores…';
+    void savePostalCode(postalCode)
+      .then(() => lookupStores(postalCode))
+      .then((found) => {
+        select.replaceChildren();
+        if (found === null) {
+          locations = [];
+          select.append(new Option('Store lookup unavailable', ''));
+          select.disabled = true;
+          message.textContent = 'Store lookup is unavailable. Try again when the API is running.';
+          return;
+        }
+        locations = found;
+        if (found.length === 0) {
+          select.append(new Option('No Kroger stores found', ''));
+          select.disabled = true;
+          message.textContent = `No Kroger stores found near ${postalCode}.`;
+          return;
+        }
+        select.append(new Option('Choose a Kroger store', ''));
+        for (const location of found) {
+          select.append(new Option(storeLabel(location), location.locationId));
+        }
+        select.disabled = false;
+        const saved = settings.store?.locationId;
+        if (saved && found.some(({ locationId }) => locationId === saved)) select.value = saved;
+        message.textContent = `Found ${found.length} Kroger ${found.length === 1 ? 'store' : 'stores'}. Choose one.`;
       })
       .catch(() => {
         message.textContent = 'Store lookup is unavailable. Try again when the API is running.';

@@ -1,49 +1,123 @@
-/** Pure transforms from the API's `ProductComparison` shape to the view contract. */
+/** Pure transforms from the API's `ShowOutcome`s to the view contract. */
 
-import { CATEGORY_LABELS, CATEGORY_ORDER, PRICE_CONTEXT_LABELS, RETAILER_LABELS } from './types.js';
-
-const RETAILER_ORDER = Object.keys(RETAILER_LABELS) as Retailer[];
+import { percentLower } from './money.js';
+import {
+  CATEGORY_LABELS,
+  CATEGORY_ORDER,
+  MARKETED_TO_LABELS,
+  PRICE_CONTEXT_LABELS,
+  VERSION_LABELS,
+} from './types.js';
 import type {
   CategoryGroup,
   CategorySlug,
   ComparisonsResponse,
   ComparisonView,
-  OfferView,
-  ProductComparison,
-  Retailer,
+  Offer,
+  ProductSide,
+  ProductSummary,
+  SelectedStore,
+  ShowOutcome,
 } from './types.js';
 
-function toOfferView(offer: ProductComparison['reference']): OfferView {
+function isPositiveCents(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value > 0;
+}
+
+function isDate(value: unknown): value is string {
+  return typeof value === 'string' && Number.isFinite(Date.parse(value));
+}
+
+function isKrogerUrl(value: unknown): value is string {
+  if (typeof value !== 'string') return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && (url.hostname === 'kroger.com' || url.hostname.endsWith('.kroger.com'));
+  } catch {
+    return false;
+  }
+}
+
+function validOffer(offer: Offer, locationId: string, priceContext: string): boolean {
+  return (
+    offer.retailer === 'kroger' &&
+    offer.availability === 'in-stock' &&
+    offer.price?.currency === 'USD' &&
+    isPositiveCents(offer.price.amountCents) &&
+    offer.locationId === locationId &&
+    offer.priceContext === priceContext &&
+    isKrogerUrl(offer.url) &&
+    isDate(offer.observedAt) &&
+    typeof offer.productId === 'string'
+  );
+}
+
+function toSide(product: ProductSummary, offer: Offer): ProductSide {
   return {
-    retailer: offer.retailer,
-    retailerLabel: RETAILER_LABELS[offer.retailer],
+    id: product.id,
+    krogerProductId: offer.productId,
+    name: product.name,
+    ...(product.brand ? { brand: product.brand } : {}),
+    variant: product.variant,
+    size: product.size,
+    marketedTo: product.marketedTo,
+    marketedToLabel: MARKETED_TO_LABELS[product.marketedTo],
     url: offer.url,
     priceCents: offer.price.amountCents,
-    priceContext: offer.priceContext,
-    priceContextLabel: PRICE_CONTEXT_LABELS[offer.priceContext],
     observedAt: offer.observedAt,
   };
 }
 
-/** Flattens one API comparison into the shape every component renders. */
-export function toView(comparison: ProductComparison): ComparisonView {
+/**
+ * Flattens one API comparison into the shape every component renders, or
+ * `undefined` when anything about it is inconsistent (wrong direction,
+ * different stores or contexts, savings that don't add up). The Marketplace
+ * fails closed: it never shows a comparison it cannot account for.
+ */
+export function toView(
+  outcome: ShowOutcome,
+  response: Pick<ComparisonsResponse, 'store'>,
+  storeName?: string,
+): ComparisonView | undefined {
+  const { locationId, priceContext } = response.store;
+  const { product, alternativeProduct, current, alternative } = outcome;
+  if (outcome.status !== 'show' || !product || !alternativeProduct || !current || !alternative) {
+    return undefined;
+  }
+  if (priceContext === 'online') return undefined;
+  if (product.marketedTo !== 'women' || alternativeProduct.marketedTo === 'women') return undefined;
+  if (!CATEGORY_ORDER.includes(product.category) || product.category !== alternativeProduct.category) {
+    return undefined;
+  }
+  if (!validOffer(current, locationId, priceContext) || !validOffer(alternative, locationId, priceContext)) {
+    return undefined;
+  }
+  const savingsCents = current.price.amountCents - alternative.price.amountCents;
+  if (savingsCents <= 0 || outcome.savings?.amountCents !== savingsCents) return undefined;
+
+  const other = toSide(alternativeProduct, alternative) as ComparisonView['other'];
+  const observedAt =
+    Date.parse(current.observedAt) <= Date.parse(alternative.observedAt)
+      ? current.observedAt
+      : alternative.observedAt;
+  const percent = percentLower(savingsCents, current.price.amountCents);
+
   return {
-    id: comparison.productId,
-    category: comparison.category,
-    categoryLabel: CATEGORY_LABELS[comparison.category],
-    name: comparison.name,
-    brand: comparison.brand,
-    variant: comparison.variant,
-    size: comparison.size,
-    upc: comparison.upc,
-    alternativeName: comparison.alternativeProduct.name,
-    alternativeVariant: comparison.alternativeProduct.variant,
-    reference: toOfferView(comparison.reference),
-    alternative: toOfferView(comparison.alternative),
-    savingsCents: comparison.savingsCents,
-    rationale: comparison.review.rationale,
-    matchedAttributes: comparison.review.matchedAttributes,
-    knownDifferences: comparison.review.knownDifferences ?? [],
+    id: outcome.equivalenceId,
+    category: product.category,
+    categoryLabel: CATEGORY_LABELS[product.category],
+    womens: toSide(product, current),
+    other,
+    versionLabel: VERSION_LABELS[other.marketedTo],
+    store: { locationId, ...(storeName ? { name: storeName } : {}) },
+    priceContext,
+    priceContextLabel: PRICE_CONTEXT_LABELS[priceContext],
+    observedAt,
+    savingsCents,
+    ...(percent !== undefined ? { percentLower: percent } : {}),
+    rationale: outcome.rationale,
+    matchedAttributes: [...(outcome.matchedAttributes ?? [])],
+    knownDifferences: [...(outcome.knownDifferences ?? [])],
   };
 }
 
@@ -51,19 +125,25 @@ const CATEGORY_RANK: Record<CategorySlug, number> = Object.fromEntries(
   CATEGORY_ORDER.map((slug, index) => [slug, index]),
 ) as Record<CategorySlug, number>;
 
-/**
- * All comparisons from the response, converted to views and stably sorted by
- * `CATEGORY_ORDER` then by product id.
- */
-export function getActiveComparisons(response: ComparisonsResponse): ComparisonView[] {
-  return response.comparisons.map(toView).sort((a, b) => {
-    const rankDiff = CATEGORY_RANK[a.category] - CATEGORY_RANK[b.category];
-    if (rankDiff !== 0) return rankDiff;
-    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
-  });
+function compareIds(a: ComparisonView, b: ComparisonView): number {
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 }
 
-/** Groups already-sorted comparison views by category, in `CATEGORY_ORDER`, omitting empty categories. */
+/**
+ * Every valid comparison in the response as a view, sorted by
+ * `CATEGORY_ORDER`, then id. Inconsistent entries are dropped.
+ */
+export function getActiveComparisons(
+  response: ComparisonsResponse,
+  storeName?: string,
+): ComparisonView[] {
+  return response.comparisons
+    .map((outcome) => toView(outcome, response, storeName))
+    .filter((view): view is ComparisonView => view !== undefined)
+    .sort((a, b) => CATEGORY_RANK[a.category] - CATEGORY_RANK[b.category] || compareIds(a, b));
+}
+
+/** Groups comparison views by category, in `CATEGORY_ORDER`, omitting empty categories. */
 export function groupByCategory(items: ComparisonView[]): CategoryGroup[] {
   const groups: CategoryGroup[] = [];
   for (const slug of CATEGORY_ORDER) {
@@ -74,7 +154,7 @@ export function groupByCategory(items: ComparisonView[]): CategoryGroup[] {
   return groups;
 }
 
-/** Finds one comparison view by product id. */
+/** Finds one comparison view by equivalence id. */
 export function getComparison(items: ComparisonView[], id: string): ComparisonView | undefined {
   return items.find((item) => item.id === id);
 }
@@ -82,82 +162,71 @@ export function getComparison(items: ComparisonView[], id: string): ComparisonVi
 export type SortKey = 'savings' | 'price' | 'name';
 
 export const SORT_LABELS: Record<SortKey, string> = {
-  savings: 'Biggest savings',
+  savings: 'Biggest difference',
   price: 'Lowest price',
   name: 'Name A to Z',
 };
 
-function compareIds(a: ComparisonView, b: ComparisonView): number {
-  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
-}
-
-/** A sorted copy. Ties fall back to product id so the order is stable. */
+/** A sorted copy. Ties fall back to id so the order is stable. */
 export function sortComparisons(items: ComparisonView[], key: SortKey): ComparisonView[] {
-  const sorted = [...items];
-  sorted.sort((a, b) => {
+  return [...items].sort((a, b) => {
     const primary =
       key === 'savings'
         ? b.savingsCents - a.savingsCents
         : key === 'price'
-          ? a.alternative.priceCents - b.alternative.priceCents
-          : a.name.localeCompare(b.name);
+          ? a.other.priceCents - b.other.priceCents
+          : a.womens.name.localeCompare(b.womens.name);
     return primary !== 0 ? primary : compareIds(a, b);
   });
-  return sorted;
 }
 
 /**
  * Text filter over the comparisons already listed. Every whitespace-separated
- * term must appear in the product's name, brand, variant, category, or either
- * retailer. This narrows the feed for browsing only; it never decides whether
+ * term must appear in either product's name, brand, or variant, or the
+ * category. This narrows the feed for browsing only; it never decides whether
  * a comparison exists, so matching stays with packages/matcher.
  */
 export function searchComparisons(items: ComparisonView[], query: string): ComparisonView[] {
   const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
   if (terms.length === 0) return items;
   return items.filter((item) => {
-    const haystack = [
-      item.name,
-      item.brand ?? '',
-      item.variant,
-      item.categoryLabel,
-      item.reference.retailerLabel,
-      item.alternative.retailerLabel,
-    ]
+    const haystack = [item.womens, item.other]
+      .flatMap((side) => [side.name, side.brand ?? '', side.variant])
+      .concat(item.categoryLabel)
       .join(' ')
       .toLowerCase();
     return terms.every((term) => haystack.includes(term));
   });
 }
 
-/** Retailers that are the cheaper side of at least one comparison, in fixed order. */
-export function alternativeRetailers(items: ComparisonView[]): Retailer[] {
-  const present = new Set(items.map((item) => item.alternative.retailer));
-  return RETAILER_ORDER.filter((retailer) => present.has(retailer));
-}
-
 export type FeedSummary = {
   count: number;
-  /** Largest single saving, integer cents. Undefined for an empty feed. */
+  /** Largest single difference, integer cents. Undefined for an empty feed. */
   maxSavingsCents: number | undefined;
-  /** Every retailer that appears on either side of a listed comparison. */
-  retailers: Retailer[];
 };
 
-/** Headline numbers for the home hero, derived only from the listed comparisons. */
+/** Headline numbers for the home page, derived only from the listed comparisons. */
 export function summarizeFeed(items: ComparisonView[]): FeedSummary {
-  const present = new Set<Retailer>();
   let maxSavingsCents: number | undefined;
   for (const item of items) {
-    present.add(item.reference.retailer);
-    present.add(item.alternative.retailer);
     if (maxSavingsCents === undefined || item.savingsCents > maxSavingsCents) {
       maxSavingsCents = item.savingsCents;
     }
   }
-  return {
-    count: items.length,
-    maxSavingsCents,
-    retailers: RETAILER_ORDER.filter((retailer) => present.has(retailer)),
-  };
+  return { count: items.length, maxSavingsCents };
+}
+
+/** "Kroger On the Rhine", or "Kroger store 01400513" when only the ID is known. */
+export function storeLabel(store: SelectedStore): string {
+  return store.name ?? `Kroger store ${store.locationId}`;
+}
+
+/**
+ * Kroger's product photo for a 13-digit Kroger product ID, or undefined for
+ * anything else. Rendered with a local illustration as the fallback.
+ */
+export function krogerImageUrl(krogerProductId: string): string | undefined {
+  return /^\d{13}$/.test(krogerProductId)
+    ? `https://www.kroger.com/product/images/medium/front/${krogerProductId}`
+    : undefined;
 }

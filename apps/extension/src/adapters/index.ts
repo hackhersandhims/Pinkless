@@ -1,36 +1,35 @@
+import type { SelectedStore } from '../shared/settings.js';
 import type { ProductView } from '../shared/types.js';
-import { amazonAdapter } from './amazon.js';
-import { cvsAdapter } from './cvs.js';
-import { cvsDemoAdapter, krogerDemoAdapter, walmartDemoAdapter } from './demo.js';
+import { krogerDemoAdapter } from './demo.js';
 import { krogerAdapter } from './kroger.js';
-import type { RetailerAdapter } from './types.js';
-import { walmartAdapter } from './walmart.js';
+import type { PageLocation, RetailerAdapter } from './types.js';
 
-export const retailerAdapters: readonly RetailerAdapter[] = [
-  amazonAdapter,
-  cvsAdapter,
-  krogerAdapter,
-  walmartAdapter,
-  cvsDemoAdapter,
-  krogerDemoAdapter,
-  walmartDemoAdapter,
-];
+export type { PageLocation, RetailerAdapter } from './types.js';
 
-/** Explicit retailer and controlled-demo adapters enabled in the content script. */
-export const ADAPTERS: readonly RetailerAdapter[] = retailerAdapters;
+/** Kroger product pages, plus the path-locked local fallback page. */
+export const ADAPTERS: readonly RetailerAdapter[] = [krogerAdapter, krogerDemoAdapter];
 
-export function adapterForUrl(url: URL): RetailerAdapter | undefined {
-  return retailerAdapters.find((adapter) => adapter.canHandle(url));
+export function adapterForUrl(
+  url: URL,
+  adapters: readonly RetailerAdapter[] = ADAPTERS,
+): RetailerAdapter | undefined {
+  return adapters.find((candidate) => candidate.canHandle(url));
 }
 
 export function extractProductView(
   adapters: readonly RetailerAdapter[],
   doc: Document,
-  loc: Location,
+  loc: PageLocation,
+  store?: SelectedStore,
 ): ProductView | null {
-  const url = new URL(loc.href);
-  const adapter = adapters.find((candidate) => candidate.canHandle(url));
-  return adapter ? adapter.extract(doc, loc) : null;
+  let url: URL;
+  try {
+    url = new URL(loc.href);
+  } catch {
+    return null;
+  }
+  const adapter = adapterForUrl(url, adapters);
+  return adapter ? adapter.extract(doc, loc, store) : null;
 }
 export { amazonAdapter } from './amazon.js';
 export { cvsAdapter } from './cvs.js';

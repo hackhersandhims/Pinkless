@@ -35,7 +35,7 @@ const shownHeadlines = (surface: ReturnType<typeof fakeSurface>): string[] =>
 
 const cheaperBy = (cents: number): ComparisonOutcome =>
   makeShowOutcome((o) => {
-    o.alternative.price.amountCents = 1499 - cents;
+    o.alternative.price.amountCents = o.current.price.amountCents - cents;
     o.savings.amountCents = cents;
   });
 
@@ -94,7 +94,7 @@ describe('what reaches the screen', () => {
     await settle(0);
 
     expect(compare).toHaveBeenCalledTimes(1);
-    expect(shownHeadlines(surface)).toEqual(["Men's alternative: save $2.40"]);
+    expect(shownHeadlines(surface)).toEqual(['Comparable alternative: save $0.80']);
   });
 
   it.each<[string, ComparisonOutcome]>([
@@ -459,5 +459,58 @@ describe('with the real surface', () => {
     const hosts = document.querySelectorAll(`#${BADGE_ROOT_ID}`);
     expect(hosts).toHaveLength(1);
     expect(hosts[0]?.shadowRoot?.querySelectorAll('.pinkless')).toHaveLength(1);
+  });
+
+  function realController(compare: ControllerDeps['compare']) {
+    controller = createController({
+      getProductView: () => currentView,
+      compare,
+      surface: createBadgeSurface(),
+      debounceMs: DEBOUNCE,
+      maxWaitMs: MAX_WAIT,
+      pageKey: () => currentPage,
+    });
+    controller.start();
+  }
+
+  it.each<[string, ComparisonOutcome]>([
+    ['suppressed (page-price mismatch)', { status: 'suppressed', reason: 'page-price-mismatch' }],
+    ['suppressed (production shape)', { status: 'suppressed' } as ComparisonOutcome],
+    ['no-match (no equivalent)', { status: 'no-match', reason: 'no-equivalent' }],
+  ])(
+    'removes an existing badge from the page when the next answer is %s',
+    async (_label, outcome) => {
+      const compare = vi
+        .fn<ControllerDeps['compare']>()
+        .mockResolvedValueOnce(makeShowOutcome())
+        .mockResolvedValueOnce(outcome);
+      realController(compare);
+      await settle(0);
+      expect(document.getElementById(BADGE_ROOT_ID)).not.toBeNull();
+
+      currentView = makeProductView({ currentPriceCents: 549 }); // SPA price change
+      await pageMutates();
+      await settle();
+
+      expect(compare).toHaveBeenCalledTimes(2);
+      expect(document.getElementById(BADGE_ROOT_ID)).toBeNull();
+    },
+  );
+
+  it('removes the badge when no store is selected any more, and shows it again after refresh()', async () => {
+    const compare = vi.fn(async () => makeShowOutcome());
+    realController(compare);
+    await settle(0);
+    expect(document.getElementById(BADGE_ROOT_ID)).not.toBeNull();
+
+    currentView = null; // the adapter returns null without a selected store
+    controller!.refresh();
+    await settle();
+    expect(document.getElementById(BADGE_ROOT_ID)).toBeNull();
+
+    currentView = makeProductView();
+    controller!.refresh();
+    await settle();
+    expect(document.querySelectorAll(`#${BADGE_ROOT_ID}`)).toHaveLength(1);
   });
 });

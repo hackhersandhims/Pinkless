@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Pinkless",
   "version": "0.1.0",
-  "description": "Find reviewed, comparable alternatives that cost less.",
+  "description": "On a women's product at Kroger, see a reviewed men's or neutral equivalent that costs less at the same store.",
   "action": {
     "default_title": "Pinkless"
   },
@@ -14,30 +14,10 @@
     "type": "module"
   },
   "permissions": ["storage", "sidePanel"],
-  "web_accessible_resources": [
-    {
-      "resources": ["assets/logo.png"],
-      "matches": [
-        "https://www.amazon.com/*",
-        "https://www.cvs.com/*",
-        "https://www.kroger.com/*",
-        "https://www.walmart.com/*",
-        "http://localhost:4174/*"
-      ]
-    }
-  ],
   "host_permissions": ["http://localhost:3000/*"],
   "content_scripts": [
     {
-      "matches": [
-        "https://www.amazon.com/*",
-        "https://www.cvs.com/*",
-        "https://www.kroger.com/*",
-        "https://www.walmart.com/*",
-        "http://localhost:4174/product/cvs*",
-        "http://localhost:4174/product/kroger*",
-        "http://localhost:4174/product/walmart*"
-      ],
+      "matches": ["https://www.kroger.com/*", "http://localhost:4174/product/kroger*"],
       "js": ["content/index.js"],
       "run_at": "document_idle"
     }

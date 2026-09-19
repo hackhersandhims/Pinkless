@@ -1,8 +1,12 @@
 # Controlled fallback demo
 
-This is Pinkless's team-owned Phase 5 product page. It is deliberately not a
-retailer lookalike: it exposes clear, deterministic mock data for the same
-normalized product fields used by a retailer adapter.
+The team-owned fallback page for judging when kroger.com's DOM changes or is
+unreachable. It is a clearly labelled stand-in for one Kroger product page —
+BIC Soleil Smooth Scented Disposable 3-Blade Razors (Kroger productId
+`0007033071417`, $6.79) — and publishes the same signals the extension reads on
+kroger.com: a canonical `https://www.kroger.com/p/...` link and one schema.org
+`Product`/`Offer`. The extension runs the same extraction code on it as on the
+live site (contract test: `apps/extension/src/adapters/demo.test.ts`).
 
 ## Run it locally
 
@@ -10,26 +14,27 @@ normalized product fields used by a retailer adapter.
 pnpm --filter @pinkless/demo dev
 ```
 
-Open one of the only supported routes:
+Open the only supported route: `http://localhost:4174/product/kroger`.
 
-- `http://localhost:4174/product/cvs`
-- `http://localhost:4174/product/kroger`
-- `http://localhost:4174/product/walmart`
+The **Demo scenario** control switches the page in place, the way a retailer
+single-page app would:
 
-The **Price variant** control changes the current price in the controlled
-product metadata. The extension's normal debounced observer must either update
-the badge or remove it; the demo page does not create a badge itself.
+- **Regular price** ($6.79): the badge can show the reviewed men's equivalent.
+- **Different page price** ($5.49): the API reports a page-price mismatch and
+  the badge must disappear.
+- **Out of stock**: the badge must disappear.
+
+The page never creates a badge or fetches a price itself.
 
 ## Rehearsal prerequisites
 
 1. Start the API in `PINKLESS_PROVIDER_MODE=mock` and allow the unpacked
    extension origin in `PINKLESS_ALLOWED_ORIGINS`.
-2. Build and load `apps/extension/dist`, select ZIP `45202`, and choose each
-   mock retailer store in the popup.
-3. Use a fresh Chrome incognito profile with the extension explicitly enabled
-   for incognito, then open a supported route above.
+2. Build and load `apps/extension/dist`, search ZIP `45202`, and choose
+   "Kroger Downtown (fixture)" in the popup.
+3. Open `http://localhost:4174/product/kroger`.
 
-The extension allows only these fixed local routes in addition to CVS, Kroger,
-and Walmart. Do not broaden the localhost pattern. A public deployment needs a
-separate manifest review and an exact host/path allowlist before it can replace
-this controlled local fallback.
+The extension allows only this fixed local route in addition to
+`www.kroger.com`. Do not broaden the localhost pattern. A public deployment
+needs a separate manifest review and an exact host/path allowlist before it can
+replace this controlled local fallback.

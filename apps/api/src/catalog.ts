@@ -1,4 +1,8 @@
+import equivalencesJson from '../../../packages/catalog/equivalences.json';
 import productsJson from '../../../packages/catalog/products.json';
-import type { Product } from '../../../packages/catalog/src/schema.js';
+import type { Catalog, Product, ProductEquivalence } from '../../../packages/catalog/src/schema.js';
 
-export const products = productsJson as Product[];
+export const catalog: Catalog = {
+  products: productsJson as Product[],
+  equivalences: equivalencesJson as ProductEquivalence[],
+};

@@ -1,11 +1,14 @@
 import { ADAPTERS, extractProductView } from '../adapters/index.js';
-import { requestComparison } from './comparison.js';
+import { loadSettings, STORE_KEY, type SelectedStore } from '../shared/settings.js';
+import { requestComparison } from './api.js';
 import { createController } from './controller.js';
+import { diagnostic } from './diagnostics.js';
 import { createBadgeSurface } from './surface.js';
 
 // Content-script entry (bundled to dist/content/index.js by scripts/build.mjs).
 //
-//   page adapter -> requestComparison (API) -> toBadgeModel -> badge in one Shadow DOM root
+//   Kroger page adapter + selected store -> POST /api/compare (via background) -> toBadgeModel
+//   -> one badge in one Shadow DOM root
 //
 // Safe to run more than once in a page: the surface hands the single badge root to the newest
 // instance and older ones stop themselves. Matching and eligibility stay in packages/matcher and
@@ -16,9 +19,30 @@ import { createBadgeSurface } from './surface.js';
 const extensionContextAlive = (): boolean =>
   Boolean((globalThis as { chrome?: { runtime?: { id?: string } } }).chrome?.runtime?.id);
 
-createController({
-  getProductView: () => extractProductView(ADAPTERS, document, location),
-  compare: requestComparison,
+let store: SelectedStore | undefined;
+
+const controller = createController({
+  // No selected store -> null -> no badge (and any existing badge is removed).
+  getProductView: () => extractProductView(ADAPTERS, document, location, store),
+  compare: (view) => requestComparison(view),
   surface: createBadgeSurface(),
   isContextAlive: extensionContextAlive,
-}).start();
+});
+
+// A store chosen or cleared in the popup changes the comparison; re-evaluate (debounced).
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName !== 'local' || !(STORE_KEY in changes)) return;
+  void loadSettings()
+    .then((settings) => {
+      store = settings.store;
+      controller.refresh();
+    })
+    .catch((error: unknown) => diagnostic('could not reload the selected store', error));
+});
+
+loadSettings()
+  .then((settings) => {
+    store = settings.store;
+  })
+  .catch((error: unknown) => diagnostic('could not load the selected store', error))
+  .finally(() => controller.start());

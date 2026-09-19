@@ -5,11 +5,22 @@
 
 .bar {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  grid-template-areas: 'brand search utility';
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-areas: 'brand search store utility';
   align-items: center;
   gap: var(--space-6);
   padding-block: var(--space-3);
+}
+
+/* Tablets: the store control drops to its own row under the search field. */
+@media (max-width: 79.99rem) {
+  .bar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'brand search utility'
+      'brand store store';
+    gap: var(--space-2) var(--space-6);
+  }
 }
 
 @media (max-width: 47.99rem) {
@@ -17,9 +28,19 @@
     grid-template-columns: 1fr auto;
     grid-template-areas:
       'brand utility'
-      'search search';
+      'search search'
+      'store store';
     gap: var(--space-3) var(--space-4);
   }
+}
+
+.store {
+  grid-area: store;
+  min-width: 0;
+}
+
+.store:empty {
+  display: none;
 }
 
 .skipLink {

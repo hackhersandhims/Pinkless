@@ -38,18 +38,3 @@ export class UnavailableRetailerProvider implements RetailerProvider {
     return this.unavailable();
   }
 }
-
-export class CvsProvider extends UnavailableRetailerProvider {
-  constructor() {
-    super('cvs', 'CVS provider requires approved partner or licensed product-and-price data.');
-  }
-}
-
-export class WalmartProvider extends UnavailableRetailerProvider {
-  constructor() {
-    super(
-      'walmart',
-      'Walmart provider requires approved product-and-price data; Marketplace APIs are not used.',
-    );
-  }
-}

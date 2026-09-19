@@ -2,13 +2,19 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { ReactNode } from 'react';
 import { loadComparisons } from '../lib/api.js';
 import { getActiveComparisons } from '../lib/catalog.js';
-import type { ComparisonView } from '../lib/types.js';
+import type { ComparisonView, SelectedStore } from '../lib/types.js';
+import { useSelectedStore } from './useStore.js';
 
 export type ComparisonsState =
-  { status: 'loading' } | { status: 'error' } | { status: 'ready'; items: ComparisonView[] };
+  | { status: 'no-store' }
+  | { status: 'loading' }
+  | { status: 'error' }
+  | { status: 'ready'; items: ComparisonView[] };
 
 type ComparisonsContextValue = {
   state: ComparisonsState;
+  /** The store from the URL, if one is chosen. */
+  store: SelectedStore | undefined;
   /** Discards the current state and loads the feed again. */
   reload: () => void;
 };
@@ -16,38 +22,48 @@ type ComparisonsContextValue = {
 const ComparisonsContext = createContext<ComparisonsContextValue | null>(null);
 
 /**
- * Loads the comparison feed once for the whole app. The header nav, hero
- * stats, and every page read from the same load, so moving between routes
- * neither refetches nor flashes a loading state.
+ * Loads the comparison feed for the store in the URL, once for the whole app.
+ * The header, hero, and every page read from the same load, so moving between
+ * routes neither refetches nor flashes a loading state. Changing the store
+ * loads that store's feed. A failed load is an error state, never fixture data.
  */
 export function ComparisonsProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<ComparisonsState>({ status: 'loading' });
+  const selected = useSelectedStore();
+  const locationId = selected?.locationId;
+  const storeName = selected?.name;
+  const store = useMemo<SelectedStore | undefined>(
+    () => (locationId ? { locationId, ...(storeName ? { name: storeName } : {}) } : undefined),
+    [locationId, storeName],
+  );
+  const [state, setState] = useState<ComparisonsState>(
+    locationId ? { status: 'loading' } : { status: 'no-store' },
+  );
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    let cancelled = false;
-    loadComparisons()
+    if (!locationId) {
+      setState({ status: 'no-store' });
+      return;
+    }
+    const controller = new AbortController();
+    setState({ status: 'loading' });
+    loadComparisons(locationId, controller.signal)
       .then((response) => {
-        if (cancelled) return;
-        setState({ status: 'ready', items: getActiveComparisons(response) });
+        if (controller.signal.aborted) return;
+        setState({ status: 'ready', items: getActiveComparisons(response, storeName) });
       })
       .catch((error: unknown) => {
-        if (cancelled) return;
+        if (controller.signal.aborted) return;
         // Shoppers get a plain-language message; the cause stays in dev tools.
         if (import.meta.env.DEV) console.error('[pinkless] failed to load comparisons', error);
         setState({ status: 'error' });
       });
-    return () => {
-      cancelled = true;
-    };
-  }, [attempt]);
+    return () => controller.abort();
+  }, [locationId, storeName, attempt]);
 
-  const reload = useCallback(() => {
-    setState({ status: 'loading' });
-    setAttempt((count) => count + 1);
-  }, []);
+  const reload = useCallback(() => setAttempt((count) => count + 1), []);
 
-  const value = useMemo(() => ({ state, reload }), [state, reload]);
+  const value = useMemo(() => ({ state, store, reload }), [state, store, reload]);
   return <ComparisonsContext.Provider value={value}>{children}</ComparisonsContext.Provider>;
 }
 

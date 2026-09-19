@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { EquivalencePolicy, Product, ProductAudience, Retailer, Size } from './schema.js';
+import type { MarketedTo, Product, ProductEquivalence, Retailer, Size } from './schema.js';
 
 export type ValidationIssue = { path: string; message: string };
 export type ValidationResult = { valid: boolean; issues: ValidationIssue[] };
@@ -10,8 +10,10 @@ const categories = new Set<Product['category']>(['razors', 'deodorant', 'body-wa
 const statuses = new Set<Product['status']>(['active', 'paused', 'retired']);
 const audiences = new Set<ProductAudience>(['women', 'men', 'unisex']);
 const sizeUnits = new Set<Size['unit']>(['oz', 'ml', 'count']);
-const retailers = new Set<Retailer>(['amazon', 'cvs', 'kroger', 'walmart']);
-const equivalencePolicies = new Set<EquivalencePolicy>(['exact-packaged-product']);
+const audiences = new Set<MarketedTo>(['women', 'men', 'neutral']);
+// Mirrors RETAILERS in schema.ts; this file runs under --experimental-strip-types, so it
+// imports types only.
+const retailers = new Set<Retailer>(['kroger']);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -65,10 +67,7 @@ function isValidGtin(value: string): boolean {
 }
 
 const retailerDomains: Record<Retailer, string> = {
-  amazon: 'amazon.com',
-  cvs: 'cvs.com',
   kroger: 'kroger.com',
-  walmart: 'walmart.com',
 };
 
 function validateUrlPattern(
@@ -182,6 +181,9 @@ function validateProduct(value: unknown, index: number, issues: ValidationIssue[
     issues.push({ path: `${path}.status`, message: 'must be active, paused, or retired.' });
   }
   validateSize(value.size, `${path}.size`, issues);
+  if (!audiences.has(value.marketedTo as MarketedTo)) {
+    issues.push({ path: `${path}.marketedTo`, message: 'must be women, men, or neutral.' });
+  }
 
   const identities = value.identities;
   if (!Array.isArray(identities)) {
@@ -197,7 +199,7 @@ function validateProduct(value: unknown, index: number, issues: ValidationIssue[
       if (!retailers.has(identity.retailer as Retailer)) {
         issues.push({
           path: `${identityPath}.retailer`,
-          message: 'must be amazon, cvs, kroger, or walmart.',
+          message: 'must be kroger.',
         });
       } else if (seenRetailers.has(identity.retailer as string)) {
         issues.push({
@@ -247,44 +249,9 @@ function validateProduct(value: unknown, index: number, issues: ValidationIssue[
     });
   }
 
-  if (
-    value.status === 'active' &&
-    !isNonEmptyString(value.upc) &&
-    (!Array.isArray(identities) || identities.length === 0)
-  ) {
-    issues.push({
-      path,
-      message: 'active products need a UPC/GTIN or at least one canonical retailer identity.',
-    });
-  }
-
-  if (!isRecord(value.equivalence)) {
-    issues.push({ path: `${path}.equivalence`, message: 'must be an object.' });
-  } else {
-    if (!equivalencePolicies.has(value.equivalence.policy as EquivalencePolicy)) {
-      issues.push({
-        path: `${path}.equivalence.policy`,
-        message: 'must use the supported exact-packaged-product policy.',
-      });
-    }
-    if (!isNonEmptyString(value.equivalence.rationale)) {
-      issues.push({
-        path: `${path}.equivalence.rationale`,
-        message: 'must be a non-empty string.',
-      });
-    }
-    validateStringArray(
-      value.equivalence.matchedAttributes,
-      `${path}.equivalence.matchedAttributes`,
-      issues,
-    );
-    if (value.equivalence.knownDifferences !== undefined) {
-      validateStringArray(
-        value.equivalence.knownDifferences,
-        `${path}.equivalence.knownDifferences`,
-        issues,
-      );
-    }
+  // A UPC alone can't be priced: the provider looks products up by Kroger productId.
+  if (value.status === 'active' && (!Array.isArray(identities) || identities.length === 0)) {
+    issues.push({ path, message: 'active products need a canonical Kroger identity.' });
   }
 
   if (!Array.isArray(value.reviewedAlternatives)) {
@@ -468,20 +435,146 @@ export function validateCatalog(value: unknown): ValidationResult {
   return { valid: issues.length === 0, issues };
 }
 
-async function main(inputPath = process.argv[2] === '--' ? process.argv[3] : process.argv[2]) {
-  const catalogPath = inputPath
-    ? resolve(process.cwd(), inputPath)
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+function sameSize(left: Size, right: Size): boolean {
+  return left.unit === right.unit && left.amount === right.amount;
+}
+
+/**
+ * Validate reviewed equivalence pairs against a product list (REQUIREMENTS §4).
+ * A pair links two different, existing products of the same category and
+ * size; per-unit normalization is not allowed, so sizes must match exactly.
+ */
+export function validateEquivalences(value: unknown, products: unknown): ValidationResult {
+  const issues: ValidationIssue[] = [];
+  if (!Array.isArray(value)) {
+    return {
+      valid: false,
+      issues: [{ path: '$', message: 'equivalences must be a JSON array.' }],
+    };
+  }
+  const byId = new Map<string, Product>();
+  if (Array.isArray(products)) {
+    for (const product of products) {
+      if (isRecord(product) && isNonEmptyString(product.id)) {
+        byId.set(product.id, product as Product);
+      }
+    }
+  }
+
+  const seenIds = new Set<string>();
+  const seenPairs = new Set<string>();
+  value.forEach((entry, index) => {
+    const path = `[${index}]`;
+    if (!isRecord(entry)) {
+      issues.push({ path, message: 'must be an object.' });
+      return;
+    }
+    if (!isNonEmptyString(entry.id)) {
+      issues.push({ path: `${path}.id`, message: 'must be a non-empty string.' });
+    } else if (seenIds.has(entry.id)) {
+      issues.push({ path: `${path}.id`, message: `duplicates equivalence ID "${entry.id}".` });
+    } else {
+      seenIds.add(entry.id);
+    }
+    if (!statuses.has(entry.status as ProductEquivalence['status'])) {
+      issues.push({ path: `${path}.status`, message: 'must be active, paused, or retired.' });
+    }
+    if (!isNonEmptyString(entry.rationale)) {
+      issues.push({ path: `${path}.rationale`, message: 'must be a non-empty string.' });
+    }
+    validateStringArray(entry.matchedAttributes, `${path}.matchedAttributes`, issues);
+    validateStringArray(entry.knownDifferences, `${path}.knownDifferences`, issues);
+    if (!isNonEmptyString(entry.reviewedBy)) {
+      issues.push({ path: `${path}.reviewedBy`, message: 'must name the reviewer.' });
+    }
+    if (
+      !isNonEmptyString(entry.reviewedAt) ||
+      !ISO_DATE.test(entry.reviewedAt) ||
+      !Number.isFinite(Date.parse(entry.reviewedAt))
+    ) {
+      issues.push({ path: `${path}.reviewedAt`, message: 'must be an ISO date (YYYY-MM-DD).' });
+    }
+
+    const ids = entry.productIds;
+    if (!Array.isArray(ids) || ids.length !== 2 || !ids.every(isNonEmptyString)) {
+      issues.push({ path: `${path}.productIds`, message: 'must list exactly two product IDs.' });
+      return;
+    }
+    const [leftId, rightId] = ids as [string, string];
+    if (leftId === rightId) {
+      issues.push({ path: `${path}.productIds`, message: 'must pair two different products.' });
+      return;
+    }
+    const pairKey = [leftId, rightId].sort().join('|');
+    if (seenPairs.has(pairKey)) {
+      issues.push({ path: `${path}.productIds`, message: 'duplicates an existing pair.' });
+    }
+    seenPairs.add(pairKey);
+
+    const left = byId.get(leftId);
+    const right = byId.get(rightId);
+    ids.forEach((id, idIndex) => {
+      if (!byId.has(id as string)) {
+        issues.push({
+          path: `${path}.productIds[${idIndex}]`,
+          message: `references unknown product "${String(id)}".`,
+        });
+      }
+    });
+    if (!left || !right) return;
+
+    if (entry.status === 'active' && (left.status !== 'active' || right.status !== 'active')) {
+      issues.push({ path, message: 'an active equivalence needs two active products.' });
+    }
+    const womens = [left, right].filter((product) => product.marketedTo === 'women');
+    if (womens.length !== 1) {
+      issues.push({
+        path,
+        message: "must pair exactly one women's product with a men's or neutral product.",
+      });
+    }
+    if (left.category !== right.category) {
+      issues.push({ path, message: 'must pair products in the same category.' });
+    }
+    if (isRecord(left.size) && isRecord(right.size) && !sameSize(left.size, right.size)) {
+      issues.push({ path, message: 'must pair products with the same size unit and amount.' });
+    }
+  });
+
+  return { valid: issues.length === 0, issues };
+}
+
+async function main(argv = process.argv.slice(2).filter((arg) => arg !== '--')) {
+  const productsPath = argv[0]
+    ? resolve(process.cwd(), argv[0])
     : fileURLToPath(new URL('../products.json', import.meta.url));
-  const catalog = JSON.parse(await readFile(catalogPath, 'utf8')) as unknown;
-  const result = validateCatalog(catalog);
-  if (!result.valid) {
-    console.error(`Catalog validation failed (${result.issues.length} issue(s)):`);
-    result.issues.forEach((issue) => console.error(`- ${issue.path}: ${issue.message}`));
+  const equivalencesPath = argv[1]
+    ? resolve(process.cwd(), argv[1])
+    : fileURLToPath(new URL('../equivalences.json', import.meta.url));
+  const products = JSON.parse(await readFile(productsPath, 'utf8')) as unknown;
+  const equivalences = JSON.parse(await readFile(equivalencesPath, 'utf8')) as unknown;
+  const issues = [
+    ...validateCatalog(products).issues.map((issue) => ({
+      ...issue,
+      path: `products${issue.path}`,
+    })),
+    ...validateEquivalences(equivalences, products).issues.map((issue) => ({
+      ...issue,
+      path: `equivalences${issue.path}`,
+    })),
+  ];
+  if (issues.length > 0) {
+    console.error(`Catalog validation failed (${issues.length} issue(s)):`);
+    issues.forEach((issue) => console.error(`- ${issue.path}: ${issue.message}`));
     process.exitCode = 1;
     return;
   }
   console.log(
-    `Catalog validation passed (${Array.isArray(catalog) ? catalog.length : 0} product records).`,
+    `Catalog validation passed (${Array.isArray(products) ? products.length : 0} products, ${
+      Array.isArray(equivalences) ? equivalences.length : 0
+    } equivalences).`,
   );
 }
 

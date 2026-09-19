@@ -44,3 +44,9 @@ export type { LoadingCardsProps } from './LoadingCards';
 
 export { PageContainer } from './PageContainer';
 export { PageHeading } from './PageHeading';
+
+export { StorePicker } from './StorePicker';
+export type { StorePickerProps } from './StorePicker';
+export { StoreControl } from './StoreControl';
+export { StoreRequired } from './StoreRequired';
+export { ProductMedia } from './ProductMedia';
