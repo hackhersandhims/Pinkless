@@ -12,6 +12,17 @@
     "type": "module"
   },
   "permissions": ["storage"],
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/logo.png"],
+      "matches": [
+        "https://www.cvs.com/*",
+        "https://www.kroger.com/*",
+        "https://www.walmart.com/*",
+        "http://localhost:4174/*"
+      ]
+    }
+  ],
   "host_permissions": ["http://localhost:3000/*"],
   "content_scripts": [
     {

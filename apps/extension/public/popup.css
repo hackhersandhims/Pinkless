@@ -3,10 +3,26 @@
 }
 
 body {
+  --popup-background: var(--on-dark-muted);
+  --popup-foreground: var(--on-dark);
+  --popup-border: var(--on-dark);
+  --popup-action-background: var(--surface-900);
+  --popup-action-foreground: var(--on-dark);
+
   margin: 0;
   inline-size: calc(var(--space-6) * 14);
-  background: var(--surface-100);
-  color: var(--ink);
+  background: var(--popup-background);
+  color: var(--popup-foreground);
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    --popup-background: var(--surface-100);
+    --popup-foreground: var(--surface-pink);
+    --popup-border: var(--surface-pink);
+    --popup-action-background: var(--surface-pink);
+    --popup-action-foreground: var(--surface-900);
+  }
 }
 
 .popup {
@@ -22,6 +38,17 @@ body {
 .provider-card {
   display: grid;
   gap: var(--space-2);
+}
+
+.popup__logo {
+  display: block;
+  inline-size: calc(var(--space-6) * 6);
+  max-inline-size: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.popup__header h1 {
+  font-family: var(--font-brand);
 }
 
 .popup p,
@@ -47,7 +74,7 @@ input,
 select,
 button {
   min-inline-size: 0;
-  border: thin solid var(--border);
+  border: thin solid var(--popup-border);
   border-radius: var(--radius-sm);
   padding: var(--space-2);
 }
@@ -55,14 +82,14 @@ button {
 input,
 select {
   inline-size: 100%;
-  background: var(--surface-100);
-  color: var(--ink);
+  background: transparent;
+  color: var(--popup-foreground);
 }
 
 button {
   flex: none;
-  background: var(--surface-900);
-  color: var(--on-dark);
+  background: var(--popup-action-background);
+  color: var(--popup-action-foreground);
   cursor: pointer;
 }
 
@@ -78,7 +105,7 @@ button:disabled {
 }
 
 .provider-card {
-  border: thin solid var(--border);
+  border: thin solid var(--popup-border);
   border-radius: var(--radius-md);
   padding: var(--space-3);
 }
@@ -96,16 +123,16 @@ button:disabled {
 }
 
 .popup__footer {
-  border-block-start: thin solid var(--border);
+  border-block-start: thin solid var(--popup-border);
   padding-block-start: var(--space-3);
 }
 
 a {
-  color: var(--ink);
+  color: var(--popup-foreground);
   font-weight: 600;
 }
 
 :is(a, button, input, select):focus-visible {
-  outline: medium solid var(--surface-900);
+  outline: medium solid var(--popup-foreground);
   outline-offset: var(--space-2);
 }

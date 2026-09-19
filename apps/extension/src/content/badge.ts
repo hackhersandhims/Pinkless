@@ -10,57 +10,100 @@ const BADGE_CSS = `
 }
 
 .pinkless-badge {
+  --panel-background: var(--on-dark-muted);
+  --panel-foreground: var(--on-dark);
+  --panel-border: var(--on-dark);
+  --panel-action-background: var(--surface-900);
+  --panel-action-foreground: var(--on-dark);
+
   position: fixed;
   z-index: 2147483647;
   display: grid;
   gap: var(--space-3);
   max-inline-size: calc(100vw - var(--space-6) - var(--space-6));
   padding: var(--space-4);
-  border: thin solid var(--border);
+  border: thin solid var(--panel-border);
   border-radius: var(--radius-lg);
-  background: var(--surface-100);
-  color: var(--ink);
+  background: var(--panel-background);
+  color: var(--panel-foreground);
   font-family: var(--font-sans);
+  box-shadow: 0 var(--space-2) var(--space-6) var(--border);
 }
 
-.pinkless-badge[data-position="bottom-right"] {
+.pinkless-badge[data-position="right"] {
   inset-inline-end: var(--space-4);
-  inset-block-end: var(--space-4);
+  inset-block-start: 50%;
+  transform: translateY(-50%);
 }
 
-.pinkless-badge[data-position="bottom-left"] {
-  inset-inline-start: var(--space-4);
-  inset-block-end: var(--space-4);
+@media (prefers-color-scheme: dark) {
+  .pinkless-badge {
+    --panel-background: var(--surface-100);
+    --panel-foreground: var(--surface-pink);
+    --panel-border: var(--surface-pink);
+    --panel-action-background: var(--surface-pink);
+    --panel-action-foreground: var(--surface-900);
+  }
 }
 
-.pinkless-badge[data-position="top-right"] {
-  inset-inline-end: var(--space-4);
-  inset-block-start: var(--space-4);
+.pinkless-badge[data-collapsed="true"] {
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
 }
 
-.pinkless-badge[data-position="top-left"] {
-  inset-inline-start: var(--space-4);
-  inset-block-start: var(--space-4);
+.pinkless-badge[data-collapsed="true"] > :not(.pinkless-badge__expand) {
+  display: none;
+}
+
+.pinkless-badge:not([data-collapsed="true"]) > .pinkless-badge__expand {
+  display: none;
 }
 
 .pinkless-badge p {
   margin: 0;
 }
 
-.pinkless-badge__headline {
-  font-weight: 700;
-}
-
+.pinkless-badge__header,
 .pinkless-badge__actions {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
 }
 
+.pinkless-badge__header {
+  justify-content: space-between;
+}
+
+.pinkless-badge__headline {
+  font-family: var(--font-brand);
+}
+
+.pinkless-badge__logo {
+  display: block;
+  inline-size: calc(var(--space-6) * 6);
+  max-inline-size: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.pinkless-badge__collapse,
+.pinkless-badge__expand {
+  border: thin solid var(--panel-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  background: transparent;
+  color: var(--panel-foreground);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pinkless-badge__expand {
+  justify-self: center;
+}
+
 .pinkless-badge__primary,
 .pinkless-badge__dismiss {
-  border: thin solid var(--surface-900);
+  border: thin solid var(--panel-border);
   border-radius: var(--radius-sm);
   padding: var(--space-2) var(--space-3);
   font: inherit;
@@ -69,14 +112,14 @@ const BADGE_CSS = `
 }
 
 .pinkless-badge__primary {
-  background: var(--surface-900);
-  color: var(--on-dark);
+  background: var(--panel-action-background);
+  color: var(--panel-action-foreground);
   text-decoration: none;
 }
 
 .pinkless-badge__dismiss {
   background: transparent;
-  color: var(--ink);
+  color: var(--panel-foreground);
 }
 
 .pinkless-badge summary {
@@ -89,7 +132,7 @@ const BADGE_CSS = `
 }
 
 .pinkless-badge :is(a, button, summary):focus-visible {
-  outline: medium solid var(--surface-900);
+  outline: medium solid var(--panel-foreground);
   outline-offset: var(--space-2);
 }
 `;
@@ -166,14 +209,23 @@ function placeWithoutCollision(document: Document, badge: HTMLElement): boolean 
   const blockers = protectedElements(document)
     .map((element) => element.getBoundingClientRect())
     .filter((rect) => rect.width > 0 && rect.height > 0);
-  const positions = ['bottom-right', 'bottom-left', 'top-right', 'top-left'] as const;
-  for (const position of positions) {
-    badge.dataset.position = position;
-    const badgeRect = badge.getBoundingClientRect();
-    if (badgeRect.width === 0 || badgeRect.height === 0) return true;
-    if (!blockers.some((blocker) => overlaps(badgeRect, blocker))) return true;
-  }
-  return false;
+  badge.dataset.position = 'right';
+  const badgeRect = badge.getBoundingClientRect();
+  return (
+    badgeRect.width === 0 ||
+    badgeRect.height === 0 ||
+    !blockers.some((blocker) => overlaps(badgeRect, blocker))
+  );
+}
+
+function setCollapsed(badge: HTMLElement, collapsed: boolean): void {
+  badge.dataset.collapsed = String(collapsed);
+}
+
+function logoUrl(): string {
+  return typeof chrome === 'undefined'
+    ? 'assets/logo.png'
+    : chrome.runtime.getURL('assets/logo.png');
 }
 
 export function renderBadge(
@@ -187,8 +239,32 @@ export function renderBadge(
   const badge = document.createElement('aside');
   badge.className = 'pinkless-badge';
   badge.dataset.pinklessUi = '';
-  badge.dataset.theme = 'light';
+  setCollapsed(badge, false);
   badge.setAttribute('aria-label', 'Pinkless price comparison');
+
+  const header = document.createElement('div');
+  header.className = 'pinkless-badge__header';
+
+  const logo = document.createElement('img');
+  logo.className = 'pinkless-badge__logo';
+  logo.src = logoUrl();
+  logo.alt = 'Pinkless';
+
+  const collapse = document.createElement('button');
+  collapse.className = 'pinkless-badge__collapse label';
+  collapse.type = 'button';
+  collapse.textContent = 'Hide';
+  collapse.setAttribute('aria-label', 'Collapse Pinkless price comparison');
+  collapse.addEventListener('click', () => setCollapsed(badge, true));
+
+  header.append(logo, collapse);
+
+  const expand = document.createElement('button');
+  expand.className = 'pinkless-badge__expand label';
+  expand.type = 'button';
+  expand.textContent = '✦';
+  expand.setAttribute('aria-label', 'Expand Pinkless price comparison');
+  expand.addEventListener('click', () => setCollapsed(badge, false));
 
   const headline = document.createElement('p');
   headline.className = 'pinkless-badge__headline heading';
@@ -228,7 +304,7 @@ export function renderBadge(
   dismiss.addEventListener('click', onDismiss);
 
   actions.append(primary, dismiss);
-  badge.append(headline, supporting, details, actions);
+  badge.append(header, expand, headline, supporting, details, actions);
   shadowRoot.appendChild(badge);
 
   if (placeWithoutCollision(document, badge)) return true;

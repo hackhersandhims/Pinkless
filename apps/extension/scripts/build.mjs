@@ -6,7 +6,13 @@ const dist = new URL('dist/', extensionRoot);
 
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
+await mkdir(new URL('assets/', dist), { recursive: true });
 await cp(new URL('public/', extensionRoot), dist, { recursive: true });
+await cp(
+  new URL('../../../logo.png', import.meta.url),
+  new URL('assets/logo.png', dist),
+  { recursive: true },
+);
 await cp(
   new URL('../../../packages/tokens/tokens.css', import.meta.url),
   new URL('tokens.css', dist),
