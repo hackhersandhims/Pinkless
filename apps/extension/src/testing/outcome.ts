@@ -21,6 +21,7 @@ export function makeShowOutcome(mutate?: (outcome: ShowOutcome) => void): ShowOu
   };
   const outcome: ShowOutcome = {
     status: 'show',
+    basis: 'same-size',
     equivalenceId: 'bic-soleil-smooth-vs-comfort-3-advance',
     product: {
       id: 'bic-soleil-smooth-scented-3blade-4pk',

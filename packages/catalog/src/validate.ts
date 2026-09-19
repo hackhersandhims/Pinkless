@@ -6,7 +6,18 @@ import type { MarketedTo, Product, ProductEquivalence, Retailer, Size } from './
 export type ValidationIssue = { path: string; message: string };
 export type ValidationResult = { valid: boolean; issues: ValidationIssue[] };
 
-const categories = new Set<Product['category']>(['razors', 'deodorant', 'body-wash']);
+// Mirrors CATEGORIES in schema.ts; this file runs under plain node, so it only imports types.
+const CATEGORIES: readonly Product['category'][] = [
+  'razors',
+  'deodorant',
+  'body-wash',
+  'shave-care',
+  'lotion',
+  'face-care',
+  'hair-care',
+  'soap',
+];
+const categories = new Set<Product['category']>(CATEGORIES);
 const statuses = new Set<Product['status']>(['active', 'paused', 'retired']);
 const sizeUnits = new Set<Size['unit']>(['oz', 'ml', 'count']);
 const audiences = new Set<MarketedTo>(['women', 'men', 'neutral']);
@@ -171,7 +182,7 @@ function validateProduct(value: unknown, index: number, issues: ValidationIssue[
     issues.push({ path: `${path}.variant`, message: 'must be a non-empty string.' });
   }
   if (!categories.has(value.category as Product['category'])) {
-    issues.push({ path: `${path}.category`, message: 'must be razors, deodorant, or body-wash.' });
+    issues.push({ path: `${path}.category`, message: `must be one of: ${CATEGORIES.join(', ')}.` });
   }
   if (!statuses.has(value.status as Product['status'])) {
     issues.push({ path: `${path}.status`, message: 'must be active, paused, or retired.' });
@@ -314,14 +325,11 @@ export function validateCatalog(value: unknown): ValidationResult {
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
-function sameSize(left: Size, right: Size): boolean {
-  return left.unit === right.unit && left.amount === right.amount;
-}
-
 /**
  * Validate reviewed equivalence pairs against a product list (REQUIREMENTS §4).
  * A pair links two different, existing products of the same category and
- * size; per-unit normalization is not allowed, so sizes must match exactly.
+ * size unit. Amounts may differ: savings are then compared per unit (see
+ * packages/matcher/src/unit-price.ts).
  */
 export function validateEquivalences(value: unknown, products: unknown): ValidationResult {
   const issues: ValidationIssue[] = [];
@@ -415,8 +423,8 @@ export function validateEquivalences(value: unknown, products: unknown): Validat
     if (left.category !== right.category) {
       issues.push({ path, message: 'must pair products in the same category.' });
     }
-    if (isRecord(left.size) && isRecord(right.size) && !sameSize(left.size, right.size)) {
-      issues.push({ path, message: 'must pair products with the same size unit and amount.' });
+    if (isRecord(left.size) && isRecord(right.size) && left.size.unit !== right.size.unit) {
+      issues.push({ path, message: 'must pair products with the same size unit.' });
     }
   });
 

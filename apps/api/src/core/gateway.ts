@@ -117,7 +117,7 @@ export class ProviderGateway {
     this.timeoutMs = options.timeoutMs ?? 4_000;
     this.emptyCacheTtlMs = options.emptyCacheTtlMs ?? 30_000;
     this.rateLimiter = new SlidingWindowRateLimiter(
-      options.maxRequestsPerWindow ?? 60,
+      options.maxRequestsPerWindow ?? 600,
       options.rateWindowMs ?? 60_000,
     );
   }

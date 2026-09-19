@@ -53,19 +53,20 @@ const UNIT_LABELS: Record<Size['unit'], string> = {
   count: 'ct',
 };
 
+/** "2.6 oz" / "4 ct". */
+export function formatSize(size: Size): string {
+  return `${size.amount} ${UNIT_LABELS[size.unit]}`;
+}
+
 /**
- * "$2.25 / ct" style per-unit price display.
- *
- * REQUIREMENTS "Later expansion" defers price-per-unit comparisons to a
- * reviewed, category-specific normalization rule set. This helper is
- * exported for that future work only — DO NOT call it from any default
- * display path (comparison cards, detail views, etc.) today.
+ * "$2.25 / ct" style per-unit price, for display only. Rounds to the nearest
+ * cent; savings never come from this, they come from the matcher's integer math.
  */
 export function formatPerUnit(amountCents: number, size: Size): string {
   assertIntegerCents(amountCents, 'formatPerUnit');
-  if (!(size.amount > 0)) {
+  const hundredths = Math.round(size.amount * 100);
+  if (!(hundredths > 0)) {
     throw new Error(`formatPerUnit requires a positive size amount; received ${size.amount}.`);
   }
-  const perUnitDollars = amountCents / 100 / size.amount;
-  return `$${perUnitDollars.toFixed(2)} / ${UNIT_LABELS[size.unit]}`;
+  return `${formatCents(Math.round((amountCents * 100) / hundredths))} / ${UNIT_LABELS[size.unit]}`;
 }

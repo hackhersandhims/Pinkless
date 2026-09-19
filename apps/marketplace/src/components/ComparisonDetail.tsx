@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { ComparisonView, ProductSide } from '../lib/types';
-import { formatCents } from '../lib/money';
+import { formatCents, formatPerUnit, formatSize } from '../lib/money';
 import { formatObservedAt } from '../lib/dates';
 import { storeLabel } from '../lib/catalog';
 import { comparisonHeadline, freshnessLine } from '../lib/copy';
@@ -38,6 +38,10 @@ function ProductPanel({
         {side.variant}
       </span>
       <p className={`display ${styles.offerPrice}`}>{formatCents(side.priceCents)}</p>
+      <span className="caption">
+        {formatSize(side.size)}
+        {item.perUnit ? ` · ${formatPerUnit(side.priceCents, side.size)}` : ''}
+      </span>
       <span className="caption">
         {item.priceContextLabel} price at {storeLabel(item.store)}
       </span>
@@ -99,8 +103,10 @@ export function ComparisonDetail({ item }: ComparisonDetailProps) {
             <h1 className={styles.title}>{comparisonHeadline(item)}</h1>
           </div>
           <p className={`body ${styles.savingsNote}`}>
-            {item.other.name} costs {formatCents(item.other.priceCents)}. {item.womens.name} costs{' '}
-            {formatCents(item.womens.priceCents)}.
+            {item.other.name} costs {formatCents(item.other.priceCents)} for{' '}
+            {formatSize(item.other.size)}. {item.womens.name} costs{' '}
+            {formatCents(item.womens.priceCents)} for {formatSize(item.womens.size)}.
+            {item.perUnit ? ' Compared for the same amount.' : ''}
           </p>
           <div className={styles.savings}>
             <SavingsBadge cents={item.savingsCents} />

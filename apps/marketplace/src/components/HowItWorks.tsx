@@ -10,7 +10,7 @@ const STEPS = [
   },
   {
     title: 'Compare reviewed pairs',
-    body: 'A person pairs each product marketed to women with a men’s or neutral product in the same category and pack size, and writes down what still differs.',
+    body: 'A person pairs each product marketed to women with a men’s or neutral product in the same category and form, and writes down what still differs. When sizes differ, prices are compared for the same amount.',
   },
   {
     title: 'See it only when it costs less',

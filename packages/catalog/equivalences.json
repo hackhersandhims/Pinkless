@@ -11,5 +11,1137 @@
     "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
     "reviewedAt": "2026-09-19",
     "status": "active"
+  },
+  {
+    "id": "venus-comfortglide-vs-mach3-handle",
+    "productIds": ["venus-comfortglide-white-tea-handle-2ct", "mach3-handle-2ct"],
+    "rationale": "Both are Gillette 3-blade razor kits with one handle and refill cartridges, 2 count.",
+    "matchedAttributes": ["brand", "blade count", "handle + cartridges", "pack count"],
+    "knownDifferences": [
+      "Venus ComfortGlide cartridges have built-in shave gel bars with a white tea scent; Mach3 cartridges have a lubrication strip.",
+      "Handle shape and color differ."
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "venus-comfortglide-vs-mach3-refills",
+    "productIds": ["venus-comfortglide-freesia-refills-4ct", "mach3-refills-4ct"],
+    "rationale": "Both are Gillette 3-blade refill cartridges in a 4-count pack.",
+    "matchedAttributes": ["brand", "blade count", "refill cartridges", "pack count"],
+    "knownDifferences": [
+      "Venus ComfortGlide cartridges have built-in shave gel bars with a freesia scent.",
+      "The cartridges fit different handles."
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "venus-extra-smooth-vs-fusion5-refills",
+    "productIds": ["venus-extra-smooth-refills-4ct", "fusion5-refills-4ct"],
+    "rationale": "Both are Gillette 5-blade refill cartridges in a 4-count pack.",
+    "matchedAttributes": ["brand", "blade count", "refill cartridges", "pack count"],
+    "knownDifferences": [
+      "Fusion5 cartridges include a precision trimmer blade on the back.",
+      "The cartridges fit different handles."
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "flamingo-vs-harrys-refills-8ct",
+    "productIds": ["flamingo-5blade-refills-8ct", "harrys-5blade-refills-8ct"],
+    "rationale": "Flamingo and Harry's are sister brands; both are 5-blade refill cartridges in an 8-count pack.",
+    "matchedAttributes": ["blade count", "refill cartridges", "pack count"],
+    "knownDifferences": [
+      "Different brand names on the listing.",
+      "The cartridges fit their own brand handles."
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "venus-sensitive-vs-sensor3-sensitive",
+    "productIds": ["venus-sensitive-3blade-disposable-3ct", "sensor3-sensitive-disposable-3ct"],
+    "rationale": "Both are Gillette 3-blade disposable razors for sensitive skin, 3 count.",
+    "matchedAttributes": ["brand", "blade count", "disposable", "sensitive skin", "pack count"],
+    "knownDifferences": [
+      "Venus has a rounded head designed for body shaving.",
+      "Handle shape and color differ."
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "venus-tropical-vs-sensor3-sensitive",
+    "productIds": ["venus-tropical-3blade-disposable-3ct", "sensor3-sensitive-disposable-3ct"],
+    "rationale": "Both are Gillette 3-blade disposable razors, 3 count.",
+    "matchedAttributes": ["brand", "blade count", "disposable", "pack count"],
+    "knownDifferences": [
+      "Venus Tropical is scented; Sensor3 Sensitive is marketed for sensitive skin.",
+      "Venus has a rounded head designed for body shaving."
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "bic-soleil-smooth-vs-comfort-3-advance-unscented",
+    "productIds": ["bic-soleil-smooth-4pk", "bic-comfort-3-advance-4ct"],
+    "rationale": "Both are BIC 3-blade disposable razors sold in a 4-count pack.",
+    "matchedAttributes": ["brand", "blade count", "disposable", "pack count"],
+    "knownDifferences": ["Handle shape and color differ."],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "dove-whole-body-deo-women-vs-men",
+    "productIds": [
+      "dove-whole-body-deo-coconut-vanilla-4oz",
+      "dove-men-care-whole-body-deo-cedar-4oz"
+    ],
+    "rationale": "Both are Dove whole body deodorant sprays in a 4 oz can.",
+    "matchedAttributes": ["brand", "whole body deodorant", "spray", "size"],
+    "knownDifferences": [
+      "Scents differ (coconut vanilla vs cedar).",
+      "The women's listing says alcohol free; the men's says aluminum free."
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodoran-vs-old-spice-high-endurance-for-men-antiper",
+    "productIds": [
+      "secret-for-women-antiperspirant-deodorant-invisible-solid-po-2343",
+      "old-spice-high-endurance-for-men-antiperspirant-deodorant-in-0024"
+    ],
+    "rationale": "Both are Procter & Gamble invisible solid antiperspirant deodorant sticks (Secret and Old Spice High Endurance).",
+    "matchedAttributes": [
+      "antiperspirant deodorant",
+      "invisible solid stick",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand line (Secret vs Old Spice High Endurance)",
+      "Size: 1 pack / 2.6 oz vs 3 oz",
+      "Scent/variant differs per listings: \"Secret for Women Antiperspirant Deodorant Invisible Solid Powder Fresh Scent\" vs \"Old Spice High Endurance for Men Antiperspirant Deodorant Invisible Solid Fresh \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodoran-vs-old-spice-high-endurance-for-men-antiper-2",
+    "productIds": [
+      "secret-for-women-antiperspirant-deodorant-invisible-solid-sh-2345",
+      "old-spice-high-endurance-for-men-antiperspirant-deodorant-in-0025"
+    ],
+    "rationale": "Both are Procter & Gamble invisible solid antiperspirant deodorant sticks (Secret and Old Spice High Endurance).",
+    "matchedAttributes": [
+      "antiperspirant deodorant",
+      "invisible solid stick",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand line (Secret vs Old Spice High Endurance)",
+      "Size: 1 pack / 2.6 oz vs 3 oz",
+      "Scent/variant differs per listings: \"Secret for Women Antiperspirant Deodorant Invisible Solid Shower Fresh Scent\" vs \"Old Spice High Endurance for Men Antiperspirant Deodorant Invisible Solid Pure S\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodoran-vs-old-spice-high-endurance-for-men-antiper-2-2",
+    "productIds": [
+      "secret-for-women-antiperspirant-deodorant-invisible-solid-co-9800",
+      "old-spice-high-endurance-for-men-antiperspirant-deodorant-in-0024"
+    ],
+    "rationale": "Both are Procter & Gamble invisible solid antiperspirant deodorant sticks (Secret and Old Spice High Endurance).",
+    "matchedAttributes": [
+      "antiperspirant deodorant",
+      "invisible solid stick",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand line (Secret vs Old Spice High Endurance)",
+      "Size: 1 pack / 2.6 oz vs 3 oz",
+      "Scent/variant differs per listings: \"Secret for Women Antiperspirant Deodorant Invisible Solid Coconut Scent\" vs \"Old Spice High Endurance for Men Antiperspirant Deodorant Invisible Solid Fresh \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodoran-vs-old-spice-high-endurance-for-men-antiper-2-2-2",
+    "productIds": [
+      "secret-for-women-antiperspirant-deodorant-invisible-solid-va-0444",
+      "old-spice-high-endurance-for-men-antiperspirant-deodorant-in-0024"
+    ],
+    "rationale": "Both are Procter & Gamble invisible solid antiperspirant deodorant sticks (Secret and Old Spice High Endurance).",
+    "matchedAttributes": [
+      "antiperspirant deodorant",
+      "invisible solid stick",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand line (Secret vs Old Spice High Endurance)",
+      "Size: 1 pack / 2.6 oz vs 3 oz",
+      "Scent/variant differs per listings: \"Secret for Women Antiperspirant Deodorant Invisible Solid Vanilla Scent\" vs \"Old Spice High Endurance for Men Antiperspirant Deodorant Invisible Solid Fresh \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodoran-vs-old-spice-high-endurance-for-men-antiper-2-2-2-2",
+    "productIds": [
+      "secret-for-women-antiperspirant-deodorant-invisible-solid-wa-7883",
+      "old-spice-high-endurance-for-men-antiperspirant-deodorant-in-0024"
+    ],
+    "rationale": "Both are Procter & Gamble invisible solid antiperspirant deodorant sticks (Secret and Old Spice High Endurance).",
+    "matchedAttributes": [
+      "antiperspirant deodorant",
+      "invisible solid stick",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand line (Secret vs Old Spice High Endurance)",
+      "Size: 1 pack / 2.6 oz vs 3 oz",
+      "Scent/variant differs per listings: \"Secret for Women Antiperspirant Deodorant Invisible Solid Waterlily Scent\" vs \"Old Spice High Endurance for Men Antiperspirant Deodorant Invisible Solid Fresh \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodoran-vs-old-spice-high-endurance-for-men-antiper-2-2-2-2-2",
+    "productIds": [
+      "secret-for-women-antiperspirant-deodorant-invisible-solid-po-2432",
+      "old-spice-high-endurance-for-men-antiperspirant-deodorant-in-1451"
+    ],
+    "rationale": "Both are Procter & Gamble invisible solid antiperspirant deodorant twin packs (Secret and Old Spice High Endurance).",
+    "matchedAttributes": [
+      "antiperspirant deodorant",
+      "invisible solid stick",
+      "2-pack",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand line (Secret vs Old Spice High Endurance)",
+      "Size: 2 pack / 2.6 oz vs 2 pack / 3 oz",
+      "Secret listing is a 2-pack; amount expressed as total (5.2 oz)",
+      "Old Spice listing is a 2-pack; amount expressed as total (6.0 oz)",
+      "Scent/variant differs per listings: \"Secret for Women Antiperspirant Deodorant Invisible Solid Powder Fresh Scent\" vs \"Old Spice High Endurance for Men Antiperspirant Deodorant Invisible Solid Fresh \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-invisible-solid-antiperspirant-an-vs-old-spice-high-endurance-for-men-antiper",
+    "productIds": [
+      "secret-invisible-solid-antiperspirant-and-deodorant-shower-f-2433",
+      "old-spice-high-endurance-for-men-antiperspirant-deodorant-in-1451"
+    ],
+    "rationale": "Both are Procter & Gamble invisible solid antiperspirant deodorant twin packs (Secret and Old Spice High Endurance).",
+    "matchedAttributes": [
+      "antiperspirant deodorant",
+      "invisible solid stick",
+      "2-pack",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand line (Secret vs Old Spice High Endurance)",
+      "Size: 2 pk / 2.6 oz vs 2 pack / 3 oz",
+      "Secret listing is a 2-pack; amount expressed as total (5.2 oz)",
+      "Old Spice listing is a 2-pack; amount expressed as total (6.0 oz)",
+      "Scent/variant differs per listings: \"Secret Invisible Solid Antiperspirant and Deodorant, Shower Fresh, Twin Pack\" vs \"Old Spice High Endurance for Men Antiperspirant Deodorant Invisible Solid Fresh \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-clinical-strength-women-s-antiper-vs-gillette-clinical-protection-for-men-ant",
+    "productIds": [
+      "secret-clinical-strength-women-s-antiperspirant-soft-solid-d-7425",
+      "gillette-clinical-protection-for-men-antiperspirant-deodoran-5965"
+    ],
+    "rationale": "Both are Procter & Gamble clinical-strength soft solid antiperspirants (Secret Clinical Strength and Gillette Clinical).",
+    "matchedAttributes": [
+      "clinical strength",
+      "soft solid",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Gillette)",
+      "Size: 2.6 oz vs 1 pack / 2.6 oz",
+      "Scent/variant differs per listings: \"Secret Clinical Strength Women's Antiperspirant Soft Solid Deodorant Light & Fre\" vs \"Gillette Clinical Protection for Men Antiperspirant Deodorant Soft Solid Ultimat\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-outlast-women-s-antiperspirant-de-vs-old-spice-sweat-defense-for-men-antipers",
+    "productIds": [
+      "secret-outlast-women-s-antiperspirant-deodorant-invisible-so-0805",
+      "old-spice-sweat-defense-for-men-antiperspirant-deodorant-inv-4480"
+    ],
+    "rationale": "Both are Procter & Gamble invisible solid antiperspirant sticks from premium lines (Secret Outlast and Old Spice Sweat Defense).",
+    "matchedAttributes": [
+      "antiperspirant deodorant",
+      "invisible solid stick",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand line (Secret Outlast vs Old Spice Sweat Defense)",
+      "Size: 1 pack / 2.6 oz vs 2.6 oz",
+      "Scent/variant differs per listings: \"Secret Outlast Women's Antiperspirant Deodorant Invisible Solid Completely Clean\" vs \"Old Spice Sweat Defense for Men Antiperspirant Deodorant Invisible Solid Stronge\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-outlast-women-s-antiperspirant-de-vs-gillette-clearshield-for-men-antiperspir",
+    "productIds": [
+      "secret-outlast-women-s-antiperspirant-deodorant-clear-gel-pr-0819",
+      "gillette-clearshield-for-men-antiperspirant-deodorant-clear-9772"
+    ],
+    "rationale": "Both are Procter & Gamble clear gel antiperspirant deodorants (Secret and Gillette ClearShield).",
+    "matchedAttributes": [
+      "clear gel",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Gillette ClearShield)",
+      "Size: 1 pack / 2.6 oz vs 1 pack / 3.8 oz",
+      "Scent/variant differs per listings: \"Secret Outlast Women's Antiperspirant Deodorant Clear Gel Protecting Powder\" vs \"Gillette ClearShield for Men Antiperspirant Deodorant Clear Gel Cool Wave Scent \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-outlast-for-women-antiperspirant--vs-gillette-clearshield-for-men-antiperspir",
+    "productIds": [
+      "secret-outlast-for-women-antiperspirant-deodorant-clear-gel-0822",
+      "gillette-clearshield-for-men-antiperspirant-deodorant-clear-9772"
+    ],
+    "rationale": "Both are Procter & Gamble clear gel antiperspirant deodorants (Secret and Gillette ClearShield).",
+    "matchedAttributes": [
+      "clear gel",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Gillette ClearShield)",
+      "Size: 1 pack / 2.6 oz vs 1 pack / 3.8 oz",
+      "Scent/variant differs per listings: \"Secret Outlast for Women Antiperspirant Deodorant Clear Gel Completely Clean Sce\" vs \"Gillette ClearShield for Men Antiperspirant Deodorant Clear Gel Cool Wave Scent \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-outlast-for-women-antiperspirant--vs-gillette-clearshield-for-men-antiperspir-2",
+    "productIds": [
+      "secret-outlast-for-women-antiperspirant-deodorant-clear-gel-0831",
+      "gillette-clearshield-for-men-antiperspirant-deodorant-clear-9772"
+    ],
+    "rationale": "Both are Procter & Gamble clear gel antiperspirant deodorants (Secret and Gillette ClearShield).",
+    "matchedAttributes": [
+      "clear gel",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Gillette ClearShield)",
+      "Size: 1 pack / 2.6 oz vs 1 pack / 3.8 oz",
+      "Scent/variant differs per listings: \"Secret Outlast for Women Antiperspirant Deodorant Clear Gel Completely Clean Sce\" vs \"Gillette ClearShield for Men Antiperspirant Deodorant Clear Gel Cool Wave Scent \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-women-s-antiperspirant-deod-vs-gillette-clearshield-for-men-antiperspir",
+    "productIds": [
+      "secret-fresh-women-s-antiperspirant-deodorant-clear-gel-berr-0905",
+      "gillette-clearshield-for-men-antiperspirant-deodorant-clear-9772"
+    ],
+    "rationale": "Both are Procter & Gamble clear gel antiperspirant deodorants (Secret and Gillette ClearShield).",
+    "matchedAttributes": [
+      "clear gel",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Gillette ClearShield)",
+      "Size: 2.6 oz vs 1 pack / 3.8 oz",
+      "Scent/variant differs per listings: \"Secret Fresh Women's Antiperspirant Deodorant Clear Gel Berry, 2.6oz\" vs \"Gillette ClearShield for Men Antiperspirant Deodorant Clear Gel Cool Wave Scent \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-women-s-antiperspirant-deod-vs-gillette-clearshield-for-men-antiperspir-2",
+    "productIds": [
+      "secret-fresh-women-s-antiperspirant-deodorant-clear-gel-ocea-4879",
+      "gillette-clearshield-for-men-antiperspirant-deodorant-clear-9772"
+    ],
+    "rationale": "Both are Procter & Gamble clear gel antiperspirant deodorants (Secret and Gillette ClearShield).",
+    "matchedAttributes": [
+      "clear gel",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Gillette ClearShield)",
+      "Size: 2.6 oz vs 1 pack / 3.8 oz",
+      "Scent/variant differs per listings: \"Secret Fresh Women's Antiperspirant Deodorant Clear Gel Oceanside, 2.6 oz\" vs \"Gillette ClearShield for Men Antiperspirant Deodorant Clear Gel Cool Wave Scent \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-for-women-antiperspirant-de-vs-gillette-clearshield-for-men-antiperspir",
+    "productIds": [
+      "secret-fresh-for-women-antiperspirant-deodorant-clear-gel-co-0031",
+      "gillette-clearshield-for-men-antiperspirant-deodorant-clear-9772"
+    ],
+    "rationale": "Both are Procter & Gamble clear gel antiperspirant deodorants (Secret and Gillette ClearShield).",
+    "matchedAttributes": [
+      "clear gel",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Gillette ClearShield)",
+      "Size: 1 pack / 2.6 oz vs 1 pack / 3.8 oz",
+      "Scent/variant differs per listings: \"Secret Fresh for Women Antiperspirant Deodorant Clear Gel Coconut Scent\" vs \"Gillette ClearShield for Men Antiperspirant Deodorant Clear Gel Cool Wave Scent \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-for-women-antiperspirant-de-vs-gillette-clearshield-for-men-antiperspir-2",
+    "productIds": [
+      "secret-fresh-for-women-antiperspirant-deodorant-clear-gel-de-8793",
+      "gillette-clearshield-for-men-antiperspirant-deodorant-clear-9772"
+    ],
+    "rationale": "Both are Procter & Gamble clear gel antiperspirant deodorants (Secret and Gillette ClearShield).",
+    "matchedAttributes": [
+      "clear gel",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Gillette ClearShield)",
+      "Size: 1 pack / 2.6 oz vs 1 pack / 3.8 oz",
+      "Scent/variant differs per listings: \"Secret Fresh for Women Antiperspirant Deodorant Clear Gel Delicate Rose Scent\" vs \"Gillette ClearShield for Men Antiperspirant Deodorant Clear Gel Cool Wave Scent \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-for-women-antiperspirant-de-vs-gillette-clearshield-for-men-antiperspir-2-2",
+    "productIds": [
+      "secret-fresh-for-women-antiperspirant-deodorant-clear-gel-wa-7885",
+      "gillette-clearshield-for-men-antiperspirant-deodorant-clear-9772"
+    ],
+    "rationale": "Both are Procter & Gamble clear gel antiperspirant deodorants (Secret and Gillette ClearShield).",
+    "matchedAttributes": [
+      "clear gel",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Gillette ClearShield)",
+      "Size: 1 pack / 2.6 oz vs 1 pack / 3.8 oz",
+      "Scent/variant differs per listings: \"Secret Fresh for Women Antiperspirant Deodorant Clear Gel Waterlily Scent\" vs \"Gillette ClearShield for Men Antiperspirant Deodorant Clear Gel Cool Wave Scent \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodoran-vs-gillette-clearshield-for-men-antiperspir",
+    "productIds": [
+      "secret-for-women-antiperspirant-deodorant-clear-gel-refreshi-0468",
+      "gillette-clearshield-for-men-antiperspirant-deodorant-clear-9772"
+    ],
+    "rationale": "Both are Procter & Gamble clear gel antiperspirant deodorants (Secret and Gillette ClearShield).",
+    "matchedAttributes": [
+      "clear gel",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Gillette ClearShield)",
+      "Size: 1 pack / 2.6 oz vs 1 pack / 3.8 oz",
+      "Scent/variant differs per listings: \"Secret for Women Antiperspirant Deodorant Clear Gel Refreshing Lavender Scent\" vs \"Gillette ClearShield for Men Antiperspirant Deodorant Clear Gel Cool Wave Scent \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-outlast-for-women-antiperspirant--vs-gillette-clearshield-for-men-antiperspir-2-2",
+    "productIds": [
+      "secret-outlast-for-women-antiperspirant-deodorant-clear-gel-4825",
+      "gillette-clearshield-for-men-antiperspirant-deodorant-clear-9995"
+    ],
+    "rationale": "Both are Procter & Gamble clear gel antiperspirant deodorant twin packs (Secret and Gillette ClearShield).",
+    "matchedAttributes": [
+      "clear gel",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "2-pack",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Gillette ClearShield)",
+      "Size: 2 pack / 2.6 oz vs 2 pack / 3.8 oz",
+      "Secret listing is a 2-pack; amount expressed as total (5.2 oz)",
+      "Gillette listing is a 2-pack; amount expressed as total (7.6 oz)",
+      "Scent/variant differs per listings: \"Secret Outlast for Women Antiperspirant Deodorant Clear Gel Completely Clean Sce\" vs \"Gillette ClearShield for Men Antiperspirant Deodorant Clear Gel Cool Wave Scent \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-clear-gel-antiperspirant-an-vs-gillette-clearshield-for-men-antiperspir",
+    "productIds": [
+      "secret-fresh-clear-gel-antiperspirant-and-deodorant-for-wome-7464",
+      "gillette-clearshield-for-men-antiperspirant-deodorant-clear-9995"
+    ],
+    "rationale": "Both are Procter & Gamble clear gel antiperspirant deodorant twin packs (Secret and Gillette ClearShield).",
+    "matchedAttributes": [
+      "clear gel",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "2-pack",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Gillette ClearShield)",
+      "Size: 2 pack / 2.6 oz vs 2 pack / 3.8 oz",
+      "Secret listing is a 2-pack; amount expressed as total (5.2 oz)",
+      "Gillette listing is a 2-pack; amount expressed as total (7.6 oz)",
+      "Scent/variant differs per listings: \"Secret Fresh Clear Gel Antiperspirant and Deodorant for Women Berry\" vs \"Gillette ClearShield for Men Antiperspirant Deodorant Clear Gel Cool Wave Scent \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-for-women-antiperspirant-de-vs-gillette-clearshield-for-men-antiperspir-2-2-2",
+    "productIds": [
+      "secret-fresh-for-women-antiperspirant-deodorant-clear-gel-co-8593",
+      "gillette-clearshield-for-men-antiperspirant-deodorant-clear-9995"
+    ],
+    "rationale": "Both are Procter & Gamble clear gel antiperspirant deodorant twin packs (Secret and Gillette ClearShield).",
+    "matchedAttributes": [
+      "clear gel",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "2-pack",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Gillette ClearShield)",
+      "Size: 2 pack / 2.6 oz vs 2 pack / 3.8 oz",
+      "Secret listing is a 2-pack; amount expressed as total (5.2 oz)",
+      "Gillette listing is a 2-pack; amount expressed as total (7.6 oz)",
+      "Scent/variant differs per listings: \"Secret Fresh for Women Antiperspirant Deodorant Clear Gel Coconut Scent\" vs \"Gillette ClearShield for Men Antiperspirant Deodorant Clear Gel Cool Wave Scent \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-for-women-antiperspirant-de-vs-gillette-clearshield-for-men-antiperspir-2-2-2-2",
+    "productIds": [
+      "secret-fresh-for-women-antiperspirant-deodorant-clear-gel-re-4826",
+      "gillette-clearshield-for-men-antiperspirant-deodorant-clear-9995"
+    ],
+    "rationale": "Both are Procter & Gamble clear gel antiperspirant deodorant twin packs (Secret and Gillette ClearShield).",
+    "matchedAttributes": [
+      "clear gel",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "2-pack",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Gillette ClearShield)",
+      "Size: 2 pack / 2.6 oz vs 2 pack / 3.8 oz",
+      "Secret listing is a 2-pack; amount expressed as total (5.2 oz)",
+      "Gillette listing is a 2-pack; amount expressed as total (7.6 oz)",
+      "Scent/variant differs per listings: \"Secret Fresh for Women Antiperspirant Deodorant Clear Gel Relaxing Lavender Scen\" vs \"Gillette ClearShield for Men Antiperspirant Deodorant Clear Gel Cool Wave Scent \""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodoran-vs-old-spice-for-men-invisible-antiperspira",
+    "productIds": [
+      "secret-for-women-antiperspirant-deodorant-dry-spray-vanilla-1775",
+      "old-spice-for-men-invisible-antiperspirant-deodorant-invisib-4989"
+    ],
+    "rationale": "Both are Procter & Gamble antiperspirant deodorant dry sprays (Secret and Old Spice).",
+    "matchedAttributes": [
+      "dry spray",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Old Spice)",
+      "Size: 4.1 oz vs 1 pack / 4.3 oz",
+      "Scent/variant differs per listings: \"Secret for Women Antiperspirant Deodorant Dry Spray Vanilla and Argan Oil Scent\" vs \"Old Spice for Men Invisible Antiperspirant Deodorant Invisible Dry Spray Swagger\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodoran-vs-old-spice-for-men-invisible-antiperspira-2",
+    "productIds": [
+      "secret-for-women-antiperspirant-deodorant-dry-spray-wild-ros-1780",
+      "old-spice-for-men-invisible-antiperspirant-deodorant-invisib-4989"
+    ],
+    "rationale": "Both are Procter & Gamble antiperspirant deodorant dry sprays (Secret and Old Spice).",
+    "matchedAttributes": [
+      "dry spray",
+      "antiperspirant deodorant",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Old Spice)",
+      "Size: 4.1 oz vs 1 pack / 4.3 oz",
+      "Scent/variant differs per listings: \"Secret for Women Antiperspirant Deodorant Dry Spray Wild Rose and Argan Oil Scen\" vs \"Old Spice for Men Invisible Antiperspirant Deodorant Invisible Dry Spray Swagger\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-aluminum-free-deodorant-for-women-vs-old-spice-for-men-aluminum-free-deodoran",
+    "productIds": [
+      "secret-aluminum-free-deodorant-for-women-dry-solid-coconut-0091",
+      "old-spice-for-men-aluminum-free-deodorant-fiji-with-palm-tre-3759"
+    ],
+    "rationale": "Both are Procter & Gamble aluminum-free deodorant sticks (Secret and Old Spice).",
+    "matchedAttributes": [
+      "aluminum-free",
+      "deodorant stick",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Old Spice)",
+      "Size: 2.4 oz vs 1 pack / 3 oz",
+      "Scent/variant differs per listings: \"Secret Aluminum Free Deodorant for Women Dry Solid, Coconut\" vs \"Old Spice for Men Aluminum-Free Deodorant Fiji with Palm Tree Scent 1-Pack\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-aluminum-free-deodorant-vs-old-spice-for-men-aluminum-free-deodoran",
+    "productIds": [
+      "secret-for-women-aluminum-free-deodorant-cotton-scent-0100",
+      "old-spice-for-men-aluminum-free-deodorant-fiji-with-palm-tre-3759"
+    ],
+    "rationale": "Both are Procter & Gamble aluminum-free deodorant sticks (Secret and Old Spice).",
+    "matchedAttributes": [
+      "aluminum-free",
+      "deodorant stick",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Old Spice)",
+      "Size: 1 pack / 2.4 oz vs 1 pack / 3 oz",
+      "Scent/variant differs per listings: \"Secret for Women Aluminum-Free Deodorant Cotton Scent\" vs \"Old Spice for Men Aluminum-Free Deodorant Fiji with Palm Tree Scent 1-Pack\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-aluminum-free-deodorant-vs-old-spice-for-men-aluminum-free-deodoran-2",
+    "productIds": [
+      "secret-for-women-aluminum-free-deodorant-lavender-scent-0093",
+      "old-spice-for-men-aluminum-free-deodorant-fiji-with-palm-tre-3759"
+    ],
+    "rationale": "Both are Procter & Gamble aluminum-free deodorant sticks (Secret and Old Spice).",
+    "matchedAttributes": [
+      "aluminum-free",
+      "deodorant stick",
+      "P&G manufacturer",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Different brand (Secret vs Old Spice)",
+      "Size: 1 pack / 2.4 oz vs 1 pack / 3 oz",
+      "Scent/variant differs per listings: \"Secret for Women Aluminum-Free Deodorant Lavender Scent\" vs \"Old Spice for Men Aluminum-Free Deodorant Fiji with Palm Tree Scent 1-Pack\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "degree-ultraclear-antiperspirant-deodora-vs-degree-ultraclear-men-s-antiperspirant-d",
+    "productIds": [
+      "degree-ultraclear-antiperspirant-deodorant-for-women-8719",
+      "degree-ultraclear-men-s-antiperspirant-deodorant-fresh-with-6914"
+    ],
+    "rationale": "Both are Degree UltraClear antiperspirant deodorant sticks.",
+    "matchedAttributes": [
+      "Degree",
+      "UltraClear line",
+      "antiperspirant stick",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Size: 2.6 oz vs 2.7 oz",
+      "Scent/variant differs per listings: \"Degree UltraClear Antiperspirant Deodorant for Women\" vs \"Degree UltraClear Men's Antiperspirant Deodorant Fresh With MotionSense Technolo\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "degree-antiperspirant-deodorant-for-wome-vs-degree-original-men-s-antiperspirant-deo",
+    "productIds": [
+      "degree-antiperspirant-deodorant-for-women-1628",
+      "degree-original-men-s-antiperspirant-deodorant-cool-rush-6540"
+    ],
+    "rationale": "Both are Degree antiperspirant deodorant sticks.",
+    "matchedAttributes": ["Degree", "antiperspirant stick", "same size unit (oz)"],
+    "knownDifferences": [
+      "Men's is the Original Protection line",
+      "Same listed size 2.6 oz",
+      "Scent/variant differs per listings: \"Degree Antiperspirant Deodorant for Women\" vs \"Degree Original Men's Antiperspirant Deodorant Cool Rush\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "dove-whole-body-deo-alcohol-free-deodora-vs-dove-men-care-whole-body-deo-aluminum-fr",
+    "productIds": [
+      "dove-whole-body-deo-alcohol-free-deodorant-spray-for-women-b-2924",
+      "dove-men-care-whole-body-deo-aluminum-free-deodorant-spray-b-2966"
+    ],
+    "rationale": "Both are Dove Whole Body Deo aluminum-free deodorant sprays.",
+    "matchedAttributes": [
+      "Dove",
+      "Whole Body Deo",
+      "aluminum-free",
+      "deodorant spray",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Women's listing says alcohol free",
+      "Same listed size 4 oz",
+      "Scent/variant differs per listings: \"Dove Whole Body Deo, Alcohol Free Deodorant Spray for Women, Berry Blush\" vs \"Dove Men+Care Whole Body Deo Aluminum Free Deodorant Spray Bamboo + Aloe\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "dove-whole-body-deo-alcohol-free-deodora-vs-dove-men-care-whole-body-deo-aluminum-fr-2",
+    "productIds": [
+      "dove-whole-body-deo-alcohol-free-deodorant-spray-for-women-l-2922",
+      "dove-men-care-whole-body-deo-aluminum-free-deodorant-spray-b-2966"
+    ],
+    "rationale": "Both are Dove Whole Body Deo aluminum-free deodorant sprays.",
+    "matchedAttributes": [
+      "Dove",
+      "Whole Body Deo",
+      "aluminum-free",
+      "deodorant spray",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Women's listing says alcohol free",
+      "Same listed size 4 oz",
+      "Scent/variant differs per listings: \"Dove Whole Body Deo, Alcohol Free Deodorant Spray for Women, Lavender Bloom\" vs \"Dove Men+Care Whole Body Deo Aluminum Free Deodorant Spray Bamboo + Aloe\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "dove-whole-body-deo-alcohol-free-deodora-vs-dove-men-care-whole-body-deo-aluminum-fr-2-2",
+    "productIds": [
+      "dove-whole-body-deo-alcohol-free-deodorant-spray-for-women-p-2921",
+      "dove-men-care-whole-body-deo-aluminum-free-deodorant-spray-b-2966"
+    ],
+    "rationale": "Both are Dove Whole Body Deo aluminum-free deodorant sprays.",
+    "matchedAttributes": [
+      "Dove",
+      "Whole Body Deo",
+      "aluminum-free",
+      "deodorant spray",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Women's listing says alcohol free",
+      "Same listed size 4 oz",
+      "Scent/variant differs per listings: \"Dove Whole Body Deo, Alcohol Free Deodorant Spray for Women, Peach Glow\" vs \"Dove Men+Care Whole Body Deo Aluminum Free Deodorant Spray Bamboo + Aloe\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "lady-speed-stick-antiperspirant-deodoran-vs-speed-stick-power-antiperspirant-deodora",
+    "productIds": [
+      "lady-speed-stick-antiperspirant-deodorant-for-women-shower-f-5441",
+      "speed-stick-power-antiperspirant-deodorant-for-men-72-hr-swe-0490"
+    ],
+    "rationale": "Both are Speed Stick antiperspirant deodorant sticks (Lady Speed Stick and Speed Stick Power).",
+    "matchedAttributes": [
+      "Colgate-Palmolive Speed Stick",
+      "antiperspirant stick",
+      "same size unit (oz)"
+    ],
+    "knownDifferences": [
+      "Men's is the Power line (72 HR claim)",
+      "Size: 2.3 oz vs 3 oz",
+      "Scent/variant differs per listings: \"Lady Speed Stick Antiperspirant Deodorant for Women Shower Fresh Scent\" vs \"Speed Stick Power Antiperspirant Deodorant for Men 72 HR Sweat & Odor Protection\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-women-s-simply3-sensitive-vs-gillette-sensor3-men-s-sensitive-skin-3",
+    "productIds": [
+      "gillette-venus-women-s-simply3-sensitive-3-blade-disposable-6356",
+      "gillette-sensor3-men-s-sensitive-skin-3-blade-disposable-raz-7215"
+    ],
+    "rationale": "Both are Gillette 3-blade disposable razors (Venus and Gillette men's).",
+    "matchedAttributes": ["3-blade disposable razor", "Gillette", "same size unit (count)"],
+    "knownDifferences": [
+      "Different razor line (Venus vs Mach3/Sensor3)",
+      "Size: 4 count vs 7 count",
+      "Scent/variant differs per listings: \"Gillette Venus Women's Simply3 Sensitive 3-Blade Disposable Razors\" vs \"Gillette Sensor3 Men's Sensitive Skin 3-Blade Disposable Razors\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-women-s-sensitive-skin-pi-vs-gillette-mach3-sensitive-men-s-disposabl",
+    "productIds": [
+      "gillette-venus-women-s-sensitive-skin-pink-disposable-razors-1392",
+      "gillette-mach3-sensitive-men-s-disposable-razors-9747"
+    ],
+    "rationale": "Both are Gillette 3-blade disposable razors (Venus and Gillette men's).",
+    "matchedAttributes": ["3-blade disposable razor", "Gillette", "same size unit (count)"],
+    "knownDifferences": [
+      "Different razor line (Venus vs Mach3/Sensor3)",
+      "Size: 6 count vs 7 count",
+      "Scent/variant differs per listings: \"Gillette Venus Women's Sensitive Skin Pink Disposable Razors\" vs \"Gillette Mach3 Sensitive Men's Disposable Razors\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "venus-tropical-women-s-disposable-razor--vs-gillette-sensor3-men-s-sensitive-skin-3",
+    "productIds": [
+      "venus-tropical-women-s-disposable-razor-6238",
+      "gillette-sensor3-men-s-sensitive-skin-3-blade-disposable-raz-7215"
+    ],
+    "rationale": "Both are Gillette 3-blade disposable razors (Venus and Gillette men's).",
+    "matchedAttributes": ["3-blade disposable razor", "Gillette", "same size unit (count)"],
+    "knownDifferences": [
+      "Different razor line (Venus vs Mach3/Sensor3)",
+      "Size: 6 ct vs 7 count",
+      "Scent/variant differs per listings: \"Venus Tropical Women's Disposable Razor\" vs \"Gillette Sensor3 Men's Sensitive Skin 3-Blade Disposable Razors\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-comfortglide-white-tea-wo-vs-mach3-refills-4ct",
+    "productIds": [
+      "gillette-venus-comfortglide-white-tea-women-s-razor-blade-re-0102",
+      "mach3-refills-4ct"
+    ],
+    "rationale": "Both are Gillette 3-blade razor refill cartridges (Venus and Mach3).",
+    "matchedAttributes": ["3-blade", "refill cartridges", "Gillette", "same size unit (count)"],
+    "knownDifferences": [
+      "Different cartridge system (Venus vs Mach3); not interchangeable handles",
+      "Same listed size 4 count",
+      "Scent/variant differs per listings: \"Gillette Venus ComfortGlide White Tea Women's Razor Blade Refills Cartridges\" vs \"Gillette Mach3 Men's 3-Blade Razor Blades Refills Cartridges\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-smooth-women-s-razor-blad-vs-gillette-mach3-razor-blade-refills-with",
+    "productIds": [
+      "gillette-venus-smooth-women-s-razor-blade-refills-cartridges-4129",
+      "gillette-mach3-razor-blade-refills-with-lubrication-strip-3-1308"
+    ],
+    "rationale": "Both are Gillette 3-blade razor refill cartridges (Venus and Mach3).",
+    "matchedAttributes": ["3-blade", "refill cartridges", "Gillette", "same size unit (count)"],
+    "knownDifferences": [
+      "Different cartridge system (Venus vs Mach3); not interchangeable handles",
+      "Size: 4 count vs 10 count",
+      "Scent/variant differs per listings: \"Gillette Venus Smooth Women's Razor Blade Refills Cartridges\" vs \"Gillette Mach3 Razor Blade Refills, With Lubrication Strip, 3-Blade Razor Blades\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-comfortglide-plus-olay-co-vs-mach3-refills-4ct",
+    "productIds": [
+      "gillette-venus-comfortglide-plus-olay-coconut-women-s-razor-5209",
+      "mach3-refills-4ct"
+    ],
+    "rationale": "Both are Gillette 3-blade razor refill cartridges (Venus and Mach3).",
+    "matchedAttributes": ["3-blade", "refill cartridges", "Gillette", "same size unit (count)"],
+    "knownDifferences": [
+      "Different cartridge system (Venus vs Mach3); not interchangeable handles",
+      "Same listed size 4 count",
+      "Scent/variant differs per listings: \"Gillette Venus ComfortGlide plus Olay Coconut Women's Razor Blade Refills Cartri\" vs \"Gillette Mach3 Men's 3-Blade Razor Blades Refills Cartridges\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-comfortglide-plus-olay-co-vs-gillette-mach3-razor-blade-refills-with",
+    "productIds": [
+      "gillette-venus-comfortglide-plus-olay-coconut-women-s-razor-5210",
+      "gillette-mach3-razor-blade-refills-with-lubrication-strip-3-1308"
+    ],
+    "rationale": "Both are Gillette 3-blade razor refill cartridges (Venus and Mach3).",
+    "matchedAttributes": ["3-blade", "refill cartridges", "Gillette", "same size unit (count)"],
+    "knownDifferences": [
+      "Different cartridge system (Venus vs Mach3); not interchangeable handles",
+      "Size: 6 count vs 10 count",
+      "Scent/variant differs per listings: \"Gillette Venus ComfortGlide plus Olay Coconut Women's Razor Blade Refills Cartri\" vs \"Gillette Mach3 Razor Blade Refills, With Lubrication Strip, 3-Blade Razor Blades\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "venus-comfortglide-white-tea-women-s-raz-vs-gillette-mach-3-razor-blade-refills-with",
+    "productIds": [
+      "venus-comfortglide-white-tea-women-s-razor-blades-with-built-9904",
+      "gillette-mach-3-razor-blade-refills-with-lubrication-strip-3-5704"
+    ],
+    "rationale": "Both are Gillette 3-blade razor refill cartridges (Venus and Mach3).",
+    "matchedAttributes": ["3-blade", "refill cartridges", "Gillette", "same size unit (count)"],
+    "knownDifferences": [
+      "Different cartridge system (Venus vs Mach3); not interchangeable handles",
+      "Size: 8 count vs 15 ct",
+      "Scent/variant differs per listings: \"Venus ComfortGlide White Tea Women's Razor Blades, with Built-in Shave Gel Bars\" vs \"Gillette Mach 3 Razor Blade Refills, with Lubrication Strip, 3-Blade Razor Blade\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-extra-smooth-women-s-razo-vs-gillette-fusion5-men-s-5-blade-razor-bla",
+    "productIds": [
+      "gillette-venus-extra-smooth-women-s-razor-blade-refills-cart-0546",
+      "gillette-fusion5-men-s-5-blade-razor-blade-refills-cartridge-5688"
+    ],
+    "rationale": "Both are Gillette 5-blade razor refill cartridges (Venus and Fusion5).",
+    "matchedAttributes": ["5-blade", "refill cartridges", "Gillette", "same size unit (count)"],
+    "knownDifferences": [
+      "Different cartridge system (Venus vs Fusion5); not interchangeable handles",
+      "Size: 6 count vs 8 count",
+      "Scent/variant differs per listings: \"Gillette Venus Extra Smooth Women's Razor Blade Refills Cartridges\" vs \"Gillette Fusion5 Men's 5-Blade Razor Blade Refills Cartridges\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-deluxe-smooth-sensitive-w-vs-gillette-fusion5-men-s-5-blade-razor-bla",
+    "productIds": [
+      "gillette-venus-deluxe-smooth-sensitive-women-s-razor-blade-r-5776",
+      "gillette-fusion5-men-s-5-blade-razor-blade-refills-cartridge-5688"
+    ],
+    "rationale": "Both are Gillette 5-blade razor refill cartridges (Venus and Fusion5).",
+    "matchedAttributes": ["5-blade", "refill cartridges", "Gillette", "same size unit (count)"],
+    "knownDifferences": [
+      "Different cartridge system (Venus vs Fusion5); not interchangeable handles",
+      "Size: 6 count vs 8 count",
+      "Scent/variant differs per listings: \"Gillette Venus Deluxe Smooth Sensitive Women's Razor Blade Refills Cartridges\" vs \"Gillette Fusion5 Men's 5-Blade Razor Blade Refills Cartridges\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "schick-hydro-silk-5-blade-razor-refills--vs-schick-hydro-sensitive-5-blade-razor-ref",
+    "productIds": [
+      "schick-hydro-silk-5-blade-razor-refills-for-women-moisturizi-0702",
+      "schick-hydro-sensitive-5-blade-razor-refills-for-men-with-fl-1480"
+    ],
+    "rationale": "Both are Schick Hydro 5-blade razor refills (Hydro Silk and Hydro Sensitive).",
+    "matchedAttributes": ["Schick", "5-blade", "refill cartridges", "same size unit (count)"],
+    "knownDifferences": [
+      "Men's refills include flip-back precision edger",
+      "Size: 4 count vs 6 count",
+      "Scent/variant differs per listings: \"Schick Hydro Silk 5-Blade Razor Refills for Women Moisturizing with Shea Butter\" vs \"Schick Hydro Sensitive 5-Blade Razor Refills for Men with Flip-Back Precision Ed\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "schick-hydro-silk-5-blade-razor-refills--vs-schick-hydro-sensitive-5-blade-razor-ref-2",
+    "productIds": [
+      "schick-hydro-silk-5-blade-razor-refills-for-women-sensitive-0722",
+      "schick-hydro-sensitive-5-blade-razor-refills-for-men-with-fl-1480"
+    ],
+    "rationale": "Both are Schick Hydro 5-blade razor refills (Hydro Silk and Hydro Sensitive).",
+    "matchedAttributes": ["Schick", "5-blade", "refill cartridges", "same size unit (count)"],
+    "knownDifferences": [
+      "Men's refills include flip-back precision edger",
+      "Size: 4 count vs 6 count",
+      "Scent/variant differs per listings: \"Schick Hydro Silk 5-Blade Razor Refills for Women Sensitive Skin Hypoallergenic \" vs \"Schick Hydro Sensitive 5-Blade Razor Refills for Men with Flip-Back Precision Ed\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "schick-hydro-silk-5-blade-razor-2-refill-vs-schick-hydro-sensitive-5-blade-razor-for",
+    "productIds": [
+      "schick-hydro-silk-5-blade-razor-2-refills-for-women-moisturi-0700",
+      "schick-hydro-sensitive-5-blade-razor-for-men-3-refills-with-1484"
+    ],
+    "rationale": "Both are Schick Hydro 5-blade razor handles with refills (Hydro Silk and Hydro Sensitive).",
+    "matchedAttributes": ["Schick", "5-blade", "handle + refills", "same size unit (count)"],
+    "knownDifferences": [
+      "Men's includes flip-back precision edger",
+      "Size: 3 count vs 4 count",
+      "Scent/variant differs per listings: \"Schick Hydro Silk 5-Blade Razor + 2 Refills for Women Moisturizing with Shea But\" vs \"Schick Hydro Sensitive 5-Blade Razor for Men + 3 Refills with Flip-Back Precisio\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "schick-hydro-silk-disposable-razors-for--vs-schick-hydro-5-blade-disposable-razors-f",
+    "productIds": [
+      "schick-hydro-silk-disposable-razors-for-women-ultra-sensitiv-2345",
+      "schick-hydro-5-blade-disposable-razors-for-men-sensitive-ski-0858"
+    ],
+    "rationale": "Both are Schick Hydro 5-blade disposable razors.",
+    "matchedAttributes": ["Schick Hydro", "5-blade", "disposable", "same size unit (count)"],
+    "knownDifferences": [
+      "Size: 2 count vs 4 count",
+      "Scent/variant differs per listings: \"Schick Hydro Silk Disposable Razors for Women Ultra Sensitive Care with Hydra-Bo\" vs \"Schick Hydro 5-Blade Disposable Razors for Men Sensitive Skin\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "bic-soleil-3-sensitive-razors-5177-vs-bic-flex-3-sensitive-disposable-razors-f",
+    "productIds": [
+      "bic-soleil-3-sensitive-razors-5177",
+      "bic-flex-3-sensitive-disposable-razors-for-men-razors-with-3-4663"
+    ],
+    "rationale": "Both are BIC 3-blade sensitive disposable razors (Soleil 3 Sensitive and Flex 3 Sensitive).",
+    "matchedAttributes": ["BIC", "3-blade", "sensitive", "disposable", "same size unit (count)"],
+    "knownDifferences": [
+      "Size: 2 pk vs 3 ct",
+      "Scent/variant differs per listings: \"BIC® Soleil® 3 Sensitive Razors\" vs \"BIC Flex 3 Sensitive Disposable Razors for Men, Razors With 3 Blades, 3 Count\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "skintimate-signature-scents-shave-gel-fo-vs-edge-extra-moisturizing-shave-gel-for-me",
+    "productIds": [
+      "skintimate-signature-scents-shave-gel-for-women-moisturizing-0548",
+      "edge-extra-moisturizing-shave-gel-for-men-hydrating-unscente-0526"
+    ],
+    "rationale": "Both are Edgewell shave gels (Skintimate and Edge).",
+    "matchedAttributes": ["shave gel", "Edgewell manufacturer", "same size unit (oz)"],
+    "knownDifferences": [
+      "Different brand (Skintimate vs Edge)",
+      "Size: 2.75 oz vs 7 oz",
+      "Scent/variant differs per listings: \"Skintimate Signature Scents Shave Gel for Women Moisturizing Raspberry Rain Scen\" vs \"Edge Extra Moisturizing Shave Gel for Men Hydrating Unscented\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
+  },
+  {
+    "id": "pure-silk-raspberry-mist-moisturizing-sh-vs-barbasol-thick-rich-soothing-aloe-shavin",
+    "productIds": [
+      "pure-silk-raspberry-mist-moisturizing-shave-cream-0991",
+      "barbasol-thick-rich-soothing-aloe-shaving-cream-0273"
+    ],
+    "rationale": "Both are Perio Inc. shaving creams (Pure Silk and Barbasol).",
+    "matchedAttributes": ["shaving cream", "Perio manufacturer", "same size unit (oz)"],
+    "knownDifferences": [
+      "Different brand (Pure Silk vs Barbasol)",
+      "Size: 7.25 oz vs 10 oz",
+      "Scent/variant differs per listings: \"Pure Silk® Raspberry Mist Moisturizing Shave Cream\" vs \"Barbasol® Thick & Rich Soothing Aloe Shaving Cream\""
+    ],
+    "reviewedBy": "DRAFT: from Kroger listing data only, needs in-person review",
+    "reviewedAt": "2026-09-19",
+    "status": "active"
   }
 ]

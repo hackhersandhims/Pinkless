@@ -137,7 +137,7 @@ constraint.
   Kroger identity; invalid sizes, URLs, or identity patterns; an equivalence
   that references a missing product, pairs a product with itself, repeats a
   pair, isn't exactly one women's + one men's/neutral product, crosses
-  categories or sizes, links an inactive product while active, or lacks a
+  categories or size units, links an inactive product while active, or lacks a
   rationale, known differences, reviewer, or review date.
 - Matching resolves an active product by, **in this order**: exact UPC, Kroger
   product ID, then canonical URL pattern. Title/category matching may help a
@@ -145,9 +145,10 @@ constraint.
   Only a women's product with an active reviewed pair is compared. Both offers
   must be USD, in stock, positive, unexpired, Kroger's **regular** price (never
   promo), at the **same store and price context**. Savings = women's price −
-  men's/neutral price; zero or negative → `no-match`.
-- No per-unit price normalization, no loyalty/membership prices, no pairing
-  across sizes or categories, and being the same brand never makes two
+  men's/neutral price scaled to the women's amount (integer math, rounded up,
+  `packages/matcher/src/unit-price.ts`); zero or negative → `no-match`.
+- Per-unit comparison only within one size unit (oz↔oz, count↔count); never
+  across units or categories. No loyalty/membership prices, and being the same brand never makes two
   products equivalent. Every pair is written and reviewed by a person — never
   inferred automatically.
 - Copy may state who a product is marketed to (as its listing says), prices,

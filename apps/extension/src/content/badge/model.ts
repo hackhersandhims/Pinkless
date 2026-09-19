@@ -5,6 +5,8 @@ import type {
   ProductSummary,
   StorePriceContext,
 } from '../../shared/types.js';
+// Pure arithmetic only (no catalog or matching logic), shared so the badge's check can't drift.
+import { sizeAdjustedSavingsCents } from '../../../../../packages/matcher/src/unit-price.js';
 import {
   ALTERNATIVE_LABELS,
   PRICE_CONTEXT_LABELS,
@@ -134,9 +136,17 @@ export function toBadgeModel(
     if (current.locationId !== alternative.locationId) return null;
 
     if (!isPositiveCents(savings.amountCents) || savings.currency !== 'USD') return null;
-    if (savings.amountCents !== current.price.amountCents - alternative.price.amountCents) {
-      return null;
-    }
+    const expectedSavings = sizeAdjustedSavingsCents(
+      current.price.amountCents,
+      product.size,
+      alternative.price.amountCents,
+      alternativeProduct.size,
+    );
+    if (savings.amountCents !== expectedSavings) return null;
+    const sameAmount =
+      product.size.unit === alternativeProduct.size.unit &&
+      product.size.amount === alternativeProduct.size.amount;
+    if (outcome.basis !== (sameAmount ? 'same-size' : 'per-unit')) return null;
 
     const currentExpiry = offerExpiry(current);
     const alternativeExpiry = offerExpiry(alternative);
@@ -154,8 +164,12 @@ export function toBadgeModel(
     const contextLabel = PRICE_CONTEXT_LABELS[current.priceContext as StorePriceContext];
 
     return {
-      headline: `Comparable alternative: save ${formatCents(savings.amountCents)}`,
-      productLine: `${alternativeLabel}: ${alternativeName} — ${alternativePrice}`,
+      headline: sameAmount
+        ? `Comparable alternative: save ${formatCents(savings.amountCents)}`
+        : `Comparable alternative: save ${formatCents(savings.amountCents)} for the same amount`,
+      productLine: sameAmount
+        ? `${alternativeLabel}: ${alternativeName} — ${alternativePrice}`
+        : `${alternativeLabel}: ${alternativeName} — ${alternativePrice} for ${formatSize(alternativeProduct.size)} (this one is ${formatSize(product.size)})`,
       supporting: [
         asSentence(rationale),
         `Differs: ${asSentence(knownDifferences[0]!)}`,
@@ -183,4 +197,8 @@ export function toBadgeModel(
     // Malformed API payload (missing nested field, wrong type): silence, not an error surface.
     return null;
   }
+}
+
+function formatSize(size: ProductSummary['size']): string {
+  return size.unit === 'count' ? `${size.amount} ct` : `${size.amount} ${size.unit}`;
 }

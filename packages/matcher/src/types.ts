@@ -59,7 +59,14 @@ export type ShowOutcome = {
   current: Offer;
   alternativeProduct: ProductSummary;
   alternative: Offer;
+  /**
+   * What the shopper saves for the women's product's amount: its price minus
+   * the alternative's price scaled to that amount (rounded up). With equal
+   * sizes this is the plain price difference.
+   */
   savings: Money;
+  /** `same-size`: identical amounts. `per-unit`: same unit, different amounts. */
+  basis: 'same-size' | 'per-unit';
   rationale: string;
   matchedAttributes: string[];
   knownDifferences: string[];

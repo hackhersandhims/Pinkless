@@ -6,6 +6,7 @@ import type {
   RetailerIdentity,
 } from '../../catalog/src/schema.js';
 import { resolveProduct } from './resolve.js';
+import { sameSize, sizeAdjustedSavingsCents } from './unit-price.js';
 import type {
   ComparisonOutcome,
   IdentityMatchMethod,
@@ -90,9 +91,24 @@ export function equivalentsFor(catalog: Catalog, productId: string): Equivalent[
     const other = byId.get(otherId);
     if (!other || other.status !== 'active' || other.marketedTo === 'women') return [];
     if (other.category !== self.category) return [];
-    if (other.size.unit !== self.size.unit || other.size.amount !== self.size.amount) return [];
+    if (other.size.unit !== self.size.unit) return [];
     return [{ equivalence, product: other }];
   });
+}
+
+/** Savings for the women's product's amount; see unit-price.ts. */
+function savingsFor(
+  product: Product,
+  current: Offer,
+  alternativeProduct: Product,
+  alternative: Offer,
+): number | undefined {
+  return sizeAdjustedSavingsCents(
+    current.price.amountCents,
+    product.size,
+    alternative.price.amountCents,
+    alternativeProduct.size,
+  );
 }
 
 function show(
@@ -111,9 +127,10 @@ function show(
     alternativeProduct: summary(equivalent.product),
     alternative,
     savings: {
-      amountCents: current.price.amountCents - alternative.price.amountCents,
+      amountCents: savingsFor(product, current, equivalent.product, alternative) ?? 0,
       currency: 'USD',
     },
+    basis: sameSize(product.size, equivalent.product.size) ? 'same-size' : 'per-unit',
     rationale: equivalence.rationale,
     matchedAttributes: [...equivalence.matchedAttributes],
     knownDifferences: [...equivalence.knownDifferences],
@@ -141,17 +158,19 @@ function bestAlternative(
       equivalent,
       offer: lowestOffer(offers, equivalent.product, store, nowMs),
     }))
-    .filter((candidate): candidate is { equivalent: Equivalent; offer: Offer } =>
-      Boolean(candidate.offer),
-    )
+    .flatMap((candidate) => {
+      if (!candidate.offer) return [];
+      const savings = savingsFor(product, current, candidate.equivalent.product, candidate.offer);
+      return savings === undefined ? [] : [{ ...candidate, offer: candidate.offer, savings }];
+    })
     .sort(
       (left, right) =>
-        left.offer.price.amountCents - right.offer.price.amountCents ||
+        right.savings - left.savings ||
         left.equivalent.equivalence.id.localeCompare(right.equivalent.equivalence.id),
     );
   const best = candidates[0];
   if (!best) return { status: 'no-match', reason: 'no-eligible-offer' };
-  if (current.price.amountCents - best.offer.price.amountCents <= 0) {
+  if (best.savings <= 0) {
     return { status: 'no-match', reason: 'no-positive-savings' };
   }
   return show(product, current, best.equivalent, best.offer, matchedBy);

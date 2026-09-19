@@ -170,11 +170,14 @@ describe('validateEquivalences', () => {
 
   it('rejects pairs across sizes, categories, or with an inactive product', () => {
     expect(
+      pairMessages([pair()], [validProduct(), secondProduct({ size: { amount: 2, unit: 'oz' } })]),
+    ).toContain('must pair products with the same size unit.');
+    expect(
       pairMessages(
         [pair()],
         [validProduct(), secondProduct({ size: { amount: 2, unit: 'count' } })],
       ),
-    ).toContain('must pair products with the same size unit and amount.');
+    ).toEqual([]);
     expect(
       pairMessages([pair()], [validProduct(), secondProduct({ category: 'deodorant' })]),
     ).toContain('must pair products in the same category.');

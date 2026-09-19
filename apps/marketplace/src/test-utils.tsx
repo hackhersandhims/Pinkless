@@ -74,6 +74,7 @@ export function makeComparisonView(
     priceContextLabel: PRICE_CONTEXT_LABELS['in-store'],
     observedAt: '2026-09-19T14:00:00.000Z',
     savingsCents: womens.priceCents - other.priceCents,
+    perUnit: false,
     rationale: 'Both are 3-blade disposable razors in a 4-count pack.',
     matchedAttributes: ['blade count', 'pack count'],
     knownDifferences: ['Handle color differs.'],

@@ -5,9 +5,10 @@ import { formatObservedAt } from './dates.js';
 import { formatCents } from './money.js';
 import type { ComparisonView } from './types.js';
 
-/** "The men’s version costs $0.80 less". */
+/** "The men’s version costs $0.80 less", plus " for the same amount" when sizes differ. */
 export function comparisonHeadline(item: ComparisonView): string {
-  return `The ${item.versionLabel} costs ${formatCents(item.savingsCents)} less`;
+  const suffix = item.perUnit ? ' for the same amount' : '';
+  return `The ${item.versionLabel} costs ${formatCents(item.savingsCents)} less${suffix}`;
 }
 
 /** "Kroger On the Rhine · In store · Checked Sep 19, 2026". */

@@ -25,6 +25,8 @@ export type ListResult =
   | { status: 'ok'; comparisons: ShowOutcome[] }
   | { status: 'suppressed'; reason: SuppressionReason };
 
+const LOOKUP_CONCURRENCY = 8;
+
 export class ComparisonService {
   constructor(
     private readonly catalog: Catalog,
@@ -32,20 +34,35 @@ export class ComparisonService {
     private readonly now: () => Date = () => new Date(),
   ) {}
 
-  /** Prices every Kroger identity of the given products at one store, in parallel. */
-  private priceProducts(products: Product[], store: StoreContext): Promise<OfferLookupResult[]> {
-    return Promise.all(
-      products.flatMap((product) =>
-        product.identities.map((identity) =>
+  /**
+   * Prices every Kroger identity of the given products at one store, at most
+   * `LOOKUP_CONCURRENCY` at a time so a large catalog doesn't burst the provider.
+   */
+  private async priceProducts(
+    products: Product[],
+    store: StoreContext,
+  ): Promise<OfferLookupResult[]> {
+    const lookups = products.flatMap((product) =>
+      product.identities.map(
+        (identity) => () =>
           this.gateway.lookupOffers(identity.retailer, {
             productId: identity.productId,
             url: identity.canonicalUrl,
             priceContext: store.priceContext,
             locationId: store.locationId,
           }),
-        ),
       ),
     );
+    const results: OfferLookupResult[] = new Array(lookups.length);
+    let next = 0;
+    const worker = async (): Promise<void> => {
+      while (next < lookups.length) {
+        const index = next++;
+        results[index] = await lookups[index]!();
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(LOOKUP_CONCURRENCY, lookups.length) }, worker));
+    return results;
   }
 
   /**
@@ -97,9 +114,12 @@ export class ComparisonService {
       return product && product.status === 'active' ? [product] : [];
     });
     const results = await this.priceProducts(products, store);
+    // A product whose lookup failed has no offers, so its pairs stay out of the
+    // list (suppress by default). Only a total failure suppresses the whole list.
     const failed = results.find((result) => result.state !== 'ok');
-    // A partially priced list would silently hide pairs; fail the whole list instead.
-    if (failed) return { status: 'suppressed', reason: stateReason(failed.state) };
+    if (failed && results.every((result) => result.state !== 'ok')) {
+      return { status: 'suppressed', reason: stateReason(failed.state) };
+    }
     const offers: Offer[] = results.flatMap((result) => result.offers);
     return { status: 'ok', comparisons: listComparisons(this.catalog, offers, store, this.now()) };
   }

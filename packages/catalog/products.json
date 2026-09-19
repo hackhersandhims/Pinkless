@@ -40,5 +40,1853 @@
       }
     ],
     "status": "active"
+  },
+  {
+    "id": "venus-comfortglide-white-tea-handle-2ct",
+    "name": "Gillette Venus ComfortGlide Women's White Tea Scented 3-Blade Razor Handle and Refill Cartridges",
+    "brand": "Gillette",
+    "variant": "3-blade razor handle + refill cartridges, 2 count",
+    "category": "razors",
+    "size": {
+      "amount": 2,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740030041",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-venus-comfortglide-women-s-white-tea-scented-3-blade-razor-handle-and-refill-cartridges/0004740030041",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740030041$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "mach3-handle-2ct",
+    "name": "Gillette Mach3 Men's 3-Blade Razor Handle and Blade Refill Cartridges",
+    "brand": "Gillette",
+    "variant": "3-blade razor handle + refill cartridges, 2 count",
+    "category": "razors",
+    "size": {
+      "amount": 2,
+      "unit": "count"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740065892",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-mach3-men-s-3-blade-razor-handle-and-blade-refill-cartridges/0004740065892",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740065892$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "venus-comfortglide-freesia-refills-4ct",
+    "name": "Gillette Venus ComfortGlide Freesia Women's Razor Blade Refill Cartridges",
+    "brand": "Gillette",
+    "variant": "3-blade refill cartridges, 4 count",
+    "category": "razors",
+    "size": {
+      "amount": 4,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740007106",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-venus-comfortglide-freesia-women-s-razor-blade-refill-cartridges/0004740007106",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740007106$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "mach3-refills-4ct",
+    "name": "Gillette Mach3 Men's 3-Blade Razor Blade Refill Cartridges",
+    "brand": "Gillette",
+    "variant": "3-blade refill cartridges, 4 count",
+    "category": "razors",
+    "size": {
+      "amount": 4,
+      "unit": "count"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740066181",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-mach3-men-s-3-blade-razor-blade-refill-cartridges/0004740066181",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740066181$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "venus-extra-smooth-refills-4ct",
+    "name": "Gillette Venus Extra Smooth Women's Razor Blade Refill Cartridges",
+    "brand": "Gillette",
+    "variant": "5-blade refill cartridges, 4 count",
+    "category": "razors",
+    "size": {
+      "amount": 4,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740009897",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-venus-extra-smooth-women-s-razor-blade-refill-cartridges/0004740009897",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740009897$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "fusion5-refills-4ct",
+    "name": "Gillette Fusion5 Men's 5-Blade Razor Blade Refill Cartridges",
+    "brand": "Gillette",
+    "variant": "5-blade refill cartridges, 4 count",
+    "category": "razors",
+    "size": {
+      "amount": 4,
+      "unit": "count"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740015687",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-fusion5-men-s-5-blade-razor-blade-refill-cartridges/0004740015687",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740015687$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "flamingo-5blade-refills-8ct",
+    "name": "Flamingo Women's Five-Blade Razor Blade Refill Cartridges",
+    "brand": "Flamingo",
+    "variant": "5-blade refill cartridges, 8 count",
+    "category": "razors",
+    "size": {
+      "amount": 8,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0081007508017",
+        "canonicalUrl": "https://www.kroger.com/p/flamingo-women-s-five-blade-razor-blade-refill-cartridges/0081007508017",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0081007508017$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "harrys-5blade-refills-8ct",
+    "name": "Harry's Men's 5-Blade Razor Refill Cartridges",
+    "brand": "Harry's",
+    "variant": "5-blade refill cartridges, 8 count",
+    "category": "razors",
+    "size": {
+      "amount": 8,
+      "unit": "count"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0085424200607",
+        "canonicalUrl": "https://www.kroger.com/p/harry-s-men-s-5-blade-razor-refill-cartridges/0085424200607",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0085424200607$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "venus-sensitive-3blade-disposable-3ct",
+    "name": "Gillette Venus Women's Sensitive Skin 3-Blade Disposable Razors",
+    "brand": "Gillette",
+    "variant": "3-blade disposable razor, 3 count",
+    "category": "razors",
+    "size": {
+      "amount": 3,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740031389",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-venus-women-s-sensitive-skin-3-blade-disposable-razors/0004740031389",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740031389$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "venus-tropical-3blade-disposable-3ct",
+    "name": "Gillette Venus Women's Tropical Scented 3-Blade Disposable Razors",
+    "brand": "Gillette",
+    "variant": "3-blade disposable razor, 3 count",
+    "category": "razors",
+    "size": {
+      "amount": 3,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740031391",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-venus-women-s-tropical-scented-3-blade-disposable-razors/0004740031391",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740031391$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "sensor3-sensitive-disposable-3ct",
+    "name": "Gillette Sensor3 Men's Sensitive Skin 3-Blade Disposable Razors",
+    "brand": "Gillette",
+    "variant": "3-blade disposable razor, 3 count",
+    "category": "razors",
+    "size": {
+      "amount": 3,
+      "unit": "count"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740067212",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-sensor3-men-s-sensitive-skin-3-blade-disposable-razors/0004740067212",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740067212$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "bic-soleil-smooth-4pk",
+    "name": "BIC Soleil Smooth Women's Disposable Razors",
+    "brand": "BIC",
+    "variant": "3-blade disposable razor, 4 pk",
+    "category": "razors",
+    "size": {
+      "amount": 4,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0007033071300",
+        "canonicalUrl": "https://www.kroger.com/p/bic-soleil-smooth-women-s-disposable-razors/0007033071300",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0007033071300$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "dove-whole-body-deo-coconut-vanilla-4oz",
+    "name": "Dove Whole Body Deo Deodorant Spray for Women, Coconut Vanilla",
+    "brand": "Dove",
+    "variant": "whole body deodorant spray, 4 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 4,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0007940052923",
+        "canonicalUrl": "https://www.kroger.com/p/dove-whole-body-deo-deodorant-spray-for-women-coconut-vanilla/0007940052923",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0007940052923$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "dove-men-care-whole-body-deo-cedar-4oz",
+    "name": "Dove Men+Care Whole Body Deo Deodorant Spray, Cedar",
+    "brand": "Dove",
+    "variant": "whole body deodorant spray, 4 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 4,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0007940052967",
+        "canonicalUrl": "https://www.kroger.com/p/dove-men-care-whole-body-deo-deodorant-spray-cedar/0007940052967",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0007940052967$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodorant-invisible-solid-po-2343",
+    "name": "Secret for Women Antiperspirant Deodorant Invisible Solid Powder Fresh Scent",
+    "brand": "Secret",
+    "variant": "1 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700012343",
+        "canonicalUrl": "https://www.kroger.com/p/secret-for-women-antiperspirant-deodorant-invisible-solid-po/0003700012343",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700012343$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "old-spice-high-endurance-for-men-antiperspirant-deodorant-in-0024",
+    "name": "Old Spice High Endurance for Men Antiperspirant Deodorant Invisible Solid Fresh Scent",
+    "brand": "Old Spice",
+    "variant": "3 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 3,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0001204400024",
+        "canonicalUrl": "https://www.kroger.com/p/old-spice-high-endurance-for-men-antiperspirant-deodorant-in/0001204400024",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0001204400024$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodorant-invisible-solid-sh-2345",
+    "name": "Secret for Women Antiperspirant Deodorant Invisible Solid Shower Fresh Scent",
+    "brand": "Secret",
+    "variant": "1 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700012345",
+        "canonicalUrl": "https://www.kroger.com/p/secret-for-women-antiperspirant-deodorant-invisible-solid-sh/0003700012345",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700012345$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "old-spice-high-endurance-for-men-antiperspirant-deodorant-in-0025",
+    "name": "Old Spice High Endurance for Men Antiperspirant Deodorant Invisible Solid Pure Sport Scent",
+    "brand": "Old Spice",
+    "variant": "3 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 3,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0001204400025",
+        "canonicalUrl": "https://www.kroger.com/p/old-spice-high-endurance-for-men-antiperspirant-deodorant-in/0001204400025",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0001204400025$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodorant-invisible-solid-co-9800",
+    "name": "Secret for Women Antiperspirant Deodorant Invisible Solid Coconut Scent",
+    "brand": "Secret",
+    "variant": "1 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700049800",
+        "canonicalUrl": "https://www.kroger.com/p/secret-for-women-antiperspirant-deodorant-invisible-solid-co/0003700049800",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700049800$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodorant-invisible-solid-va-0444",
+    "name": "Secret for Women Antiperspirant Deodorant Invisible Solid Vanilla Scent",
+    "brand": "Secret",
+    "variant": "1 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700020444",
+        "canonicalUrl": "https://www.kroger.com/p/secret-for-women-antiperspirant-deodorant-invisible-solid-va/0003700020444",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700020444$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodorant-invisible-solid-wa-7883",
+    "name": "Secret for Women Antiperspirant Deodorant Invisible Solid Waterlily Scent",
+    "brand": "Secret",
+    "variant": "1 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700097883",
+        "canonicalUrl": "https://www.kroger.com/p/secret-for-women-antiperspirant-deodorant-invisible-solid-wa/0003700097883",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700097883$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodorant-invisible-solid-po-2432",
+    "name": "Secret for Women Antiperspirant Deodorant Invisible Solid Powder Fresh Scent",
+    "brand": "Secret",
+    "variant": "2 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 5.2,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700012432",
+        "canonicalUrl": "https://www.kroger.com/p/secret-for-women-antiperspirant-deodorant-invisible-solid-po/0003700012432",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700012432$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "old-spice-high-endurance-for-men-antiperspirant-deodorant-in-1451",
+    "name": "Old Spice High Endurance for Men Antiperspirant Deodorant Invisible Solid Fresh Scent 2-Pack",
+    "brand": "Old Spice",
+    "variant": "2 pack / 3 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 6,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0001204401451",
+        "canonicalUrl": "https://www.kroger.com/p/old-spice-high-endurance-for-men-antiperspirant-deodorant-in/0001204401451",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0001204401451$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-invisible-solid-antiperspirant-and-deodorant-shower-f-2433",
+    "name": "Secret Invisible Solid Antiperspirant and Deodorant, Shower Fresh, Twin Pack",
+    "brand": "Secret",
+    "variant": "2 pk / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 5.2,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700012433",
+        "canonicalUrl": "https://www.kroger.com/p/secret-invisible-solid-antiperspirant-and-deodorant-shower-f/0003700012433",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700012433$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-clinical-strength-women-s-antiperspirant-soft-solid-d-7425",
+    "name": "Secret Clinical Strength Women's Antiperspirant Soft Solid Deodorant Light & Fresh, 2.6oz",
+    "brand": "Secret",
+    "variant": "2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700017425",
+        "canonicalUrl": "https://www.kroger.com/p/secret-clinical-strength-women-s-antiperspirant-soft-solid-d/0003700017425",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700017425$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-clinical-protection-for-men-antiperspirant-deodoran-5965",
+    "name": "Gillette Clinical Protection for Men Antiperspirant Deodorant Soft Solid Ultimate Fresh Scent 1-Pack",
+    "brand": "Gillette",
+    "variant": "1 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740005965",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-clinical-protection-for-men-antiperspirant-deodoran/0004740005965",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740005965$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-outlast-women-s-antiperspirant-deodorant-invisible-so-0805",
+    "name": "Secret Outlast Women's Antiperspirant Deodorant Invisible Solid Completely Clean, 2.6oz",
+    "brand": "Secret",
+    "variant": "1 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700080805",
+        "canonicalUrl": "https://www.kroger.com/p/secret-outlast-women-s-antiperspirant-deodorant-invisible-so/0003700080805",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700080805$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "old-spice-sweat-defense-for-men-antiperspirant-deodorant-inv-4480",
+    "name": "Old Spice Sweat Defense for Men Antiperspirant Deodorant Invisible Solid Stronger Swagger Scent",
+    "brand": "Old Spice",
+    "variant": "2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700094480",
+        "canonicalUrl": "https://www.kroger.com/p/old-spice-sweat-defense-for-men-antiperspirant-deodorant-inv/0003700094480",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700094480$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-outlast-women-s-antiperspirant-deodorant-clear-gel-pr-0819",
+    "name": "Secret Outlast Women's Antiperspirant Deodorant Clear Gel Protecting Powder",
+    "brand": "Secret",
+    "variant": "1 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700080819",
+        "canonicalUrl": "https://www.kroger.com/p/secret-outlast-women-s-antiperspirant-deodorant-clear-gel-pr/0003700080819",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700080819$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-clearshield-for-men-antiperspirant-deodorant-clear-9772",
+    "name": "Gillette ClearShield for Men Antiperspirant Deodorant Clear Gel Cool Wave Scent 1-Pack",
+    "brand": "Gillette",
+    "variant": "1 pack / 3.8 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 3.8,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740009772",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-clearshield-for-men-antiperspirant-deodorant-clear/0004740009772",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740009772$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-outlast-for-women-antiperspirant-deodorant-clear-gel-0822",
+    "name": "Secret Outlast for Women Antiperspirant Deodorant Clear Gel Completely Clean Scent",
+    "brand": "Secret",
+    "variant": "1 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700080822",
+        "canonicalUrl": "https://www.kroger.com/p/secret-outlast-for-women-antiperspirant-deodorant-clear-gel/0003700080822",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700080822$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-outlast-for-women-antiperspirant-deodorant-clear-gel-0831",
+    "name": "Secret Outlast for Women Antiperspirant Deodorant Clear Gel Completely Clean Scent",
+    "brand": "Secret",
+    "variant": "1 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700080831",
+        "canonicalUrl": "https://www.kroger.com/p/secret-outlast-for-women-antiperspirant-deodorant-clear-gel/0003700080831",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700080831$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-women-s-antiperspirant-deodorant-clear-gel-berr-0905",
+    "name": "Secret Fresh Women's Antiperspirant Deodorant Clear Gel Berry, 2.6oz",
+    "brand": "Secret",
+    "variant": "2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700080905",
+        "canonicalUrl": "https://www.kroger.com/p/secret-fresh-women-s-antiperspirant-deodorant-clear-gel-berr/0003700080905",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700080905$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-women-s-antiperspirant-deodorant-clear-gel-ocea-4879",
+    "name": "Secret Fresh Women's Antiperspirant Deodorant Clear Gel Oceanside, 2.6 oz",
+    "brand": "Secret",
+    "variant": "2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700094879",
+        "canonicalUrl": "https://www.kroger.com/p/secret-fresh-women-s-antiperspirant-deodorant-clear-gel-ocea/0003700094879",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700094879$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-for-women-antiperspirant-deodorant-clear-gel-co-0031",
+    "name": "Secret Fresh for Women Antiperspirant Deodorant Clear Gel Coconut Scent",
+    "brand": "Secret",
+    "variant": "1 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700050031",
+        "canonicalUrl": "https://www.kroger.com/p/secret-fresh-for-women-antiperspirant-deodorant-clear-gel-co/0003700050031",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700050031$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-for-women-antiperspirant-deodorant-clear-gel-de-8793",
+    "name": "Secret Fresh for Women Antiperspirant Deodorant Clear Gel Delicate Rose Scent",
+    "brand": "Secret",
+    "variant": "1 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700088793",
+        "canonicalUrl": "https://www.kroger.com/p/secret-fresh-for-women-antiperspirant-deodorant-clear-gel-de/0003700088793",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700088793$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-for-women-antiperspirant-deodorant-clear-gel-wa-7885",
+    "name": "Secret Fresh for Women Antiperspirant Deodorant Clear Gel Waterlily Scent",
+    "brand": "Secret",
+    "variant": "1 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700097885",
+        "canonicalUrl": "https://www.kroger.com/p/secret-fresh-for-women-antiperspirant-deodorant-clear-gel-wa/0003700097885",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700097885$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodorant-clear-gel-refreshi-0468",
+    "name": "Secret for Women Antiperspirant Deodorant Clear Gel Refreshing Lavender Scent",
+    "brand": "Secret",
+    "variant": "1 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700020468",
+        "canonicalUrl": "https://www.kroger.com/p/secret-for-women-antiperspirant-deodorant-clear-gel-refreshi/0003700020468",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700020468$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-outlast-for-women-antiperspirant-deodorant-clear-gel-4825",
+    "name": "Secret Outlast for Women Antiperspirant Deodorant Clear Gel Completely Clean Scent",
+    "brand": "Secret",
+    "variant": "2 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 5.2,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700054825",
+        "canonicalUrl": "https://www.kroger.com/p/secret-outlast-for-women-antiperspirant-deodorant-clear-gel/0003700054825",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700054825$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-clearshield-for-men-antiperspirant-deodorant-clear-9995",
+    "name": "Gillette ClearShield for Men Antiperspirant Deodorant Clear Gel Cool Wave Scent 2-Pack",
+    "brand": "Gillette",
+    "variant": "2 pack / 3.8 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 7.6,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740009995",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-clearshield-for-men-antiperspirant-deodorant-clear/0004740009995",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740009995$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-clear-gel-antiperspirant-and-deodorant-for-wome-7464",
+    "name": "Secret Fresh Clear Gel Antiperspirant and Deodorant for Women Berry",
+    "brand": "Secret",
+    "variant": "2 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 5.2,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700057464",
+        "canonicalUrl": "https://www.kroger.com/p/secret-fresh-clear-gel-antiperspirant-and-deodorant-for-wome/0003700057464",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700057464$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-for-women-antiperspirant-deodorant-clear-gel-co-8593",
+    "name": "Secret Fresh for Women Antiperspirant Deodorant Clear Gel Coconut Scent",
+    "brand": "Secret",
+    "variant": "2 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 5.2,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700078593",
+        "canonicalUrl": "https://www.kroger.com/p/secret-fresh-for-women-antiperspirant-deodorant-clear-gel-co/0003700078593",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700078593$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-fresh-for-women-antiperspirant-deodorant-clear-gel-re-4826",
+    "name": "Secret Fresh for Women Antiperspirant Deodorant Clear Gel Relaxing Lavender Scent",
+    "brand": "Secret",
+    "variant": "2 pack / 2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 5.2,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700054826",
+        "canonicalUrl": "https://www.kroger.com/p/secret-fresh-for-women-antiperspirant-deodorant-clear-gel-re/0003700054826",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700054826$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodorant-dry-spray-vanilla-1775",
+    "name": "Secret for Women Antiperspirant Deodorant Dry Spray Vanilla and Argan Oil Scent",
+    "brand": "Secret",
+    "variant": "4.1 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 4.1,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003077201775",
+        "canonicalUrl": "https://www.kroger.com/p/secret-for-women-antiperspirant-deodorant-dry-spray-vanilla/0003077201775",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003077201775$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "old-spice-for-men-invisible-antiperspirant-deodorant-invisib-4989",
+    "name": "Old Spice for Men Invisible Antiperspirant Deodorant Invisible Dry Spray Swagger Scent 1-Pack",
+    "brand": "Old Spice",
+    "variant": "1 pack / 4.3 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 4.3,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0001204404989",
+        "canonicalUrl": "https://www.kroger.com/p/old-spice-for-men-invisible-antiperspirant-deodorant-invisib/0001204404989",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0001204404989$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-antiperspirant-deodorant-dry-spray-wild-ros-1780",
+    "name": "Secret for Women Antiperspirant Deodorant Dry Spray Wild Rose and Argan Oil Scent",
+    "brand": "Secret",
+    "variant": "4.1 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 4.1,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003077201780",
+        "canonicalUrl": "https://www.kroger.com/p/secret-for-women-antiperspirant-deodorant-dry-spray-wild-ros/0003077201780",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003077201780$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-aluminum-free-deodorant-for-women-dry-solid-coconut-0091",
+    "name": "Secret Aluminum Free Deodorant for Women Dry Solid, Coconut",
+    "brand": "Secret",
+    "variant": "2.4 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.4,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700080091",
+        "canonicalUrl": "https://www.kroger.com/p/secret-aluminum-free-deodorant-for-women-dry-solid-coconut/0003700080091",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700080091$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "old-spice-for-men-aluminum-free-deodorant-fiji-with-palm-tre-3759",
+    "name": "Old Spice for Men Aluminum-Free Deodorant Fiji with Palm Tree Scent 1-Pack",
+    "brand": "Old Spice",
+    "variant": "1 pack / 3 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 3,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0001204403759",
+        "canonicalUrl": "https://www.kroger.com/p/old-spice-for-men-aluminum-free-deodorant-fiji-with-palm-tre/0001204403759",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0001204403759$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-aluminum-free-deodorant-cotton-scent-0100",
+    "name": "Secret for Women Aluminum-Free Deodorant Cotton Scent",
+    "brand": "Secret",
+    "variant": "1 pack / 2.4 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.4,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700080100",
+        "canonicalUrl": "https://www.kroger.com/p/secret-for-women-aluminum-free-deodorant-cotton-scent/0003700080100",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700080100$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "secret-for-women-aluminum-free-deodorant-lavender-scent-0093",
+    "name": "Secret for Women Aluminum-Free Deodorant Lavender Scent",
+    "brand": "Secret",
+    "variant": "1 pack / 2.4 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.4,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0003700080093",
+        "canonicalUrl": "https://www.kroger.com/p/secret-for-women-aluminum-free-deodorant-lavender-scent/0003700080093",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0003700080093$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "degree-ultraclear-antiperspirant-deodorant-for-women-8719",
+    "name": "Degree UltraClear Antiperspirant Deodorant for Women",
+    "brand": "Degree",
+    "variant": "2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0007940058719",
+        "canonicalUrl": "https://www.kroger.com/p/degree-ultraclear-antiperspirant-deodorant-for-women/0007940058719",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0007940058719$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "degree-ultraclear-men-s-antiperspirant-deodorant-fresh-with-6914",
+    "name": "Degree UltraClear Men's Antiperspirant Deodorant Fresh With MotionSense Technology",
+    "brand": "Degree",
+    "variant": "2.7 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.7,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0007940066914",
+        "canonicalUrl": "https://www.kroger.com/p/degree-ultraclear-men-s-antiperspirant-deodorant-fresh-with/0007940066914",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0007940066914$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "degree-antiperspirant-deodorant-for-women-1628",
+    "name": "Degree Antiperspirant Deodorant for Women",
+    "brand": "Degree",
+    "variant": "2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0007940021628",
+        "canonicalUrl": "https://www.kroger.com/p/degree-antiperspirant-deodorant-for-women/0007940021628",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0007940021628$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "degree-original-men-s-antiperspirant-deodorant-cool-rush-6540",
+    "name": "Degree Original Men's Antiperspirant Deodorant Cool Rush",
+    "brand": "Degree",
+    "variant": "2.6 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.6,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0007940026540",
+        "canonicalUrl": "https://www.kroger.com/p/degree-original-men-s-antiperspirant-deodorant-cool-rush/0007940026540",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0007940026540$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "dove-whole-body-deo-alcohol-free-deodorant-spray-for-women-b-2924",
+    "name": "Dove Whole Body Deo, Alcohol Free Deodorant Spray for Women, Berry Blush",
+    "brand": "Dove",
+    "variant": "4 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 4,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0007940052924",
+        "canonicalUrl": "https://www.kroger.com/p/dove-whole-body-deo-alcohol-free-deodorant-spray-for-women-b/0007940052924",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0007940052924$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "dove-men-care-whole-body-deo-aluminum-free-deodorant-spray-b-2966",
+    "name": "Dove Men+Care Whole Body Deo Aluminum Free Deodorant Spray Bamboo + Aloe",
+    "brand": "Dove",
+    "variant": "4 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 4,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0007940052966",
+        "canonicalUrl": "https://www.kroger.com/p/dove-men-care-whole-body-deo-aluminum-free-deodorant-spray-b/0007940052966",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0007940052966$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "dove-whole-body-deo-alcohol-free-deodorant-spray-for-women-l-2922",
+    "name": "Dove Whole Body Deo, Alcohol Free Deodorant Spray for Women, Lavender Bloom",
+    "brand": "Dove",
+    "variant": "4 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 4,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0007940052922",
+        "canonicalUrl": "https://www.kroger.com/p/dove-whole-body-deo-alcohol-free-deodorant-spray-for-women-l/0007940052922",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0007940052922$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "dove-whole-body-deo-alcohol-free-deodorant-spray-for-women-p-2921",
+    "name": "Dove Whole Body Deo, Alcohol Free Deodorant Spray for Women, Peach Glow",
+    "brand": "Dove",
+    "variant": "4 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 4,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0007940052921",
+        "canonicalUrl": "https://www.kroger.com/p/dove-whole-body-deo-alcohol-free-deodorant-spray-for-women-p/0007940052921",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0007940052921$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "lady-speed-stick-antiperspirant-deodorant-for-women-shower-f-5441",
+    "name": "Lady Speed Stick Antiperspirant Deodorant for Women Shower Fresh Scent",
+    "brand": "Lady Speed Stick",
+    "variant": "2.3 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 2.3,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0002220095441",
+        "canonicalUrl": "https://www.kroger.com/p/lady-speed-stick-antiperspirant-deodorant-for-women-shower-f/0002220095441",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0002220095441$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "speed-stick-power-antiperspirant-deodorant-for-men-72-hr-swe-0490",
+    "name": "Speed Stick Power Antiperspirant Deodorant for Men 72 HR Sweat & Odor Protection Fresh Scent",
+    "brand": "Speed Stick",
+    "variant": "3 oz",
+    "category": "deodorant",
+    "size": {
+      "amount": 3,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0002220000490",
+        "canonicalUrl": "https://www.kroger.com/p/speed-stick-power-antiperspirant-deodorant-for-men-72-hr-swe/0002220000490",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0002220000490$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-women-s-simply3-sensitive-3-blade-disposable-6356",
+    "name": "Gillette Venus Women's Simply3 Sensitive 3-Blade Disposable Razors",
+    "brand": "Gillette",
+    "variant": "4 count",
+    "category": "razors",
+    "size": {
+      "amount": 4,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740066356",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-venus-women-s-simply3-sensitive-3-blade-disposable/0004740066356",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740066356$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-sensor3-men-s-sensitive-skin-3-blade-disposable-raz-7215",
+    "name": "Gillette Sensor3 Men's Sensitive Skin 3-Blade Disposable Razors",
+    "brand": "Gillette",
+    "variant": "7 count",
+    "category": "razors",
+    "size": {
+      "amount": 7,
+      "unit": "count"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740067215",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-sensor3-men-s-sensitive-skin-3-blade-disposable-raz/0004740067215",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740067215$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-women-s-sensitive-skin-pink-disposable-razors-1392",
+    "name": "Gillette Venus Women's Sensitive Skin Pink Disposable Razors",
+    "brand": "Venus",
+    "variant": "6 count",
+    "category": "razors",
+    "size": {
+      "amount": 6,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740031392",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-venus-women-s-sensitive-skin-pink-disposable-razors/0004740031392",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740031392$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-mach3-sensitive-men-s-disposable-razors-9747",
+    "name": "Gillette Mach3 Sensitive Men's Disposable Razors",
+    "brand": "Gillette",
+    "variant": "7 count",
+    "category": "razors",
+    "size": {
+      "amount": 7,
+      "unit": "count"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740069747",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-mach3-sensitive-men-s-disposable-razors/0004740069747",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740069747$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "venus-tropical-women-s-disposable-razor-6238",
+    "name": "Venus Tropical Women's Disposable Razor",
+    "brand": "Gillette",
+    "variant": "6 ct",
+    "category": "razors",
+    "size": {
+      "amount": 6,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740066238",
+        "canonicalUrl": "https://www.kroger.com/p/venus-tropical-women-s-disposable-razor/0004740066238",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740066238$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-comfortglide-white-tea-women-s-razor-blade-re-0102",
+    "name": "Gillette Venus ComfortGlide White Tea Women's Razor Blade Refills Cartridges",
+    "brand": "Gillette",
+    "variant": "4 count",
+    "category": "razors",
+    "size": {
+      "amount": 4,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740030102",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-venus-comfortglide-white-tea-women-s-razor-blade-re/0004740030102",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740030102$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-smooth-women-s-razor-blade-refills-cartridges-4129",
+    "name": "Gillette Venus Smooth Women's Razor Blade Refills Cartridges",
+    "brand": "Gillette",
+    "variant": "4 count",
+    "category": "razors",
+    "size": {
+      "amount": 4,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740014129",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-venus-smooth-women-s-razor-blade-refills-cartridges/0004740014129",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740014129$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-mach3-razor-blade-refills-with-lubrication-strip-3-1308",
+    "name": "Gillette Mach3 Razor Blade Refills, With Lubrication Strip, 3-Blade Razor Blades for Close Shave",
+    "brand": "Gillette",
+    "variant": "10 count",
+    "category": "razors",
+    "size": {
+      "amount": 10,
+      "unit": "count"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740031308",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-mach3-razor-blade-refills-with-lubrication-strip-3/0004740031308",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740031308$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-comfortglide-plus-olay-coconut-women-s-razor-5209",
+    "name": "Gillette Venus ComfortGlide plus Olay Coconut Women's Razor Blade Refills Cartridges",
+    "brand": "Gillette",
+    "variant": "4 count",
+    "category": "razors",
+    "size": {
+      "amount": 4,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740065209",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-venus-comfortglide-plus-olay-coconut-women-s-razor/0004740065209",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740065209$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-comfortglide-plus-olay-coconut-women-s-razor-5210",
+    "name": "Gillette Venus ComfortGlide plus Olay Coconut Women's Razor Blade Refills Cartridges",
+    "brand": "Venus",
+    "variant": "6 count",
+    "category": "razors",
+    "size": {
+      "amount": 6,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740065210",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-venus-comfortglide-plus-olay-coconut-women-s-razor/0004740065210",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740065210$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "venus-comfortglide-white-tea-women-s-razor-blades-with-built-9904",
+    "name": "Venus ComfortGlide White Tea Women's Razor Blades, with Built-in Shave Gel Bars",
+    "brand": "Gillette",
+    "variant": "8 count",
+    "category": "razors",
+    "size": {
+      "amount": 8,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740069904",
+        "canonicalUrl": "https://www.kroger.com/p/venus-comfortglide-white-tea-women-s-razor-blades-with-built/0004740069904",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740069904$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-mach-3-razor-blade-refills-with-lubrication-strip-3-5704",
+    "name": "Gillette Mach 3 Razor Blade Refills, with Lubrication Strip, 3-Blade Razor Blades for Close Shave",
+    "brand": "Gillette",
+    "variant": "15 ct",
+    "category": "razors",
+    "size": {
+      "amount": 15,
+      "unit": "count"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740065704",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-mach-3-razor-blade-refills-with-lubrication-strip-3/0004740065704",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740065704$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-extra-smooth-women-s-razor-blade-refills-cart-0546",
+    "name": "Gillette Venus Extra Smooth Women's Razor Blade Refills Cartridges",
+    "brand": "Gillette",
+    "variant": "6 count",
+    "category": "razors",
+    "size": {
+      "amount": 6,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740030546",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-venus-extra-smooth-women-s-razor-blade-refills-cart/0004740030546",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740030546$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-fusion5-men-s-5-blade-razor-blade-refills-cartridge-5688",
+    "name": "Gillette Fusion5 Men's 5-Blade Razor Blade Refills Cartridges",
+    "brand": "Gillette",
+    "variant": "8 count",
+    "category": "razors",
+    "size": {
+      "amount": 8,
+      "unit": "count"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740015688",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-fusion5-men-s-5-blade-razor-blade-refills-cartridge/0004740015688",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740015688$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "gillette-venus-deluxe-smooth-sensitive-women-s-razor-blade-r-5776",
+    "name": "Gillette Venus Deluxe Smooth Sensitive Women's Razor Blade Refills Cartridges",
+    "brand": "Gillette",
+    "variant": "6 count",
+    "category": "razors",
+    "size": {
+      "amount": 6,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0004740065776",
+        "canonicalUrl": "https://www.kroger.com/p/gillette-venus-deluxe-smooth-sensitive-women-s-razor-blade-r/0004740065776",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0004740065776$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "schick-hydro-silk-5-blade-razor-refills-for-women-moisturizi-0702",
+    "name": "Schick Hydro Silk 5-Blade Razor Refills for Women Moisturizing with Shea Butter",
+    "brand": "Schick",
+    "variant": "4 count",
+    "category": "razors",
+    "size": {
+      "amount": 4,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0084105800702",
+        "canonicalUrl": "https://www.kroger.com/p/schick-hydro-silk-5-blade-razor-refills-for-women-moisturizi/0084105800702",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0084105800702$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "schick-hydro-sensitive-5-blade-razor-refills-for-men-with-fl-1480",
+    "name": "Schick Hydro Sensitive 5-Blade Razor Refills for Men with Flip-Back Precision Edger",
+    "brand": "Schick",
+    "variant": "6 count",
+    "category": "razors",
+    "size": {
+      "amount": 6,
+      "unit": "count"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0084105801480",
+        "canonicalUrl": "https://www.kroger.com/p/schick-hydro-sensitive-5-blade-razor-refills-for-men-with-fl/0084105801480",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0084105801480$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "schick-hydro-silk-5-blade-razor-refills-for-women-sensitive-0722",
+    "name": "Schick Hydro Silk 5-Blade Razor Refills for Women Sensitive Skin Hypoallergenic Serum with Aloe",
+    "brand": "Schick",
+    "variant": "4 count",
+    "category": "razors",
+    "size": {
+      "amount": 4,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0084105800722",
+        "canonicalUrl": "https://www.kroger.com/p/schick-hydro-silk-5-blade-razor-refills-for-women-sensitive/0084105800722",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0084105800722$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "schick-hydro-silk-5-blade-razor-2-refills-for-women-moisturi-0700",
+    "name": "Schick Hydro Silk 5-Blade Razor + 2 Refills for Women Moisturizing with Shea Butter",
+    "brand": "Schick",
+    "variant": "3 count",
+    "category": "razors",
+    "size": {
+      "amount": 3,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0084105800700",
+        "canonicalUrl": "https://www.kroger.com/p/schick-hydro-silk-5-blade-razor-2-refills-for-women-moisturi/0084105800700",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0084105800700$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "schick-hydro-sensitive-5-blade-razor-for-men-3-refills-with-1484",
+    "name": "Schick Hydro Sensitive 5-Blade Razor for Men + 3 Refills with Flip-Back Precision Edger",
+    "brand": "Schick",
+    "variant": "4 count",
+    "category": "razors",
+    "size": {
+      "amount": 4,
+      "unit": "count"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0084105801484",
+        "canonicalUrl": "https://www.kroger.com/p/schick-hydro-sensitive-5-blade-razor-for-men-3-refills-with/0084105801484",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0084105801484$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "schick-hydro-silk-disposable-razors-for-women-ultra-sensitiv-2345",
+    "name": "Schick Hydro Silk Disposable Razors for Women Ultra Sensitive Care with Hydra-Boost Serum + Aloe",
+    "brand": "Schick",
+    "variant": "2 count",
+    "category": "razors",
+    "size": {
+      "amount": 2,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0084105802345",
+        "canonicalUrl": "https://www.kroger.com/p/schick-hydro-silk-disposable-razors-for-women-ultra-sensitiv/0084105802345",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0084105802345$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "schick-hydro-5-blade-disposable-razors-for-men-sensitive-ski-0858",
+    "name": "Schick Hydro 5-Blade Disposable Razors for Men Sensitive Skin",
+    "brand": "Schick",
+    "variant": "4 count",
+    "category": "razors",
+    "size": {
+      "amount": 4,
+      "unit": "count"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0084105800858",
+        "canonicalUrl": "https://www.kroger.com/p/schick-hydro-5-blade-disposable-razors-for-men-sensitive-ski/0084105800858",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0084105800858$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "bic-soleil-3-sensitive-razors-5177",
+    "name": "BIC Soleil 3 Sensitive Razors",
+    "brand": "BIC",
+    "variant": "2 pk",
+    "category": "razors",
+    "size": {
+      "amount": 2,
+      "unit": "count"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0007033075177",
+        "canonicalUrl": "https://www.kroger.com/p/bic-soleil-3-sensitive-razors/0007033075177",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0007033075177$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "bic-flex-3-sensitive-disposable-razors-for-men-razors-with-3-4663",
+    "name": "BIC Flex 3 Sensitive Disposable Razors for Men, Razors With 3 Blades, 3 Count",
+    "brand": "BIC",
+    "variant": "3 ct",
+    "category": "razors",
+    "size": {
+      "amount": 3,
+      "unit": "count"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0007033074663",
+        "canonicalUrl": "https://www.kroger.com/p/bic-flex-3-sensitive-disposable-razors-for-men-razors-with-3/0007033074663",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0007033074663$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "skintimate-signature-scents-shave-gel-for-women-moisturizing-0548",
+    "name": "Skintimate Signature Scents Shave Gel for Women Moisturizing Raspberry Rain Scent",
+    "brand": "Skintimate",
+    "variant": "2.75 oz",
+    "category": "shave-care",
+    "size": {
+      "amount": 2.75,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0084105800548",
+        "canonicalUrl": "https://www.kroger.com/p/skintimate-signature-scents-shave-gel-for-women-moisturizing/0084105800548",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0084105800548$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "edge-extra-moisturizing-shave-gel-for-men-hydrating-unscente-0526",
+    "name": "Edge Extra Moisturizing Shave Gel for Men Hydrating Unscented",
+    "brand": "Edge",
+    "variant": "7 oz",
+    "category": "shave-care",
+    "size": {
+      "amount": 7,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0084105800526",
+        "canonicalUrl": "https://www.kroger.com/p/edge-extra-moisturizing-shave-gel-for-men-hydrating-unscente/0084105800526",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0084105800526$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "pure-silk-raspberry-mist-moisturizing-shave-cream-0991",
+    "name": "Pure Silk Raspberry Mist Moisturizing Shave Cream",
+    "brand": "Pure Silk",
+    "variant": "7.25 oz",
+    "category": "shave-care",
+    "size": {
+      "amount": 7.25,
+      "unit": "oz"
+    },
+    "marketedTo": "women",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0005100930991",
+        "canonicalUrl": "https://www.kroger.com/p/pure-silk-raspberry-mist-moisturizing-shave-cream/0005100930991",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0005100930991$"]
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "id": "barbasol-thick-rich-soothing-aloe-shaving-cream-0273",
+    "name": "Barbasol Thick & Rich Soothing Aloe Shaving Cream",
+    "brand": "Barbasol",
+    "variant": "10 oz",
+    "category": "shave-care",
+    "size": {
+      "amount": 10,
+      "unit": "oz"
+    },
+    "marketedTo": "men",
+    "identities": [
+      {
+        "retailer": "kroger",
+        "productId": "0005100900273",
+        "canonicalUrl": "https://www.kroger.com/p/barbasol-thick-rich-soothing-aloe-shaving-cream/0005100900273",
+        "canonicalUrlPatterns": ["^https://www\\.kroger\\.com/p/[a-z0-9-]+/0005100900273$"]
+      }
+    ],
+    "status": "active"
   }
 ]

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { ComparisonView, ProductSide } from '../lib/types';
-import { formatCents } from '../lib/money';
+import { formatCents, formatPerUnit, formatSize } from '../lib/money';
 import { comparisonHeadline, comparisonSummary, freshnessLine } from '../lib/copy';
 import { useStoreLink } from '../routes/useStore';
 import { ArrowRightIcon } from './icons';
@@ -12,11 +12,23 @@ export type ComparisonCardProps = {
   item: ComparisonView;
 };
 
-function SideRow({ side, emphasis }: { side: ProductSide; emphasis?: boolean }) {
+function SideRow({
+  side,
+  emphasis,
+  perUnit,
+}: {
+  side: ProductSide;
+  emphasis?: boolean;
+  perUnit: boolean;
+}) {
   return (
     <div className={`${styles.side} ${emphasis ? styles.sideEmphasis : ''}`}>
       <span className={`label ${styles.marketed}`}>{side.marketedToLabel}</span>
       <span className={`caption ${styles.sideName}`}>{side.name}</span>
+      <span className="caption">
+        {formatSize(side.size)}
+        {perUnit ? ` · ${formatPerUnit(side.priceCents, side.size)}` : ''}
+      </span>
       <span className={`heading ${styles.sidePrice}`}>{formatCents(side.priceCents)}</span>
     </div>
   );
@@ -62,8 +74,8 @@ export function ComparisonCard({ item }: ComparisonCardProps) {
         </div>
 
         <div className={styles.sides}>
-          <SideRow side={item.womens} />
-          <SideRow side={item.other} emphasis />
+          <SideRow side={item.womens} perUnit={item.perUnit} />
+          <SideRow side={item.other} perUnit={item.perUnit} emphasis />
         </div>
 
         {firstDifference ? (

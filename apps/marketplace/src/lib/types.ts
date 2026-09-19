@@ -55,13 +55,27 @@ export type SelectedStore = {
 };
 
 /** Fixed display order. Categories with no active comparisons are omitted. */
-export const CATEGORY_ORDER = ['razors', 'deodorant', 'body-wash'] as const;
+export const CATEGORY_ORDER = [
+  'razors',
+  'deodorant',
+  'body-wash',
+  'shave-care',
+  'lotion',
+  'face-care',
+  'hair-care',
+  'soap',
+] as const;
 export type CategorySlug = (typeof CATEGORY_ORDER)[number];
 
 export const CATEGORY_LABELS: Record<CategorySlug, string> = {
   razors: 'Razors',
   deodorant: 'Deodorant',
   'body-wash': 'Body wash',
+  'shave-care': 'Shave gel & cream',
+  lotion: 'Lotion',
+  'face-care': 'Face care',
+  'hair-care': 'Hair care',
+  soap: 'Bar soap',
 };
 
 /** Factual marketing labels, as stated on the listing. Never a claim about pricing. */
@@ -105,7 +119,8 @@ export type ProductSide = {
 
 /**
  * One rendered comparison. `womens` always costs more than `other`, both at
- * `store` in `priceContext`, and `savingsCents` is exactly their difference.
+ * `store` in `priceContext`, and `savingsCents` is exactly their difference
+ * (for equal sizes) or the difference for the same amount (`perUnit`).
  */
 export type ComparisonView = {
   /** The equivalence record ID; also the /compare/:id slug. */
@@ -121,8 +136,13 @@ export type ComparisonView = {
   priceContextLabel: string;
   /** The older of the two price observations, shown as "Checked …". */
   observedAt: string;
-  /** Integer minor units, always > 0. */
+  /**
+   * Integer minor units, always > 0. With `perUnit`, what the shopper saves
+   * for the women's product's amount at the other version's unit price.
+   */
   savingsCents: number;
+  /** The two products come in different amounts of the same unit. */
+  perUnit: boolean;
   /** Whole-number percent the other version is below the women's price, when ≥ 1. */
   percentLower?: number;
   rationale: string;

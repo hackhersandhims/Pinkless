@@ -120,7 +120,7 @@ describe('equivalentsFor', () => {
     expect(equivalentsFor(bothWomens, 'pricier')).toEqual([]);
   });
 
-  it('ignores paused pairs, inactive counterparts, and mismatched sizes or categories', () => {
+  it('ignores paused pairs, inactive counterparts, and mismatched size units or categories', () => {
     expect(
       equivalentsFor(
         catalog({ equivalences: [equivalence(undefined, { status: 'paused' })] }),
@@ -132,7 +132,7 @@ describe('equivalentsFor', () => {
     expect(equivalentsFor(paused, 'pricier')).toEqual([]);
     const resized = catalog();
     resized.products[1] = product('cheaper', '0000000000002', {
-      size: { amount: 5, unit: 'count' },
+      size: { amount: 5, unit: 'oz' },
     });
     expect(equivalentsFor(resized, 'pricier')).toEqual([]);
     const recategorized = catalog();
@@ -151,8 +151,61 @@ describe('compareOffers', () => {
       alternativeProduct: { id: 'cheaper' },
       alternative: { productId: '0000000000002', price: { amountCents: 599 } },
       savings: { amountCents: 80, currency: 'USD' },
+      basis: 'same-size',
       knownDifferences: ['Handle color differs.'],
       matchedBy: 'retailer-product-id',
+    });
+  });
+
+  it('compares different amounts of the same unit per unit, rounding in the shopper-safe direction', () => {
+    // Women's 2.3 oz for $2.79; men's 3 oz for $2.69. 2.3 oz of the men's costs
+    // 269 * 230 / 300 = 206.23 -> 207 (rounded up), so savings are 279 - 207 = 72.
+    const resized = catalog();
+    resized.products[0] = product('pricier', '0000000000001', {
+      size: { amount: 2.3, unit: 'oz' },
+    });
+    resized.products[1] = product('cheaper', '0000000000002', { size: { amount: 3, unit: 'oz' } });
+    const outcome = compareOffers(
+      resized,
+      view({ currentPriceCents: 279 }),
+      [offer('0000000000001', 279), offer('0000000000002', 269)],
+      now,
+    );
+    expect(outcome).toMatchObject({
+      status: 'show',
+      basis: 'per-unit',
+      savings: { amountCents: 72 },
+    });
+  });
+
+  it("shows a bigger men's pack that costs more in total but less per unit", () => {
+    const resized = catalog();
+    resized.products[1] = product('cheaper', '0000000000002', {
+      size: { amount: 8, unit: 'count' },
+    });
+    const outcome = compareOffers(
+      resized,
+      view(),
+      [pricierOffer, offer('0000000000002', 999)],
+      now,
+    );
+    // 4 of the 8-count cost 999 * 4 / 8 = 499.5 -> 500; 679 - 500 = 179.
+    expect(outcome).toMatchObject({
+      status: 'show',
+      basis: 'per-unit',
+      savings: { amountCents: 179 },
+    });
+  });
+
+  it("stays quiet when the women's product is not pricier per unit", () => {
+    const resized = catalog();
+    resized.products[1] = product('cheaper', '0000000000002', {
+      size: { amount: 2, unit: 'count' },
+    });
+    // 4 of the 2-count at 599 each pair = 1198 > 679.
+    expect(compareOffers(resized, view(), [pricierOffer, cheaperOffer], now)).toEqual({
+      status: 'no-match',
+      reason: 'no-positive-savings',
     });
   });
 

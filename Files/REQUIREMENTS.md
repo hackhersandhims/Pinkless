@@ -232,7 +232,8 @@ type Product = {
   name: string;
   brand?: string;
   variant: string;
-  category: "razors" | "deodorant" | "body-wash";
+  category: "razors" | "deodorant" | "body-wash" | "shave-care" | "lotion"
+    | "face-care" | "hair-care" | "soap";
   audience: "women" | "men" | "unisex";
   size: Size;
   // Who the listing or package markets it to. A factual label, not a claim.
@@ -282,8 +283,8 @@ Catalog validation must reject:
 - an active equivalence whose products are not both active;
 - an equivalence that does not pair exactly one `women` product with one
   `men` or `neutral` product;
-- an equivalence across categories, or between different size units or
-  amounts;
+- an equivalence across categories, or between different size units (amounts
+  may differ; see §5 per-unit rule);
 - an equivalence with an empty rationale, empty `knownDifferences`, or no
   reviewer and review date.
 
@@ -318,13 +319,18 @@ The matcher must:
    same Kroger `locationId` and the same price context. Use only Kroger's
    regular price, never a promo price.
 5. Both offers must be USD, positive, in stock, and unexpired.
-6. Savings = current regular price − equivalent regular price. Pick the
-   cheapest eligible equivalent. Zero or negative → `no-match`.
+6. Savings = current regular price − the equivalent's regular price scaled
+   to the current product's amount (`ceil(equivalentCents × currentAmount /
+   equivalentAmount)`, integer cents, amounts in hundredths). With equal sizes
+   this is the plain price difference (`basis: "same-size"`); otherwise
+   `basis: "per-unit"`. Rounding up only ever understates savings. Pick the
+   equivalent with the largest savings. Zero or negative → `no-match`.
 7. Return a display model (both products, both prices, store, price context,
    observation time, rationale, known differences) only if all checks pass.
 
-The matcher must not normalize price per unit, compare membership-only or
-loyalty prices, or pair products that differ in size unit or amount. Brand
+The matcher compares per unit only within one size unit (oz with oz, count
+with count), never across units or with estimated conversions. It must not
+compare membership-only or loyalty prices. Brand
 may be the same or different; being the same brand never makes two products
 equivalent on its own.
 
@@ -332,7 +338,9 @@ equivalent on its own.
 
 ### Badge content
 
-- Headline: `Comparable alternative: save $X.XX`
+- Headline: `Comparable alternative: save $X.XX` (same size), or
+  `Comparable alternative: save $X.XX for the same amount` (per unit; the
+  product line then states both sizes).
 - Product line: `Men's version:` (or `Neutral version:`), then the
   equivalent product's name and price at the selected store.
 - Supporting text: short reviewed rationale plus the first known difference,

@@ -17,6 +17,18 @@ export type Money = {
   currency: 'USD';
 };
 
+export const CATEGORIES = [
+  'razors',
+  'deodorant',
+  'body-wash',
+  'shave-care',
+  'lotion',
+  'face-care',
+  'hair-care',
+  'soap',
+] as const;
+export type Category = (typeof CATEGORIES)[number];
+
 export type Size = {
   amount: number;
   unit: 'oz' | 'ml' | 'count';
@@ -48,7 +60,7 @@ export type Product = {
   name: string;
   brand?: string;
   variant: string;
-  category: 'razors' | 'deodorant' | 'body-wash';
+  category: Category;
   size: Size;
   marketedTo: MarketedTo;
   identities: RetailerIdentity[];

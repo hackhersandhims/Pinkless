@@ -1,5 +1,6 @@
 /** Pure transforms from the API's `ShowOutcome`s to the view contract. */
 
+import { sizeAdjustedSavingsCents } from '../../../../packages/matcher/src/unit-price.js';
 import { percentLower } from './money.js';
 import {
   CATEGORY_LABELS,
@@ -101,8 +102,18 @@ export function toView(
   ) {
     return undefined;
   }
-  const savingsCents = current.price.amountCents - alternative.price.amountCents;
-  if (savingsCents <= 0 || outcome.savings?.amountCents !== savingsCents) return undefined;
+  const savingsCents = sizeAdjustedSavingsCents(
+    current.price.amountCents,
+    product.size,
+    alternative.price.amountCents,
+    alternativeProduct.size,
+  );
+  if (!savingsCents || savingsCents <= 0 || outcome.savings?.amountCents !== savingsCents) {
+    return undefined;
+  }
+  const perUnit =
+    product.size.unit !== alternativeProduct.size.unit ||
+    product.size.amount !== alternativeProduct.size.amount;
 
   const other = toSide(alternativeProduct, alternative) as ComparisonView['other'];
   const observedAt =
@@ -123,6 +134,7 @@ export function toView(
     priceContextLabel: PRICE_CONTEXT_LABELS[priceContext],
     observedAt,
     savingsCents,
+    perUnit,
     ...(percent !== undefined ? { percentLower: percent } : {}),
     rationale: outcome.rationale,
     matchedAttributes: [...(outcome.matchedAttributes ?? [])],

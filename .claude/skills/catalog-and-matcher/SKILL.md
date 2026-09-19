@@ -107,10 +107,11 @@ the same PR.
 7. Savings = women's price − men's/neutral price. Zero or negative →
    `no-match`.
 
-## No auto-normalization
+## Normalization limits
 
-- No per-unit price normalization, no loyalty/membership prices, no pairing
-  across sizes or categories.
+- Per-unit comparison only within one size unit (oz↔oz, count↔count), via
+  `packages/matcher/src/unit-price.ts`; never across units or categories. No
+  loyalty/membership prices.
 - Being the same brand never makes two products equivalent. Every pair is
   written and reviewed by a person.
 

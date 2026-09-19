@@ -113,8 +113,61 @@ export function BodyWashIcon({ className }: IconProps) {
   );
 }
 
+export function ShaveCareIcon({ className }: IconProps) {
+  return (
+    <Icon className={className}>
+      <rect x="8" y="7" width="8" height="14" rx="2" />
+      <path d="M10 7V4.5h4V7" />
+      <path d="M14 4.5h3" />
+    </Icon>
+  );
+}
+
+export function LotionIcon({ className }: IconProps) {
+  return (
+    <Icon className={className}>
+      <path d="M7 10.5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2V21H7z" />
+      <path d="M10.5 8.5V5.5h3v3" />
+      <path d="M12 3v2.5" />
+    </Icon>
+  );
+}
+
+export function FaceCareIcon({ className }: IconProps) {
+  return (
+    <Icon className={className}>
+      <rect x="5" y="11" width="14" height="9" rx="2" />
+      <path d="M6.5 11V8.5h11V11" />
+    </Icon>
+  );
+}
+
+export function HairCareIcon({ className }: IconProps) {
+  return (
+    <Icon className={className}>
+      <path d="M8 21V9.5a4 4 0 0 1 8 0V21z" />
+      <path d="M10 5.5V3h4v2.5" />
+    </Icon>
+  );
+}
+
+export function SoapIcon({ className }: IconProps) {
+  return (
+    <Icon className={className}>
+      <rect x="4" y="9" width="16" height="10" rx="4" />
+      <circle cx="9" cy="5.5" r="1.5" />
+      <circle cx="14" cy="4.5" r="1" />
+    </Icon>
+  );
+}
+
 export const CATEGORY_ICONS: Record<CategorySlug, ComponentType<IconProps>> = {
   razors: RazorIcon,
   deodorant: DeodorantIcon,
   'body-wash': BodyWashIcon,
+  'shave-care': ShaveCareIcon,
+  lotion: LotionIcon,
+  'face-care': FaceCareIcon,
+  'hair-care': HairCareIcon,
+  soap: SoapIcon,
 };
