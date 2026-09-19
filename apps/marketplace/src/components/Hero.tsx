@@ -36,7 +36,7 @@ export function Hero({ store, featured, loading = false }: HeroProps) {
             {store ? `Prices at ${storeLabel(store)}` : 'Kroger price comparisons'}
           </p>
           <h1 id="hero-title" className={styles.headline}>
-            <span>Before you buy,</span> <span>check the men’s version.</span>
+            <span>Same shelf. Same store.</span> <span>Smaller price.</span>
           </h1>
           <p className={`body ${styles.sub}`}>
             Pinkless pairs products marketed to women with reviewed men’s or neutral equivalents,
